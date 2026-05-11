@@ -150,7 +150,7 @@
         .nav-right { display: flex; align-items: center; gap: 10px; }
 
         /* KARTELA MODAL (Discord Style) */
-        .kartela-modal, .chat-modal {
+        .kartela-modal, .chat-modal, .pdf-modal {
             position: fixed;
             top: 0;
             left: 0;
@@ -178,6 +178,11 @@
             display: flex;
             flex-direction: column;
             animation: modalFade 0.3s ease;
+        }
+
+        .pdf-modal-content {
+            max-width: 900px !important;
+            height: 90vh !important;
         }
 
         @keyframes modalFade {
@@ -405,6 +410,23 @@
         </div>
     </div>
 
+    <div class="pdf-modal" id="pdf-modal">
+        <div class="modal-content pdf-modal-content">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-file-pdf"></i> <span data-tr="Filli İç Cephe Kataloğu" data-en="Filli Interior Catalog">Filli İç Cephe Kataloğu</span></h2>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <a href="https://www.filliboya.com/uploads/FILLI-IC-CEPHE-RENK-KARTELASI-V2.pdf" download target="_blank" class="btn btn-primary" style="padding: 6px 15px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;" data-tr="İndir" data-en="Download">
+                        <i class="fa-solid fa-download"></i> İndir
+                    </a>
+                    <button class="close-modal" id="close-pdf-modal"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+            <div class="modal-body" style="padding: 0; overflow: hidden;">
+                <iframe src="https://www.filliboya.com/uploads/FILLI-IC-CEPHE-RENK-KARTELASI-V2.pdf" width="100%" height="100%" style="border: none;"></iframe>
+            </div>
+        </div>
+    </div>
+
     <div class="kartela-modal" id="kartela-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -421,10 +443,13 @@
                                placeholder="Renk veya kod ara..." 
                                style="width: 100%; padding: 10px 10px 10px 35px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none;">
                     </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="filter-btn active" data-type="all" style="flex: 1; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;" data-tr="Tümü" data-en="All">Tümü</button>
-                        <button class="filter-btn" data-type="ic" style="flex: 1; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;" data-tr="İç Cephe" data-en="Interior">İç Cephe</button>
-                        <button class="filter-btn" data-type="dis" style="flex: 1; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;" data-tr="Dış Cephe" data-en="Exterior">Dış Cephe</button>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button id="open-pdf-btn" style="flex: 1; min-width: 120px; padding: 8px; border-radius: 6px; border: 1px solid #3b82f6; cursor: pointer; background: rgba(59, 130, 246, 0.15); color: white; font-size: 0.8rem; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px;" data-tr="Filli İç Cephe" data-en="Filli Interior">
+                            <i class="fa-solid fa-file-pdf" style="color: #ef4444;"></i> Filli İç Cephe
+                        </button>
+                        <button class="filter-btn active" data-type="all" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;" data-tr="Tümü" data-en="All">Tümü</button>
+                        <button class="filter-btn" data-type="ic" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;" data-tr="İç Cephe" data-en="Interior">İç Cephe</button>
+                        <button class="filter-btn" data-type="dis" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;" data-tr="Dış Cephe" data-en="Exterior">Dış Cephe</button>
                     </div>
                 </div>
                 <div class="kartela-grid" id="modal-color-grid"></div>
@@ -932,9 +957,8 @@
     chatInput.onkeypress = (e) => { if(e.key === 'Enter') handleSend(); };
 
     // ============================================
-    // KARTELA & FİLTRELEME MANTIĞI
+    // KARTELA & PDF MANTIĞI
     // ============================================
-    // (colorList dizisi colors.js dosyasından yükleniyor)
 
     const openModalBtn = document.getElementById('open-kartela-btn');
     const modal = document.getElementById('kartela-modal');
@@ -943,13 +967,31 @@
     const colorSearch = document.getElementById('color-search');
     const filterBtns = document.querySelectorAll('.filter-btn');
 
+    // PDF Modal Tanımlamaları
+    const openPdfBtn = document.getElementById('open-pdf-btn');
+    const pdfModal = document.getElementById('pdf-modal');
+    const closePdfModalBtn = document.getElementById('close-pdf-modal');
+
+    // PDF Modalı Açma/Kapama İşlemleri
+    if(openPdfBtn) {
+        openPdfBtn.onclick = () => {
+            modal.style.display = 'none'; // İstenirse kartela modalını kapatıp sadece PDF modalını açabiliriz
+            pdfModal.style.display = 'flex';
+        };
+    }
+    if(closePdfModalBtn) {
+        closePdfModalBtn.onclick = () => {
+            pdfModal.style.display = 'none';
+            modal.style.display = 'flex'; // Geri dönmek istenirse kartela tekrar açılır
+        };
+    }
+
     let activeFilter = 'all';
     let searchTerm = '';
 
     function renderColors() {
         colorGrid.innerHTML = '';
         
-        // colorList'in colors.js'den başarılı bir şekilde gelip gelmediğini kontrol edelim
         if (typeof colorList === 'undefined') {
             console.error("colorList bulunamadı! colors.js dosyasının doğru yüklendiğinden emin olun.");
             return;
@@ -1004,6 +1046,7 @@
     window.onclick = (e) => { 
         if(e.target == modal) modal.style.display = 'none'; 
         if(e.target == chatModal) chatModal.style.display = 'none';
+        if(e.target == pdfModal) pdfModal.style.display = 'none';
     }
 
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
