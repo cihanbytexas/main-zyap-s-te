@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Öz Yapı Asistan | Yönetim Paneli</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .admin-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 800px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 15px;
+        }
+        .header h1 { margin: 0; font-size: 1.5rem; color: #1e3a8a; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #374151; }
+        input[type="password"] {
+            width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; outline: none; box-sizing: border-box;
+        }
+        input[type="password"]:focus { border-color: #3b82f6; }
+        textarea {
+            width: 100%; height: 500px; padding: 15px; border: 1px solid #d1d5db; border-radius: 6px; font-family: monospace; font-size: 0.95rem; resize: vertical; outline: none; box-sizing: border-box; background: #f9fafb;
+        }
+        textarea:focus { border-color: #3b82f6; background: white; }
+        .btn-save {
+            background-color: #3b82f6; color: white; border: none; padding: 15px 30px; font-size: 1.1rem; font-weight: 600; border-radius: 6px; cursor: pointer; width: 100%; transition: 0.3s;
+        }
+        .btn-save:hover { background-color: #1e3a8a; }
+        #status-message {
+            margin-top: 15px; padding: 10px; border-radius: 6px; text-align: center; font-weight: 600; display: none;
+        }
+        .success { background-color: #d1fae5; color: #065f46; }
+        .error { background-color: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        <div class="header">
+            <i class="fa-solid fa-robot" style="font-size: 2rem; color: #3b82f6;"></i>
+            <h1>Chat Bot Fiyat ve Kural Yönetimi</h1>
+        </div>
+
+        <div class="form-group">
+            <label for="admin-password">Yönetici Şifresi:</label>
+            <input type="password" id="admin-password" placeholder="Sisteme kayıtlı şifrenizi girin">
+        </div>
+
+        <div class="form-group">
+            <label for="bot-text">Bot Kuralları ve Fiyat Listesi:</label>
+            <textarea id="bot-text" placeholder="Yükleniyor..."></textarea>
+        </div>
+
+        <button class="btn-save" id="save-btn"><i class="fa-solid fa-floppy-disk"></i> Değişiklikleri Kaydet</button>
+        <div id="status-message"></div>
+    </div>
+
+    <script>
+        const botTextArea = document.getElementById('bot-text');
+        const saveBtn = document.getElementById('save-btn');
+        const passwordInput = document.getElementById('admin-password');
+        const statusMsg = document.getElementById('status-message');
+
+        // Sayfa açıldığında mevcut fiyatları getir
+        window.onload = async () => {
+            try {
+                const res = await fetch('/api/settings');
+                const data = await res.json();
+                if (data.text) {
+                    botTextArea.value = data.text;
+                } else {
+                    botTextArea.value = "Veri çekilemedi.";
+                }
+            } catch (err) {
+                botTextArea.value = "Bağlantı hatası.";
+            }
+        };
+
+        // Kaydet butonuna basıldığında
+        saveBtn.onclick = async () => {
+            const password = passwordInput.value;
+            const newText = botTextArea.value;
+
+            if (!password) {
+                showStatus("Lütfen şifre girin!", "error");
+                return;
+            }
+
+            saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...';
+            saveBtn.disabled = true;
+
+            try {
+                const res = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password, newText })
+                });
+                
+                const data = await res.json();
+
+                if (res.ok) {
+                    showStatus(data.message, "success");
+                    passwordInput.value = ''; // Güvenlik için şifreyi temizle
+                } else {
+                    showStatus(data.error, "error");
+                }
+            } catch (err) {
+                showStatus("Sunucu ile bağlantı kurulamadı.", "error");
+            }
+
+            saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Değişiklikleri Kaydet';
+            saveBtn.disabled = false;
+        };
+
+        function showStatus(msg, type) {
+            statusMsg.textContent = msg;
+            statusMsg.className = type;
+            statusMsg.style.display = 'block';
+            setTimeout(() => { statusMsg.style.display = 'none'; }, 4000);
+        }
+    </script>
+</body>
+</html>
