@@ -41,6 +41,9 @@ function applyLanguage(lang) {
     // Renk kartela filtreleme butonları (ic/dis etiket metni)
     renderColors();
 
+    // Dinamik yorumları yeniden listele (Dil değiştiğinde boş mesaj uyarısı güncellensin)
+    fetchApprovedReviews();
+
     // html lang attribute
     document.documentElement.lang = lang === 'tr' ? 'tr' : 'en';
 }
@@ -222,6 +225,123 @@ openModalBtn.onclick = () => {
 };
 closeModalBtn.onclick = () => modal.style.display = 'none';
 
+// ============================================
+// DİNAMİK YORUM YAPMA VE LİSTELEME SİTEMİ
+// ============================================
+let selectedRating = 0;
+
+// Yıldız Seçme ve Hover Efektleri
+document.querySelectorAll('#star-rating-container .review-star').forEach(star => {
+    star.addEventListener('click', function() {
+        selectedRating = parseInt(this.getAttribute('data-value'));
+        updateStarDisplay(selectedRating);
+    });
+
+    star.addEventListener('mouseover', function() {
+        const hoverValue = parseInt(this.getAttribute('data-value'));
+        updateStarDisplay(hoverValue);
+    });
+});
+
+document.getElementById('star-rating-container')?.addEventListener('mouseleave', () => {
+    updateStarDisplay(selectedRating);
+});
+
+function updateStarDisplay(value) {
+    document.querySelectorAll('#star-rating-container .review-star').forEach(star => {
+        const starValue = parseInt(star.getAttribute('data-value'));
+        if(starValue <= value) {
+            star.style.color = '#f59e0b'; // Altın sarısı aktif
+        } else {
+            star.style.color = '#cbd5e1'; // Gri inaktif
+        }
+    });
+}
+
+// Onaylı Yorumları Backend'den Çekip Basma
+async function fetchApprovedReviews() {
+    const grid = document.getElementById('dynamic-testimonials-list');
+    if (!grid) return;
+
+    try {
+        const res = await fetch('/api/reviews');
+        const reviews = await res.json();
+
+        if(!reviews || reviews.length === 0) {
+            grid.innerHTML = currentLang === 'tr' 
+                ? `<p style="text-align:center; grid-column: 1/-1; color: var(--text-light);">Henüz yorum yapılmamış. İlk yorumu siz yapın!</p>`
+                : `<p style="text-align:center; grid-column: 1/-1; color: var(--text-light);">No reviews yet. Be the first to write a review!</p>`;
+            return;
+        }
+
+        grid.innerHTML = '';
+        reviews.forEach(r => {
+            const firstLetter = r.ad_soyad ? r.ad_soyad.charAt(0).toUpperCase() : 'M';
+            grid.innerHTML += `
+                <div class="testimonial-card">
+                    <i class="fa-solid fa-quote-right quote-icon"></i>
+                    <div class="stars">
+                        ${'<i class="fa-solid fa-star"></i>'.repeat(r.puan)}${`<i class="fa-regular fa-star" style="color:#cbd5e1"></i>`.repeat(5 - r.puan)}
+                    </div>
+                    <p>"${r.yorum_metni}"</p>
+                    <div class="client-info">
+                        <div class="client-avatar" style="background: var(--primary-color); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${firstLetter}</div>
+                        <div>
+                            <h4>${r.ad_soyad}</h4>
+                            <span style="font-size: 0.8rem; color: var(--text-light);">${r.kategori}</span>
+                        </div>
+                    </div>
+                </div>`;
+        });
+    } catch (e) {
+        console.error("Yorum verileri çekilirken hata oluştu:", e);
+    }
+}
+
+// Form Gönderme Tetikleyicisi
+const reviewForm = document.getElementById('user-review-form');
+if(reviewForm) {
+    reviewForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        if(selectedRating === 0) {
+            alert(currentLang === 'tr' ? "Lütfen bir yıldız puanı seçiniz." : "Please select a star rating.");
+            return;
+        }
+
+        const payload = {
+            ad_soyad: document.getElementById('rev-name').value,
+            kategori: document.getElementById('rev-category').value,
+            puan: selectedRating,
+            yorum_metni: document.getElementById('rev-text').value
+        };
+
+        try {
+            const res = await fetch('/api/reviews', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+
+            if(data.success) {
+                alert(currentLang === 'tr' 
+                    ? "Teşekkürler! Yorumunuz yönetici onayından sonra yayınlanacaktır." 
+                    : "Thank you! Your review will be published after admin approval.");
+                reviewForm.reset();
+                selectedRating = 0;
+                updateStarDisplay(0);
+            } else {
+                alert("Hata / Error: " + data.error);
+            }
+        } catch(err) {
+            alert(currentLang === 'tr'
+                ? "Sistemde bir arıza oluştu, lütfen daha sonra tekrar deneyin."
+                : "A system error occurred, please try again later.");
+        }
+    });
+}
+
 // --- UI GENEL MANTIĞI ---
 window.onclick = (e) => { 
     if(e.target == modal) modal.style.display = 'none'; 
@@ -286,3 +406,6 @@ swatches.forEach(swatch => {
         displayHex.textContent = hexColor;
     });
 });
+
+// Sayfa ilk yüklendiğinde onaylı yorumları veritabanından çek
+document.addEventListener('DOMContentLoaded', fetchApprovedReviews);
