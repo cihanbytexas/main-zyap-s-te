@@ -324,7 +324,7 @@
             event.target.value = ''; 
         }
 
-        // GİRİŞ KONTROLÜ (GÜVENLİ HASH KONTROLÜ)
+        // GİRİŞ KONTROLÜ (GÜVENLİ HASH KONTROLÜ VE HATA YAKALAMA)
         async function enterPanel() {
             const pass = passwordInput.value;
             
@@ -333,11 +333,18 @@
                 return;
             }
 
-            const hashedInput = await sha256(pass);
-            const targetHash = "fdea70019333a581d1c41f760fbb83e8578d2a1ab98732c24bdcd8e70357d7f7";
+            try {
+                const hashedInput = await sha256(pass);
+                const targetHash = "fdea70019333a581d1c41f760fbb83e8578d2a1ab98732c24bdcd8e70357d7f7";
 
-            if (hashedInput !== targetHash) {
-                Swal.fire({ icon: 'error', title: 'Hata', text: 'Hatalı şifre girdiniz!', confirmButtonColor: '#ef4444' });
+                if (hashedInput !== targetHash) {
+                    Swal.fire({ icon: 'error', title: 'Hata', text: 'Hatalı şifre girdiniz!', confirmButtonColor: '#ef4444' });
+                    return;
+                }
+            } catch (error) {
+                // HTTPS olmadan test ediliyorsa crypto.subtle çöker, bu blok hatayı yakalar.
+                console.error("Şifreleme hatası (HTTPS gerekli olabilir):", error);
+                Swal.fire({ icon: 'error', title: 'Sistem Hatası', text: 'Tarayıcı güvenlik ayarları nedeniyle şifre kontrol edilemedi. Projeyi localhost veya HTTPS üzerinden çalıştırdığınıza emin olun.', confirmButtonColor: '#ef4444' });
                 return;
             }
 
@@ -351,7 +358,7 @@
                 dashboard.classList.remove('hidden');
                 setTimeout(() => dashboard.style.opacity = '1', 50);
                 loadData();
-                loadReviews(); // Giriş yapıldığında bildirim rozeti için yorumları arka planda saydır
+                loadReviews();
             }, 500);
         }
 
@@ -362,7 +369,7 @@
             }).then((result) => { if (result.isConfirmed) { location.reload(); } });
         }
 
-        // BOT AYARLARINI SUNUCUDAN ÇEKME
+        // BOT AYARLARINI SUNUCUDAN ÇEKME (TAMAMLANAN KISIM)
         async function loadData() {
             botTextArea.value = "Yükleniyor...";
             try {
@@ -370,4 +377,159 @@
                 const data = await res.json();
                 
                 const serverText = data.text || "";
-                botTextArea.value = serverText
+                botTextArea.value = serverText;
+                originalText = serverText;
+
+                // Geri alma (undo) geçmişini ilk veriyle başlat
+                historyStack = [serverText];
+                historyIndex = 0;
+                updateHistoryButtons();
+
+            } catch (err) {
+                botTextArea.value = "Sunucudan veri çekilirken hata oluştu. Bağlantınızı kontrol edin.";
+                console.error("Supabase Bağlantı Hatası:", err);
+            }
+        }
+
+        // BOT AYARLARINI KAYDETME İŞLEMİ (EKLENEN KISIM)
+        saveBtn.addEventListener('click', async () => {
+            const newText = botTextArea.value;
+            
+            // Yükleniyor durumu
+            const originalBtnContent = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...';
+            saveBtn.disabled = true;
+
+            try {
+                const res = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: sessionPassword, newText: newText })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    Swal.fire({ icon: 'success', title: 'Başarılı', text: data.message, confirmButtonColor: '#3b82f6' });
+                    originalText = newText; // Değişiklik kaydedildiği için orijinal metni güncelle
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Yetki Hatası', text: data.error, confirmButtonColor: '#ef4444' });
+                }
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'Bağlantı Hatası', text: 'Sunucuya ulaşılamıyor, internet bağlantınızı kontrol edin.', confirmButtonColor: '#ef4444' });
+                console.error(err);
+            } finally {
+                // Butonu eski haline getir
+                saveBtn.innerHTML = originalBtnContent;
+                saveBtn.disabled = false;
+            }
+        });
+
+        // YORUMLARI SUNUCUDAN ÇEKME (EKLENEN KISIM)
+        async function loadReviews() {
+            if (!sessionPassword) return;
+
+            const pendingList = document.getElementById('pending-reviews-list');
+            const approvedList = document.getElementById('approved-reviews-list');
+            const badge = document.getElementById('pending-badge');
+
+            try {
+                const res = await fetch(`/api/reviews?action=admin_list&password=${sessionPassword}`);
+                const data = await res.json();
+
+                if (data.error) {
+                    console.error("Yorum Hatası:", data.error);
+                    return;
+                }
+
+                // Bekleyen Yorumları Bas
+                if (data.pending && data.pending.length > 0) {
+                    badge.innerText = data.pending.length;
+                    badge.classList.remove('hidden');
+                    
+                    pendingList.innerHTML = data.pending.map(r => `
+                        <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+                            <td class="p-4">
+                                <div class="font-semibold text-slate-800">${r.ad_soyad}</div>
+                                <div class="text-xs text-slate-500">${r.kategori}</div>
+                            </td>
+                            <td class="p-4 text-amber-500 text-xs">
+                                ${'<i class="fa-solid fa-star"></i>'.repeat(r.puan)}${'<i class="fa-regular fa-star text-slate-300"></i>'.repeat(5 - r.puan)}
+                            </td>
+                            <td class="p-4 text-slate-600 max-w-md truncate" title="${r.yorum_metni}">${r.yorum_metni}</td>
+                            <td class="p-4 text-right space-x-2">
+                                <button onclick="handleReviewAction(${r.id}, 'approve')" class="px-3 py-1.5 bg-emerald-100 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded-lg transition text-xs font-bold shadow-sm"><i class="fa-solid fa-check"></i> Onayla</button>
+                                <button onclick="handleReviewAction(${r.id}, 'delete')" class="px-3 py-1.5 bg-red-100 text-red-600 hover:bg-red-500 hover:text-white rounded-lg transition text-xs font-bold shadow-sm"><i class="fa-solid fa-xmark"></i> Reddet</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    badge.classList.add('hidden');
+                    pendingList.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-400 font-medium bg-slate-50">Onay bekleyen yorum bulunmuyor.</td></tr>';
+                }
+
+                // Onaylanan Yorumları Bas
+                if (data.approved && data.approved.length > 0) {
+                    approvedList.innerHTML = data.approved.map(r => `
+                        <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+                            <td class="p-4">
+                                <div class="font-semibold text-slate-800">${r.ad_soyad}</div>
+                                <div class="text-xs text-slate-500">${r.kategori}</div>
+                            </td>
+                            <td class="p-4 text-amber-500 text-xs">
+                                ${'<i class="fa-solid fa-star"></i>'.repeat(r.puan)}${'<i class="fa-regular fa-star text-slate-300"></i>'.repeat(5 - r.puan)}
+                            </td>
+                            <td class="p-4 text-slate-600 max-w-md truncate" title="${r.yorum_metni}">${r.yorum_metni}</td>
+                            <td class="p-4 text-right">
+                                <button onclick="handleReviewAction(${r.id}, 'delete')" class="px-3 py-1.5 bg-slate-100 text-slate-600 hover:bg-red-500 hover:text-white rounded-lg transition text-xs font-bold shadow-sm"><i class="fa-solid fa-trash-can"></i> Yayından Kaldır</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    approvedList.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-400 font-medium bg-slate-50">Henüz yayınlanmış yorum yok.</td></tr>';
+                }
+
+            } catch (err) {
+                console.error("Yorumlar yüklenirken bağlantı koptu:", err);
+            }
+        }
+
+        // YORUM ONAYLAMA VE SİLME İŞLEMİ (EKLENEN KISIM)
+        async function handleReviewAction(id, action) {
+            const isDelete = action === 'delete';
+            const actionText = isDelete ? "Bu yorumu silmek/kaldırmak istediğinize emin misiniz?" : "Bu yorumu sitede yayınlamak için onaylıyor musunuz?";
+            
+            const result = await Swal.fire({
+                title: 'Emin misiniz?',
+                text: actionText,
+                icon: isDelete ? 'warning' : 'question',
+                showCancelButton: true,
+                confirmButtonColor: isDelete ? '#ef4444' : '#10b981',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: isDelete ? 'Evet, Sil' : 'Evet, Onayla',
+                cancelButtonText: 'İptal'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const res = await fetch('/api/reviews', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action, password: sessionPassword, id })
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        Swal.fire({ icon: 'success', title: 'İşlem Başarılı', text: data.message, timer: 1500, showConfirmButton: false });
+                        loadReviews(); // Başarılıysa listeyi anında güncelle
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Hata', text: data.error });
+                    }
+                } catch (err) {
+                    Swal.fire({ icon: 'error', title: 'Sistem Hatası', text: 'İşlem sunucuya iletilemedi.' });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
