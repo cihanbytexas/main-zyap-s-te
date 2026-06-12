@@ -1,0 +1,28 @@
+/* --- style.css dosyasının en altı --- */
+
+/* Auth Modal Tabs */
+.auth-header { padding-bottom: 0 !important; border-bottom: none !important; }
+.auth-tabs { display: flex; gap: 20px; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.auth-tab { background: none; border: none; color: #9ca3af; font-size: 1.1rem; padding: 10px 5px; cursor: pointer; transition: 0.3s; position: relative; font-weight: 600; }
+.auth-tab.active { color: #fff; }
+.auth-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: #3b82f6; }
+
+/* Auth Forms */
+.form-group { margin-bottom: 15px; }
+.form-input { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; margin-top: 5px; outline: none; transition: 0.3s; }
+.form-input:focus { border-color: #3b82f6; background: rgba(255,255,255,0.1); }
+.auth-msg { font-size: 0.85rem; text-align: center; margin-bottom: 10px; display: none; }
+.msg-error { color: #ef4444; }
+.msg-success { color: #10b981; }
+
+/* Navbar User Profile Area */
+.user-profile-area { display: flex; align-items: center; gap: 12px; margin-left: 15px; background: var(--bg-light); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid #e5e7eb; }
+.user-avatar-img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--secondary-color); }
+.user-greeting-text { font-size: 0.85rem; font-weight: 600; color: var(--text-dark); }
+.logout-btn { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1rem; transition: 0.3s; padding: 5px; }
+.logout-btn:hover { transform: scale(1.1); }
+
+@media (max-width: 768px) {
+    .hide-mobile { display: none; }
+    .user-profile-area { padding: 5px; margin-left: 5px; }
+}
