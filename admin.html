@@ -69,9 +69,15 @@
                 </div>
             </div>
             <nav class="flex-1 p-4 space-y-2">
-                <a href="#" class="flex items-center gap-3 p-3 bg-blue-600/10 text-blue-400 border border-blue-600/20 rounded-xl font-medium transition">
+                <button id="menu-bot" onclick="switchTab('bot')" class="flex items-center gap-3 p-3 w-full text-left bg-blue-600 text-white rounded-xl font-medium transition">
                     <i class="fa-solid fa-sliders w-5 text-center"></i> Bot Konfigürasyonu
-                </a>
+                </button>
+                <button id="menu-reviews" onclick="switchTab('reviews')" class="flex items-center gap-3 p-3 w-full text-left text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl font-medium transition justify-between">
+                    <span class="flex items-center gap-3">
+                        <i class="fa-solid fa-comments w-5 text-center"></i> Yorum Yönetimi
+                    </span>
+                    <span id="pending-badge" class="bg-red-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-full hidden">0</span>
+                </button>
             </nav>
             <div class="p-4 border-t border-slate-800">
                 <button onclick="logout()" class="flex items-center gap-3 p-3 w-full hover:bg-red-500/10 hover:text-red-400 rounded-xl text-slate-400 font-medium transition group">
@@ -82,7 +88,7 @@
 
         <main class="flex-1 flex flex-col min-w-0 bg-slate-50 h-full">
             <header class="h-20 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between z-0 shadow-sm flex-shrink-0">
-                <h1 class="text-lg sm:text-2xl font-bold text-slate-800 truncate pr-2">Kurallar ve Fiyat Listesi</h1>
+                <h1 id="page-title" class="text-lg sm:text-2xl font-bold text-slate-800 truncate pr-2">Kurallar ve Fiyat Listesi</h1>
                 
                 <div class="flex items-center gap-3 flex-shrink-0">
                     <div class="text-right hidden sm:block">
@@ -99,39 +105,86 @@
             <div class="flex-1 p-4 sm:p-8 flex flex-col overflow-hidden">
                 <div class="max-w-5xl mx-auto w-full flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                     
-                    <div class="bg-slate-50 px-4 sm:px-6 py-4 border-b border-slate-200 flex flex-wrap gap-4 justify-between items-center flex-shrink-0">
-                        <div class="hidden sm:flex items-center gap-2 text-slate-600 font-medium">
-                            <i class="fa-solid fa-code text-blue-500"></i> Bot Verisi
-                        </div>
-                        
-                        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                            <div class="flex bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex-shrink-0">
-                                <button id="undo-btn" onclick="undo()" class="px-3 py-2 hover:bg-slate-50 text-slate-600 border-r border-slate-200 disabled:opacity-30 disabled:hover:bg-white transition" title="Geri Al" disabled>
-                                    <i class="fa-solid fa-rotate-left"></i>
-                                </button>
-                                <button id="redo-btn" onclick="redo()" class="px-3 py-2 hover:bg-slate-50 text-slate-600 disabled:opacity-30 disabled:hover:bg-white transition" title="İleri Al" disabled>
-                                    <i class="fa-solid fa-rotate-right"></i>
-                                </button>
+                    <div id="section-bot" class="flex-1 flex flex-col overflow-hidden">
+                        <div class="bg-slate-50 px-4 sm:px-6 py-4 border-b border-slate-200 flex flex-wrap gap-4 justify-between items-center flex-shrink-0">
+                            <div class="hidden sm:flex items-center gap-2 text-slate-600 font-medium">
+                                <i class="fa-solid fa-code text-blue-500"></i> Bot Verisi
                             </div>
                             
-                            <div class="flex bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex-shrink-0">
-                                <button onclick="triggerImport()" class="px-3 sm:px-4 py-2 hover:bg-slate-50 text-slate-700 border-r border-slate-200 transition text-xs font-semibold flex items-center gap-1.5" title="İçe Aktar">
-                                    <i class="fa-solid fa-file-import text-blue-500"></i> <span class="hidden sm:inline">İçe Aktar</span>
-                                </button>
-                                <button onclick="exportText()" class="px-3 sm:px-4 py-2 hover:bg-slate-50 text-slate-700 transition text-xs font-semibold flex items-center gap-1.5" title="Dışa Aktar">
-                                    <i class="fa-solid fa-file-export text-emerald-500"></i> <span class="hidden sm:inline">Dışa Aktar</span>
+                            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                                <div class="flex bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex-shrink-0">
+                                    <button id="undo-btn" onclick="undo()" class="px-3 py-2 hover:bg-slate-50 text-slate-600 border-r border-slate-200 disabled:opacity-30 disabled:hover:bg-white transition" title="Geri Al" disabled>
+                                        <i class="fa-solid fa-rotate-left"></i>
+                                    </button>
+                                    <button id="redo-btn" onclick="redo()" class="px-3 py-2 hover:bg-slate-50 text-slate-600 disabled:opacity-30 disabled:hover:bg-white transition" title="İleri Al" disabled>
+                                        <i class="fa-solid fa-rotate-right"></i>
+                                    </button>
+                                </div>
+                                
+                                <div class="flex bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex-shrink-0">
+                                    <button onclick="triggerImport()" class="px-3 sm:px-4 py-2 hover:bg-slate-50 text-slate-700 border-r border-slate-200 transition text-xs font-semibold flex items-center gap-1.5" title="İçe Aktar">
+                                        <i class="fa-solid fa-file-import text-blue-500"></i> <span class="hidden sm:inline">İçe Aktar</span>
+                                    </button>
+                                    <button onclick="exportText()" class="px-3 sm:px-4 py-2 hover:bg-slate-50 text-slate-700 transition text-xs font-semibold flex items-center gap-1.5" title="Dışa Aktar">
+                                        <i class="fa-solid fa-file-export text-emerald-500"></i> <span class="hidden sm:inline">Dışa Aktar</span>
+                                    </button>
+                                </div>
+
+                                <button id="save-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg font-semibold transition shadow-md shadow-blue-200 flex items-center gap-2 text-xs flex-shrink-0">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> Kaydet
                                 </button>
                             </div>
-
-                            <button id="save-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg font-semibold transition shadow-md shadow-blue-200 flex items-center gap-2 text-xs flex-shrink-0">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> Kaydet
-                            </button>
+                        </div>
+                        
+                        <div class="flex-1 relative bg-slate-50">
+                            <textarea id="bot-text" class="absolute inset-0 w-full h-full p-5 pb-16 bg-white border-0 resize-none font-mono text-sm text-slate-700 leading-relaxed overflow-y-auto" placeholder="Veri sunucudan çekiliyor..."></textarea>
                         </div>
                     </div>
-                    
-                    <div class="flex-1 relative bg-slate-50">
-                        <textarea id="bot-text" class="absolute inset-0 w-full h-full p-5 pb-16 bg-white border-0 resize-none font-mono text-sm text-slate-700 leading-relaxed overflow-y-auto" placeholder="Veri sunucudan çekiliyor..."></textarea>
+
+                    <div id="section-reviews" class="flex-1 flex flex-col overflow-y-auto hidden p-4 sm:p-6 space-y-6 bg-slate-50">
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                            <div class="bg-white px-5 py-4 border-b border-slate-100 flex items-center gap-2 font-bold text-slate-700">
+                                <i class="fa-solid fa-clock text-amber-500"></i> Onay Bekleyen Müşteri Yorumları
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                            <th class="p-4">Müşteri / Rol</th>
+                                            <th class="p-4">Değerlendirme</th>
+                                            <th class="p-4">Yorum Metni</th>
+                                            <th class="p-4 text-right">İşlemler</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pending-reviews-list" class="text-sm divide-y divide-slate-100">
+                                        <tr><td colspan="4" class="p-4 text-center text-slate-400">Yorumlar yükleniyor...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                            <div class="bg-white px-5 py-4 border-b border-slate-100 flex items-center gap-2 font-bold text-slate-700">
+                                <i class="fa-solid fa-circle-check text-emerald-500"></i> Sitede Yayınlanan Aktif Yorumlar
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                            <th class="p-4">Müşteri / Rol</th>
+                                            <th class="p-4">Değerlendirme</th>
+                                            <th class="p-4">Yorum Metni</th>
+                                            <th class="p-4 text-right">İşlemler</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="approved-reviews-list" class="text-sm divide-y divide-slate-100">
+                                        <tr><td colspan="4" class="p-4 text-center text-slate-400">Yorumlar yükleniyor...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </main>
@@ -174,6 +227,30 @@
             const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // SEKMELER ARASI GEÇİŞ MANTIĞI
+        function switchTab(tabName) {
+            const btnBot = document.getElementById('menu-bot');
+            const btnRev = document.getElementById('menu-reviews');
+            const secBot = document.getElementById('section-bot');
+            const secRev = document.getElementById('section-reviews');
+            const title = document.getElementById('page-title');
+
+            if(tabName === 'bot') {
+                btnBot.className = "flex items-center gap-3 p-3 w-full text-left bg-blue-600 text-white rounded-xl font-medium transition";
+                btnRev.className = "flex items-center gap-3 p-3 w-full text-left text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl font-medium transition justify-between";
+                secBot.classList.remove('hidden');
+                secRev.classList.add('hidden');
+                title.innerText = "Kurallar ve Fiyat Listesi";
+            } else {
+                btnRev.className = "flex items-center gap-3 p-3 w-full text-left bg-blue-600 text-white rounded-xl font-medium transition justify-between";
+                btnBot.className = "flex items-center gap-3 p-3 w-full text-left text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl font-medium transition";
+                secBot.classList.add('hidden');
+                secRev.classList.remove('hidden');
+                title.innerText = "Müşteri Yorum Yönetimi";
+                loadReviews();
+            }
         }
 
         // GERI AL / ILERI AL MANTIĞI
@@ -256,10 +333,7 @@
                 return;
             }
 
-            // Girilen şifreyi şifreleme havuzuna sokuyoruz
             const hashedInput = await sha256(pass);
-            
-            // "Ozyapi2026" metninin SHA-256 karşılığı (Geri döndürülemez maske)
             const targetHash = "fdea70019333a581d1c41f760fbb83e8578d2a1ab98732c24bdcd8e70357d7f7";
 
             if (hashedInput !== targetHash) {
@@ -277,6 +351,7 @@
                 dashboard.classList.remove('hidden');
                 setTimeout(() => dashboard.style.opacity = '1', 50);
                 loadData();
+                loadReviews(); // Giriş yapıldığında bildirim rozeti için yorumları arka planda saydır
             }, 500);
         }
 
@@ -287,6 +362,7 @@
             }).then((result) => { if (result.isConfirmed) { location.reload(); } });
         }
 
+        // BOT AYARLARINI SUNUCUDAN ÇEKME
         async function loadData() {
             botTextArea.value = "Yükleniyor...";
             try {
@@ -294,59 +370,4 @@
                 const data = await res.json();
                 
                 const serverText = data.text || "";
-                botTextArea.value = serverText;
-                originalText = serverText; 
-                
-                historyStack = [serverText];
-                historyIndex = 0;
-                updateHistoryButtons();
-
-                if(res.ok) {
-                    const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
-                    Toast.fire({ icon: 'success', title: 'Veriler çekildi' });
-                }
-            } catch (err) {
-                botTextArea.value = "Sunucu hatası. Sayfayı yenileyin.";
-            }
-        }
-
-        saveBtn.onclick = async () => {
-            if (!sessionPassword) { 
-                Swal.fire({ icon: 'error', title: 'Hata', text: 'Yeniden giriş yapın.', confirmButtonColor: '#3b82f6' }).then(() => location.reload());
-                return; 
-            }
-
-            if (botTextArea.value === originalText) {
-                Swal.fire({ icon: 'info', title: 'Değişiklik Yok', text: 'Metni değiştirmediniz.', confirmButtonColor: '#3b82f6' });
-                return;
-            }
-
-            const originalHtml = saveBtn.innerHTML;
-            saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...';
-            saveBtn.disabled = true;
-
-            try {
-                const res = await fetch('/api/settings', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password: sessionPassword, newText: botTextArea.value })
-                });
-                const data = await res.json();
-
-                if (res.ok) {
-                    Swal.fire({ icon: 'success', title: 'Başarılı!', text: 'Kaydedildi.', confirmButtonColor: '#10b981' });
-                    originalText = botTextArea.value; 
-                } else {
-                    Swal.fire({ icon: 'error', title: 'Hata!', text: data.error || 'Şifre hatalı.', confirmButtonColor: '#ef4444' })
-                    .then(() => { if (res.status === 401) { location.reload(); } });
-                }
-            } catch (err) { 
-                Swal.fire({ icon: 'error', title: 'Hata', text: 'Sunucuya ulaşılamıyor.', confirmButtonColor: '#3b82f6' });
-            }
-
-            saveBtn.innerHTML = originalHtml;
-            saveBtn.disabled = false;
-        };
-    </script>
-</body>
-</html>
+                botTextArea.value = serverText
