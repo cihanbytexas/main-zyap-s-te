@@ -254,7 +254,7 @@
                     <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=600&q=80" alt="İç ve Dış Cephe Boyaları" class="product-img">
                     <div class="product-info">
                         <h3>Filli Boya & Fawori</h3>
-                        <p data-tr="Plastik, silikonlu boyalar ve binlerce renk seçeneği ile estetik çözümler." data-en="Aesthetic solutions with plastic, silicone paints and thousands of color options.">Plastik, silikonlu boyalar ve binlerce renk seçeneği ile estetik çözümler.</p>
+                        <p data-tr="Plastik, silikonlu boyalar and binlerce renk seçeneği ile estetik çözümler." data-en="Aesthetic solutions with plastic, silicone paints and thousands of color options.">Plastik, silikonlu boyalar ve binlerce renk seçeneği ile estetik çözümler.</p>
                     </div>
                 </div>
                 <div class="card product-card">
@@ -390,35 +390,41 @@
     <section id="testimonials" class="bg-gray reveal">
         <div class="container">
             <h2 class="section-title" data-tr="Müşterilerimiz Ne Diyor?" data-en="What Our Customers Say?">Müşterilerimiz Ne Diyor?</h2>
-            <div class="grid-container">
-                <div class="testimonial-card">
-                    <i class="fa-solid fa-quote-right quote-icon"></i>
-                    <div class="stars">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            
+            <div class="grid-container" id="dynamic-testimonials-list"></div>
+
+            <div class="review-form-container" style="margin-top: 50px; max-width: 600px; margin-left: auto; margin-right: auto; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255,255,255,0.08); padding: 30px; border-radius: 12px; backdrop-filter: blur(10px);">
+                <h3 style="margin-bottom: 20px; text-align: center; color: white;" data-tr="Yorum Yapın" data-en="Write a Review">Yorum Yapın</h3>
+                <form id="user-review-form">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #e2e8f0;" data-tr="Adınız Soyadınız" data-en="Your Name">Adınız Soyadınız</label>
+                        <input type="text" id="rev-name" required style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white; outline: none;" data-tr-placeholder="Örn: Ahmet Yılmaz" data-en-placeholder="e.g. John Doe" placeholder="Örn: Ahmet Yılmaz">
                     </div>
-                    <p data-tr='"Fırat Boru tesisat malzemeleri ve Filli boya aldım. Renk makinesinde tam istediğimiz tonu buldular. İlgi ve alaka harika."' data-en='"I bought Fırat Boru plumbing materials and Filli paint. They found exactly the shade we wanted with the color machine. The attention and care is amazing."'>"Fırat Boru tesisat malzemeleri ve Filli boya aldım. Renk makinesinde tam istediğimiz tonu buldular. İlgi ve alaka harika."</p>
-                    <div class="client-info">
-                        <div class="client-avatar">A</div>
-                        <div>
-                            <h4>Ahmet Yılmaz</h4>
-                            <span style="font-size: 0.8rem; color: var(--text-light);" data-tr="Ev Sahibi" data-en="Homeowner">Ev Sahibi</span>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #e2e8f0;" data-tr="Kategori / Unvan" data-en="Category / Title">Kategori / Unvan</label>
+                        <select id="rev-category" required style="width: 100%; padding: 10px; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white; outline: none;">
+                            <option value="Ev Sahibi" data-tr="Ev Sahibi" data-en="Homeowner">Ev Sahibi</option>
+                            <option value="Dekorasyon Ustası" data-tr="Dekorasyon Ustası" data-en="Decoration Master">Dekorasyon Ustası</option>
+                            <option value="Tesisat Ustası" data-tr="Tesisat Ustası" data-en="Plumbing Master">Tesisat Ustası</option>
+                            <option value="Müteahhit" data-tr="Müteahhit" data-en="Contractor">Müteahhit</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #e2e8f0;" data-tr="Puanınız" data-en="Your Rating">Puanınız</label>
+                        <div id="star-rating-container" style="display: flex; gap: 6px; font-size: 1.6rem; cursor: pointer;">
+                            <i class="fa-solid fa-star review-star" data-value="1" style="color: #cbd5e1; transition: 0.2s;"></i>
+                            <i class="fa-solid fa-star review-star" data-value="2" style="color: #cbd5e1; transition: 0.2s;"></i>
+                            <i class="fa-solid fa-star review-star" data-value="3" style="color: #cbd5e1; transition: 0.2s;"></i>
+                            <i class="fa-solid fa-star review-star" data-value="4" style="color: #cbd5e1; transition: 0.2s;"></i>
+                            <i class="fa-solid fa-star review-star" data-value="5" style="color: #cbd5e1; transition: 0.2s;"></i>
                         </div>
                     </div>
-                </div>
-                <div class="testimonial-card">
-                    <i class="fa-solid fa-quote-right quote-icon"></i>
-                    <div class="stars">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #e2e8f0;" data-tr="Yorumunuz" data-en="Your Review">Yorumunuz</label>
+                        <textarea id="rev-text" required rows="4" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white; outline: none; resize: none;" data-tr-placeholder="Görüşlerinizi buraya yazın..." data-en-placeholder="Write your review here..." placeholder="Görüşlerinizi buraya yazın..."></textarea>
                     </div>
-                    <p data-tr='"Kare ve Güven batarya modelleri gerçekten çok kaliteli. Tesisat işlerimde her zaman Öz Yapı Marketi tercih ediyorum."' data-en='"The Kare and Güven battery models are really very high quality. I always prefer Öz Yapı Market for my plumbing work."'>"Kare ve Güven batarya modelleri gerçekten çok kaliteli. Tesisat işlerimde her zaman Öz Yapı Market'i tercih ediyorum."</p>
-                    <div class="client-info">
-                        <div class="client-avatar">M</div>
-                        <div>
-                            <h4>Mustafa Usta</h4>
-                            <span style="font-size: 0.8rem; color: var(--text-light);" data-tr="Dekorasyon Ustası" data-en="Decoration Master">Dekorasyon Ustası</span>
-                        </div>
-                    </div>
-                </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;" data-tr="Yorumu Gönder" data-en="Submit Review">Yorumu Gönder</button>
+                </form>
             </div>
         </div>
     </section>
