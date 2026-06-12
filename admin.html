@@ -3,110 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Öz Yapı Asistan | Yönetim Paneli</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Öz Yapı Market | Yönetim Paneli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-            color: #1f2937;
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
+        body { font-family: 'Inter', sans-serif; }
+        /* Özel Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        /* Textarea odaklanma efekti */
+        textarea:focus { outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); border-color: #3b82f6; }
+        
+        /* Göz ikonunun seçilmesini engelleme */
+        .no-select {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
-        .admin-container {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            width: 100%;
-            max-width: 800px;
-        }
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-            border-bottom: 2px solid #f3f4f6;
-            padding-bottom: 15px;
-        }
-        .header h1 { margin: 0; font-size: 1.5rem; color: #1e3a8a; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; color: #374151; }
-        input[type="password"] {
-            width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; outline: none; box-sizing: border-box;
-        }
-        input[type="password"]:focus { border-color: #3b82f6; }
-        textarea {
-            width: 100%; height: 500px; padding: 15px; border: 1px solid #d1d5db; border-radius: 6px; font-family: monospace; font-size: 0.95rem; resize: vertical; outline: none; box-sizing: border-box; background: #f9fafb;
-        }
-        textarea:focus { border-color: #3b82f6; background: white; }
-        .btn-save {
-            background-color: #3b82f6; color: white; border: none; padding: 15px 30px; font-size: 1.1rem; font-weight: 600; border-radius: 6px; cursor: pointer; width: 100%; transition: 0.3s;
-        }
-        .btn-save:hover { background-color: #1e3a8a; }
-        #status-message {
-            margin-top: 15px; padding: 10px; border-radius: 6px; text-align: center; font-weight: 600; display: none;
-        }
-        .success { background-color: #d1fae5; color: #065f46; }
-        .error { background-color: #fee2e2; color: #991b1b; }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 h-screen overflow-hidden text-slate-800">
 
-    <div class="admin-container">
-        <div class="header">
-            <i class="fa-solid fa-robot" style="font-size: 2rem; color: #3b82f6;"></i>
-            <h1>Chat Bot Fiyat ve Kural Yönetimi</h1>
+    <input type="file" id="file-import-input" class="hidden" accept=".txt" onchange="handleImport(event)">
+
+    <div id="login-screen" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50 transition-opacity duration-500">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 transform transition-all">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-blue-100">
+                    <i class="fa-solid fa-lock text-3xl text-blue-600"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 tracking-tight">ÖZ YAPI MARKET</h2>
+                <p class="text-slate-500 mt-2 text-sm">Yönetim Paneline erişmek için şifrenizi girin.</p>
+            </div>
+            
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Yönetici Şifresi</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-key absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                        <input type="password" id="login-password" class="w-full pl-11 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-slate-700" placeholder="••••••••" onkeypress="if(event.key === 'Enter') enterPanel()">
+                        <i id="toggle-password" class="fa-solid fa-eye absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 cursor-pointer hover:text-slate-600 transition-colors text-lg no-select"></i>
+                    </div>
+                </div>
+                <button onclick="enterPanel()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-all shadow-lg shadow-blue-200 flex justify-center items-center gap-2">
+                    Giriş Yap <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
         </div>
+    </div>
 
-        <div class="form-group">
-            <label for="admin-password">Yönetici Şifresi:</label>
-            <input type="password" id="admin-password" placeholder="Sisteme kayıtlı şifrenizi girin">
-        </div>
+    <div id="admin-dashboard" class="flex h-full hidden opacity-0 transition-opacity duration-500">
+        
+        <aside class="w-72 bg-slate-900 text-white flex flex-col shadow-xl z-10 hidden md:flex">
+            <div class="p-6 flex items-center gap-4 border-b border-slate-800">
+                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg">
+                    <i class="fa-solid fa-robot text-white text-xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold tracking-wider">ÖZ YAPI</h2>
+                    <p class="text-xs text-slate-400 uppercase tracking-widest">Asistan Yönetimi</p>
+                </div>
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <a href="#" class="flex items-center gap-3 p-3 bg-blue-600/10 text-blue-400 border border-blue-600/20 rounded-xl font-medium transition">
+                    <i class="fa-solid fa-sliders w-5 text-center"></i> Bot Konfigürasyonu
+                </a>
+            </nav>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="logout()" class="flex items-center gap-3 p-3 w-full hover:bg-red-500/10 hover:text-red-400 rounded-xl text-slate-400 font-medium transition group">
+                    <i class="fa-solid fa-power-off w-5 text-center group-hover:text-red-400"></i> Güvenli Çıkış
+                </button>
+            </div>
+        </aside>
 
-        <div class="form-group">
-            <label for="bot-text">Bot Kuralları ve Fiyat Listesi:</label>
-            <textarea id="bot-text" placeholder="Yükleniyor..."></textarea>
-        </div>
+        <main class="flex-1 flex flex-col min-w-0 bg-slate-50">
+            <header class="h-20 bg-white border-b border-slate-200 px-8 flex items-center justify-between z-0 shadow-sm">
+                <h1 class="text-2xl font-bold text-slate-800">Kurallar ve Fiyat Listesi</h1>
+                <div class="flex items-center gap-3">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-bold text-slate-800">Sistem Yöneticisi</p>
+                        <p class="text-xs text-emerald-500 font-medium"><i class="fa-solid fa-circle text-[8px] mr-1"></i>Bağlandı</p>
+                    </div>
+                    <div class="w-12 h-12 bg-slate-100 border border-slate-200 rounded-full flex items-center justify-center text-slate-600">
+                        <i class="fa-solid fa-user-tie text-xl"></i>
+                    </div>
+                </div>
+            </header>
 
-        <button class="btn-save" id="save-btn"><i class="fa-solid fa-floppy-disk"></i> Değişiklikleri Kaydet</button>
-        <div id="status-message"></div>
+            <div class="flex-1 p-8 overflow-y-auto">
+                <div class="max-w-5xl mx-auto">
+                    
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[calc(100vh-140px)]">
+                        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex flex-wrap gap-4 justify-between items-center">
+                            <div class="flex items-center gap-2 text-slate-600 font-medium">
+                                <i class="fa-solid fa-code text-blue-500"></i> Bot Davranış Verisi
+                            </div>
+                            
+                            <div class="flex flex-wrap items-center gap-3">
+                                <div class="flex bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+                                    <button id="undo-btn" onclick="undo()" class="px-3 py-2 hover:bg-slate-50 text-slate-600 border-r border-slate-200 disabled:opacity-30 disabled:hover:bg-white transition" title="Geri Al" disabled>
+                                        <i class="fa-solid fa-rotate-left"></i>
+                                    </button>
+                                    <button id="redo-btn" onclick="redo()" class="px-3 py-2 hover:bg-slate-50 text-slate-600 disabled:opacity-30 disabled:hover:bg-white transition" title="İleri Al" disabled>
+                                        <i class="fa-solid fa-rotate-right"></i>
+                                    </button>
+                                </div>
+                                
+                                <div class="flex bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+                                    <button onclick="triggerImport()" class="px-4 py-2 hover:bg-slate-50 text-slate-700 border-r border-slate-200 transition text-xs font-semibold flex items-center gap-1.5" title="Dosyadan İçe Aktar">
+                                        <i class="fa-solid fa-file-import text-blue-500"></i> İçe Aktar
+                                    </button>
+                                    <button onclick="exportText()" class="px-4 py-2 hover:bg-slate-50 text-slate-700 transition text-xs font-semibold flex items-center gap-1.5" title="Dosya Olarak Dışa Aktar">
+                                        <i class="fa-solid fa-file-export text-emerald-500"></i> Dışa Aktar
+                                    </button>
+                                </div>
+
+                                <button id="save-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-semibold transition shadow-md shadow-blue-200 flex items-center gap-2 text-xs">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> Sunucuya Kaydet
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1 p-1 bg-slate-50">
+                            <textarea id="bot-text" class="w-full h-full p-5 bg-white border border-slate-200 rounded-xl resize-none font-mono text-sm text-slate-700 leading-relaxed" placeholder="Veri sunucudan çekiliyor..."></textarea>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
     </div>
 
     <script>
+        let sessionPassword = "";
+        let originalText = ""; // Değişiklik yapılmadı kontrolü için
+
+        // Geri/İleri Alma Geçmiş Hafızası
+        let historyStack = [];
+        let historyIndex = -1;
+        let isUndoingOrRedoing = false;
+
+        const passwordInput = document.getElementById('login-password');
+        const togglePasswordBtn = document.getElementById('toggle-password');
         const botTextArea = document.getElementById('bot-text');
         const saveBtn = document.getElementById('save-btn');
-        const passwordInput = document.getElementById('admin-password');
-        const statusMsg = document.getElementById('status-message');
 
-        // Sayfa açıldığında mevcut fiyatları getir
-        window.onload = async () => {
+        // ==========================================
+        // GÖZ İKONU BASILI TUTMA MANTIĞI
+        // ==========================================
+        function showPassword() {
+            passwordInput.type = 'text';
+            togglePasswordBtn.classList.remove('fa-eye');
+            togglePasswordBtn.classList.add('fa-eye-slash');
+        }
+
+        function hidePassword() {
+            passwordInput.type = 'password';
+            togglePasswordBtn.classList.remove('fa-eye-slash');
+            togglePasswordBtn.classList.add('fa-eye');
+        }
+
+        togglePasswordBtn.addEventListener('mousedown', showPassword);
+        togglePasswordBtn.addEventListener('mouseup', hidePassword);
+        togglePasswordBtn.addEventListener('mouseleave', hidePassword);
+        togglePasswordBtn.addEventListener('touchstart', (e) => { e.preventDefault(); showPassword(); });
+        togglePasswordBtn.addEventListener('touchend', hidePassword);
+
+        // ==========================================
+        // GERİ AL / İLERİ AL MANTIĞI
+        // ==========================================
+        function saveHistoryState(text) {
+            if (isUndoingOrRedoing) return;
+            
+            // Eğer ileri alınmış durumlar varken yeni bir şey yazılırsa ileriyi sil
+            if (historyIndex < historyStack.length - 1) {
+                historyStack = historyStack.slice(0, historyIndex + 1);
+            }
+            
+            // Üst üste aynı veriyi kaydetme
+            if (historyStack.length > 0 && historyStack[historyIndex] === text) return;
+
+            historyStack.push(text);
+            historyIndex++;
+            updateHistoryButtons();
+        }
+
+        function undo() {
+            if (historyIndex > 0) {
+                isUndoingOrRedoing = true;
+                historyIndex--;
+                botTextArea.value = historyStack[historyIndex];
+                updateHistoryButtons();
+                isUndoingOrRedoing = false;
+            }
+        }
+
+        function redo() {
+            if (historyIndex < historyStack.length - 1) {
+                isUndoingOrRedoing = true;
+                historyIndex++;
+                botTextArea.value = historyStack[historyIndex];
+                updateHistoryButtons();
+                isUndoingOrRedoing = false;
+            }
+        }
+
+        function updateHistoryButtons() {
+            document.getElementById('undo-btn').disabled = (historyIndex <= 0);
+            document.getElementById('redo-btn').disabled = (historyIndex >= historyStack.length - 1);
+        }
+
+        // Yazma durduktan 400ms sonra geçmiş kaydı alır (Performans için)
+        let historyTimeout;
+        botTextArea.addEventListener('input', () => {
+            clearTimeout(historyTimeout);
+            historyTimeout = setTimeout(() => {
+                saveHistoryState(botTextArea.value);
+            }, 400);
+        });
+
+        // ==========================================
+        // İÇE / DIŞA AKTAR MANTIĞI
+        // ==========================================
+        function exportText() {
+            const text = botTextArea.value;
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            const dateStr = new Date().toISOString().slice(0,10);
+            
+            link.href = URL.createObjectURL(blob);
+            link.download = `ozyapi_bot_ayarlari_${dateStr}.txt`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+            
+            Swal.fire({ icon: 'success', title: 'Dışa Aktarıldı', text: 'Mevcut veriler başarıyla .txt dosyası olarak indirildi.', timer: 2000, showConfirmButton: false });
+        }
+
+        function triggerImport() {
+            document.getElementById('file-import-input').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                botTextArea.value = e.target.result;
+                saveHistoryState(botTextArea.value); // Geçmişe işle
+                Swal.fire({ icon: 'success', title: 'İçe Aktarıldı', text: 'Dosyadaki veriler editöre başarıyla yüklendi. Değişiklikleri kaydetmeyi unutmayın!', confirmButtonColor: '#3b82f6' });
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Inputu temizle
+        }
+
+        // ==========================================
+        // SİSTEM PANEL AKIŞI
+        // ==========================================
+        function enterPanel() {
+            const pass = passwordInput.value;
+            if (!pass) {
+                Swal.fire({ icon: 'warning', title: 'Uyarı', text: 'Lütfen şifrenizi girin.', confirmButtonColor: '#3b82f6' });
+                return;
+            }
+            sessionPassword = pass;
+            
+            const loginScreen = document.getElementById('login-screen');
+            const dashboard = document.getElementById('admin-dashboard');
+            
+            loginScreen.style.opacity = '0';
+            setTimeout(() => {
+                loginScreen.style.display = 'none';
+                dashboard.classList.remove('hidden');
+                setTimeout(() => dashboard.style.opacity = '1', 50);
+                loadData();
+            }, 500);
+        }
+
+        function logout() {
+            Swal.fire({
+                title: 'Çıkış yapmak istiyor musunuz?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Evet, Çıkış Yap',
+                cancelButtonText: 'İptal'
+            }).then((result) => { if (result.isConfirmed) { location.reload(); } });
+        }
+
+        // 3. Veri Çekme (GET)
+        async function loadData() {
+            botTextArea.value = "Yükleniyor...";
             try {
                 const res = await fetch('/api/settings');
                 const data = await res.json();
-                if (data.text) {
-                    botTextArea.value = data.text;
-                } else {
-                    botTextArea.value = "Veri çekilemedi.";
+                
+                const serverText = data.text || "";
+                botTextArea.value = serverText;
+                originalText = serverText; // Orijinal hali kaydet
+                
+                // Geçmişi temizle ve ilk hali ekle
+                historyStack = [serverText];
+                historyIndex = 0;
+                updateHistoryButtons();
+
+                if(res.ok) {
+                    const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+                    Toast.fire({ icon: 'success', title: 'Veriler başarıyla çekildi' });
                 }
             } catch (err) {
-                botTextArea.value = "Bağlantı hatası.";
+                botTextArea.value = "Sunucu ile bağlantı kurulamadı. Lütfen sayfayı yenileyin.";
             }
-        };
+        }
 
-        // Kaydet butonuna basıldığında
+        // 4. Veri Kaydetme (POST)
         saveBtn.onclick = async () => {
-            const password = passwordInput.value;
-            const newText = botTextArea.value;
+            if (!sessionPassword) { 
+                Swal.fire({ icon: 'error', title: 'Oturum Hatası', text: 'Yeniden giriş yapın.', confirmButtonColor: '#3b82f6' }).then(() => location.reload());
+                return; 
+            }
 
-            if (!password) {
-                showStatus("Lütfen şifre girin!", "error");
+            // AKILLI KONTROL: Değişiklik yoksa durdur
+            if (botTextArea.value === originalText) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Değişiklik Yapılmadı',
+                    text: 'Metin üzerinde herhangi bir değişiklik yapmadınız. Sunucuya yüklenmesine gerek yok.',
+                    confirmButtonColor: '#3b82f6'
+                });
                 return;
             }
 
+            const originalHtml = saveBtn.innerHTML;
             saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...';
             saveBtn.disabled = true;
 
@@ -114,31 +350,25 @@
                 const res = await fetch('/api/settings', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password, newText })
+                    body: JSON.stringify({ password: sessionPassword, newText: botTextArea.value })
                 });
                 
                 const data = await res.json();
 
                 if (res.ok) {
-                    showStatus(data.message, "success");
-                    passwordInput.value = ''; // Güvenlik için şifreyi temizle
+                    Swal.fire({ icon: 'success', title: 'Başarılı!', text: 'Kurallar ve fiyatlar sisteme işlendi.', confirmButtonColor: '#10b981' });
+                    originalText = botTextArea.value; // Kaydedilen yeni metni orijinal kabul et
                 } else {
-                    showStatus(data.error, "error");
+                    Swal.fire({ icon: 'error', title: 'İşlem Reddedildi!', text: data.error || 'Şifre hatalı.', confirmButtonColor: '#ef4444' })
+                    .then(() => { if (res.status === 401) { location.reload(); } });
                 }
-            } catch (err) {
-                showStatus("Sunucu ile bağlantı kurulamadı.", "error");
+            } catch (err) { 
+                Swal.fire({ icon: 'error', title: 'Bağlantı Hatası', text: 'Sunucuya ulaşılamıyor.', confirmButtonColor: '#3b82f6' });
             }
 
-            saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Değişiklikleri Kaydet';
+            saveBtn.innerHTML = originalHtml;
             saveBtn.disabled = false;
         };
-
-        function showStatus(msg, type) {
-            statusMsg.textContent = msg;
-            statusMsg.className = type;
-            statusMsg.style.display = 'block';
-            setTimeout(() => { statusMsg.style.display = 'none'; }, 4000);
-        }
     </script>
 </body>
 </html>
