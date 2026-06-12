@@ -10,15 +10,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        /* Özel Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        /* Textarea odaklanma efekti */
         textarea:focus { outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); border-color: #3b82f6; }
         
-        /* Göz ikonunun seçilmesini engelleme */
         .no-select {
             -webkit-touch-callout: none;
             -webkit-user-select: none;
@@ -29,11 +26,11 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 h-screen overflow-hidden text-slate-800">
+<body class="bg-slate-50 h-[100dvh] overflow-hidden text-slate-800 flex flex-col">
 
     <input type="file" id="file-import-input" class="hidden" accept=".txt" onchange="handleImport(event)">
 
-    <div id="login-screen" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50 transition-opacity duration-500">
+    <div id="login-screen" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50 transition-opacity duration-500 p-4">
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 transform transition-all">
             <div class="text-center mb-8">
                 <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-blue-100">
@@ -83,59 +80,58 @@
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col min-w-0 bg-slate-50">
-            <header class="h-20 bg-white border-b border-slate-200 px-8 flex items-center justify-between z-0 shadow-sm">
-                <h1 class="text-2xl font-bold text-slate-800">Kurallar ve Fiyat Listesi</h1>
-                <div class="flex items-center gap-3">
+        <main class="flex-1 flex flex-col min-w-0 bg-slate-50 h-full">
+            <header class="h-20 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between z-0 shadow-sm flex-shrink-0">
+                <h1 class="text-lg sm:text-2xl font-bold text-slate-800 truncate pr-2">Kurallar ve Fiyat Listesi</h1>
+                
+                <div class="flex items-center gap-3 flex-shrink-0">
                     <div class="text-right hidden sm:block">
-                        <p class="text-sm font-bold text-slate-800">Sistem Yöneticisi</p>
-                        <p class="text-xs text-emerald-500 font-medium"><i class="fa-solid fa-circle text-[8px] mr-1"></i>Bağlandı</p>
+                        <p class="text-sm font-bold text-slate-800">Mehmet Öz</p>
+                        <p class="text-xs text-emerald-500 font-medium"><i class="fa-solid fa-circle text-[8px] mr-1"></i>Yönetici</p>
                     </div>
-                    <div class="w-12 h-12 bg-slate-100 border border-slate-200 rounded-full flex items-center justify-center text-slate-600">
-                        <i class="fa-solid fa-user-tie text-xl"></i>
+                    <div class="flex flex-col items-center sm:block">
+                        <img src="https://i.hizliresim.com/jofsx6m.png" alt="Mehmet Öz" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-blue-500 shadow-md">
+                        <span class="text-[10px] font-bold text-slate-700 mt-1 sm:hidden">Mehmet Öz</span>
                     </div>
                 </div>
             </header>
 
-            <div class="flex-1 p-8 overflow-y-auto">
-                <div class="max-w-5xl mx-auto">
+            <div class="flex-1 p-4 sm:p-8 flex flex-col overflow-hidden">
+                <div class="max-w-5xl mx-auto w-full flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                     
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[calc(100vh-140px)]">
-                        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex flex-wrap gap-4 justify-between items-center">
-                            <div class="flex items-center gap-2 text-slate-600 font-medium">
-                                <i class="fa-solid fa-code text-blue-500"></i> Bot Davranış Verisi
-                            </div>
-                            
-                            <div class="flex flex-wrap items-center gap-3">
-                                <div class="flex bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
-                                    <button id="undo-btn" onclick="undo()" class="px-3 py-2 hover:bg-slate-50 text-slate-600 border-r border-slate-200 disabled:opacity-30 disabled:hover:bg-white transition" title="Geri Al" disabled>
-                                        <i class="fa-solid fa-rotate-left"></i>
-                                    </button>
-                                    <button id="redo-btn" onclick="redo()" class="px-3 py-2 hover:bg-slate-50 text-slate-600 disabled:opacity-30 disabled:hover:bg-white transition" title="İleri Al" disabled>
-                                        <i class="fa-solid fa-rotate-right"></i>
-                                    </button>
-                                </div>
-                                
-                                <div class="flex bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
-                                    <button onclick="triggerImport()" class="px-4 py-2 hover:bg-slate-50 text-slate-700 border-r border-slate-200 transition text-xs font-semibold flex items-center gap-1.5" title="Dosyadan İçe Aktar">
-                                        <i class="fa-solid fa-file-import text-blue-500"></i> İçe Aktar
-                                    </button>
-                                    <button onclick="exportText()" class="px-4 py-2 hover:bg-slate-50 text-slate-700 transition text-xs font-semibold flex items-center gap-1.5" title="Dosya Olarak Dışa Aktar">
-                                        <i class="fa-solid fa-file-export text-emerald-500"></i> Dışa Aktar
-                                    </button>
-                                </div>
-
-                                <button id="save-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-semibold transition shadow-md shadow-blue-200 flex items-center gap-2 text-xs">
-                                    <i class="fa-solid fa-cloud-arrow-up"></i> Sunucuya Kaydet
-                                </button>
-                            </div>
+                    <div class="bg-slate-50 px-4 sm:px-6 py-4 border-b border-slate-200 flex flex-wrap gap-4 justify-between items-center flex-shrink-0">
+                        <div class="hidden sm:flex items-center gap-2 text-slate-600 font-medium">
+                            <i class="fa-solid fa-code text-blue-500"></i> Bot Verisi
                         </div>
                         
-                        <div class="flex-1 p-1 bg-slate-50">
-                            <textarea id="bot-text" class="w-full h-full p-5 bg-white border border-slate-200 rounded-xl resize-none font-mono text-sm text-slate-700 leading-relaxed" placeholder="Veri sunucudan çekiliyor..."></textarea>
+                        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                            <div class="flex bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex-shrink-0">
+                                <button id="undo-btn" onclick="undo()" class="px-3 py-2 hover:bg-slate-50 text-slate-600 border-r border-slate-200 disabled:opacity-30 disabled:hover:bg-white transition" title="Geri Al" disabled>
+                                    <i class="fa-solid fa-rotate-left"></i>
+                                </button>
+                                <button id="redo-btn" onclick="redo()" class="px-3 py-2 hover:bg-slate-50 text-slate-600 disabled:opacity-30 disabled:hover:bg-white transition" title="İleri Al" disabled>
+                                    <i class="fa-solid fa-rotate-right"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="flex bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex-shrink-0">
+                                <button onclick="triggerImport()" class="px-3 sm:px-4 py-2 hover:bg-slate-50 text-slate-700 border-r border-slate-200 transition text-xs font-semibold flex items-center gap-1.5" title="İçe Aktar">
+                                    <i class="fa-solid fa-file-import text-blue-500"></i> <span class="hidden sm:inline">İçe Aktar</span>
+                                </button>
+                                <button onclick="exportText()" class="px-3 sm:px-4 py-2 hover:bg-slate-50 text-slate-700 transition text-xs font-semibold flex items-center gap-1.5" title="Dışa Aktar">
+                                    <i class="fa-solid fa-file-export text-emerald-500"></i> <span class="hidden sm:inline">Dışa Aktar</span>
+                                </button>
+                            </div>
+
+                            <button id="save-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg font-semibold transition shadow-md shadow-blue-200 flex items-center gap-2 text-xs flex-shrink-0">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Kaydet
+                            </button>
                         </div>
                     </div>
-
+                    
+                    <div class="flex-1 relative bg-slate-50">
+                        <textarea id="bot-text" class="absolute inset-0 w-full h-full p-5 pb-16 bg-white border-0 resize-none font-mono text-sm text-slate-700 leading-relaxed overflow-y-auto" placeholder="Veri sunucudan çekiliyor..."></textarea>
+                    </div>
                 </div>
             </div>
         </main>
@@ -143,9 +139,8 @@
 
     <script>
         let sessionPassword = "";
-        let originalText = ""; // Değişiklik yapılmadı kontrolü için
+        let originalText = ""; 
 
-        // Geri/İleri Alma Geçmiş Hafızası
         let historyStack = [];
         let historyIndex = -1;
         let isUndoingOrRedoing = false;
@@ -155,15 +150,12 @@
         const botTextArea = document.getElementById('bot-text');
         const saveBtn = document.getElementById('save-btn');
 
-        // ==========================================
-        // GÖZ İKONU BASILI TUTMA MANTIĞI
-        // ==========================================
+        // GÖZ İKONU MANTIĞI
         function showPassword() {
             passwordInput.type = 'text';
             togglePasswordBtn.classList.remove('fa-eye');
             togglePasswordBtn.classList.add('fa-eye-slash');
         }
-
         function hidePassword() {
             passwordInput.type = 'password';
             togglePasswordBtn.classList.remove('fa-eye-slash');
@@ -176,20 +168,21 @@
         togglePasswordBtn.addEventListener('touchstart', (e) => { e.preventDefault(); showPassword(); });
         togglePasswordBtn.addEventListener('touchend', hidePassword);
 
-        // ==========================================
-        // GERİ AL / İLERİ AL MANTIĞI
-        // ==========================================
+        // KRİPTOGRAFİK ŞİFRELEME YARDIMCISI (SHA-256)
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // GERI AL / ILERI AL MANTIĞI
         function saveHistoryState(text) {
             if (isUndoingOrRedoing) return;
-            
-            // Eğer ileri alınmış durumlar varken yeni bir şey yazılırsa ileriyi sil
             if (historyIndex < historyStack.length - 1) {
                 historyStack = historyStack.slice(0, historyIndex + 1);
             }
-            
-            // Üst üste aynı veriyi kaydetme
             if (historyStack.length > 0 && historyStack[historyIndex] === text) return;
-
             historyStack.push(text);
             historyIndex++;
             updateHistoryButtons();
@@ -220,61 +213,61 @@
             document.getElementById('redo-btn').disabled = (historyIndex >= historyStack.length - 1);
         }
 
-        // Yazma durduktan 400ms sonra geçmiş kaydı alır (Performans için)
         let historyTimeout;
         botTextArea.addEventListener('input', () => {
             clearTimeout(historyTimeout);
-            historyTimeout = setTimeout(() => {
-                saveHistoryState(botTextArea.value);
-            }, 400);
+            historyTimeout = setTimeout(() => { saveHistoryState(botTextArea.value); }, 400);
         });
 
-        // ==========================================
-        // İÇE / DIŞA AKTAR MANTIĞI
-        // ==========================================
+        // IÇE / DIŞA AKTAR MANTIĞI
         function exportText() {
             const text = botTextArea.value;
             const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
             const dateStr = new Date().toISOString().slice(0,10);
-            
             link.href = URL.createObjectURL(blob);
             link.download = `ozyapi_bot_ayarlari_${dateStr}.txt`;
             link.click();
             URL.revokeObjectURL(link.href);
-            
-            Swal.fire({ icon: 'success', title: 'Dışa Aktarıldı', text: 'Mevcut veriler başarıyla .txt dosyası olarak indirildi.', timer: 2000, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: 'Dışa Aktarıldı', text: 'Mevcut veriler başarıyla indirildi.', timer: 2000, showConfirmButton: false });
         }
 
-        function triggerImport() {
-            document.getElementById('file-import-input').click();
-        }
+        function triggerImport() { document.getElementById('file-import-input').click(); }
 
         function handleImport(event) {
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(e) {
                 botTextArea.value = e.target.result;
-                saveHistoryState(botTextArea.value); // Geçmişe işle
-                Swal.fire({ icon: 'success', title: 'İçe Aktarıldı', text: 'Dosyadaki veriler editöre başarıyla yüklendi. Değişiklikleri kaydetmeyi unutmayın!', confirmButtonColor: '#3b82f6' });
+                saveHistoryState(botTextArea.value);
+                Swal.fire({ icon: 'success', title: 'İçe Aktarıldı', text: 'Veriler başarıyla yüklendi.', confirmButtonColor: '#3b82f6' });
             };
             reader.readAsText(file);
-            event.target.value = ''; // Inputu temizle
+            event.target.value = ''; 
         }
 
-        // ==========================================
-        // SİSTEM PANEL AKIŞI
-        // ==========================================
-        function enterPanel() {
+        // GİRİŞ KONTROLÜ (GÜVENLİ HASH KONTROLÜ)
+        async function enterPanel() {
             const pass = passwordInput.value;
+            
             if (!pass) {
                 Swal.fire({ icon: 'warning', title: 'Uyarı', text: 'Lütfen şifrenizi girin.', confirmButtonColor: '#3b82f6' });
                 return;
             }
-            sessionPassword = pass;
+
+            // Girilen şifreyi şifreleme havuzuna sokuyoruz
+            const hashedInput = await sha256(pass);
             
+            // "Ozyapi2026" metninin SHA-256 karşılığı (Geri döndürülemez maske)
+            const targetHash = "fdea70019333a581d1c41f760fbb83e8578d2a1ab98732c24bdcd8e70357d7f7";
+
+            if (hashedInput !== targetHash) {
+                Swal.fire({ icon: 'error', title: 'Hata', text: 'Hatalı şifre girdiniz!', confirmButtonColor: '#ef4444' });
+                return;
+            }
+
+            sessionPassword = pass;
             const loginScreen = document.getElementById('login-screen');
             const dashboard = document.getElementById('admin-dashboard');
             
@@ -289,17 +282,11 @@
 
         function logout() {
             Swal.fire({
-                title: 'Çıkış yapmak istiyor musunuz?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#64748b',
-                confirmButtonText: 'Evet, Çıkış Yap',
-                cancelButtonText: 'İptal'
+                title: 'Çıkış yapmak istiyor musunuz?', icon: 'question', showCancelButton: true,
+                confirmButtonColor: '#ef4444', cancelButtonColor: '#64748b', confirmButtonText: 'Evet', cancelButtonText: 'İptal'
             }).then((result) => { if (result.isConfirmed) { location.reload(); } });
         }
 
-        // 3. Veri Çekme (GET)
         async function loadData() {
             botTextArea.value = "Yükleniyor...";
             try {
@@ -308,37 +295,29 @@
                 
                 const serverText = data.text || "";
                 botTextArea.value = serverText;
-                originalText = serverText; // Orijinal hali kaydet
+                originalText = serverText; 
                 
-                // Geçmişi temizle ve ilk hali ekle
                 historyStack = [serverText];
                 historyIndex = 0;
                 updateHistoryButtons();
 
                 if(res.ok) {
                     const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
-                    Toast.fire({ icon: 'success', title: 'Veriler başarıyla çekildi' });
+                    Toast.fire({ icon: 'success', title: 'Veriler çekildi' });
                 }
             } catch (err) {
-                botTextArea.value = "Sunucu ile bağlantı kurulamadı. Lütfen sayfayı yenileyin.";
+                botTextArea.value = "Sunucu hatası. Sayfayı yenileyin.";
             }
         }
 
-        // 4. Veri Kaydetme (POST)
         saveBtn.onclick = async () => {
             if (!sessionPassword) { 
-                Swal.fire({ icon: 'error', title: 'Oturum Hatası', text: 'Yeniden giriş yapın.', confirmButtonColor: '#3b82f6' }).then(() => location.reload());
+                Swal.fire({ icon: 'error', title: 'Hata', text: 'Yeniden giriş yapın.', confirmButtonColor: '#3b82f6' }).then(() => location.reload());
                 return; 
             }
 
-            // AKILLI KONTROL: Değişiklik yoksa durdur
             if (botTextArea.value === originalText) {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Değişiklik Yapılmadı',
-                    text: 'Metin üzerinde herhangi bir değişiklik yapmadınız. Sunucuya yüklenmesine gerek yok.',
-                    confirmButtonColor: '#3b82f6'
-                });
+                Swal.fire({ icon: 'info', title: 'Değişiklik Yok', text: 'Metni değiştirmediniz.', confirmButtonColor: '#3b82f6' });
                 return;
             }
 
@@ -352,18 +331,17 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password: sessionPassword, newText: botTextArea.value })
                 });
-                
                 const data = await res.json();
 
                 if (res.ok) {
-                    Swal.fire({ icon: 'success', title: 'Başarılı!', text: 'Kurallar ve fiyatlar sisteme işlendi.', confirmButtonColor: '#10b981' });
-                    originalText = botTextArea.value; // Kaydedilen yeni metni orijinal kabul et
+                    Swal.fire({ icon: 'success', title: 'Başarılı!', text: 'Kaydedildi.', confirmButtonColor: '#10b981' });
+                    originalText = botTextArea.value; 
                 } else {
-                    Swal.fire({ icon: 'error', title: 'İşlem Reddedildi!', text: data.error || 'Şifre hatalı.', confirmButtonColor: '#ef4444' })
+                    Swal.fire({ icon: 'error', title: 'Hata!', text: data.error || 'Şifre hatalı.', confirmButtonColor: '#ef4444' })
                     .then(() => { if (res.status === 401) { location.reload(); } });
                 }
             } catch (err) { 
-                Swal.fire({ icon: 'error', title: 'Bağlantı Hatası', text: 'Sunucuya ulaşılamıyor.', confirmButtonColor: '#3b82f6' });
+                Swal.fire({ icon: 'error', title: 'Hata', text: 'Sunucuya ulaşılamıyor.', confirmButtonColor: '#3b82f6' });
             }
 
             saveBtn.innerHTML = originalHtml;
