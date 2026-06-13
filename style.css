@@ -214,7 +214,6 @@ section { padding: 80px 0; }
 #user-review-form input:focus, #user-review-form select:focus, #user-review-form textarea:focus {
     border-color: #111827; background: #ffffff;
 }
-/* Üye girişi yapan kişi için sönük (disabled) durumu */
 #user-review-form input:disabled {
     background-color: #e5e7eb;
     color: #6b7280;
