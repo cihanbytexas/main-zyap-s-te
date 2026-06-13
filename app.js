@@ -420,10 +420,10 @@ if(reviewForm) {
 // UI GENEL MANTIĞI & MOBİL MENÜ
 // ============================================
 window.onclick = (e) => { 
-    if(e.target == modal) modal.style.display = 'none'; 
-    if(e.target == chatModal) chatModal.style.display = 'none';
-    if(e.target == pdfModal) pdfModal.style.display = 'none';
-    if(e.target == authModal) authModal.style.display = 'none';
+    if(e.target == modal) { if(modal) modal.style.display = 'none'; }
+    if(e.target == chatModal) { if(chatModal) chatModal.style.display = 'none'; }
+    if(e.target == pdfModal) { if(pdfModal) pdfModal.style.display = 'none'; }
+    if(e.target == authModal) { if(authModal) authModal.style.display = 'none'; }
 }
 
 const mobileMenuBtn = document.getElementById('mobile-menu-btn');
