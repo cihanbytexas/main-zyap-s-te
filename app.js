@@ -1,13 +1,26 @@
 // ============================================
-// SUPABASE İNİTİALİZATİON & AUTHENTİCATİON
+// GLOBAL DEĞİŞKENLER & SUPABASE İNİTİALİZATİON
 // ============================================
-const supabaseUrl = "https://ppdwtpjglkphayfxexhv.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwZHd0cGpnbGtwaGF5ZnhleGh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNTc5ODEsImV4cCI6MjA5NjgzMzk4MX0.fJIyyxfU15EgrNARWkISFHJvU7-o-QpZbIKbRc3q_-s";
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
+let currentLang = 'tr';
+let supabase = null;
 let currentUser = null;
 
-// Auth UI Elementleri
+// Supabase Kurulumunu Güvenli Şekilde Başlat (CDN yoksa çökmez)
+try {
+    if (window.supabase) {
+        const supabaseUrl = "https://ppdwtpjglkphayfxexhv.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwZHd0cGpnbGtwaGF5ZnhleGh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNTc5ODEsImV4cCI6MjA5NjgzMzk4MX0.fJIyyxfU15EgrNARWkISFHJvU7-o-QpZbIKbRc3q_-s";
+        supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    } else {
+        console.warn("Supabase CDN yüklenemedi. Auth özellikleri devre dışı kalabilir.");
+    }
+} catch (e) {
+    console.error("Supabase başlatılırken hata:", e);
+}
+
+// ============================================
+// AUTHENTİCATİON (GİRİŞ / KAYIT) MANTIĞI
+// ============================================
 const authModal = document.getElementById('auth-modal');
 const closeAuthBtn = document.getElementById('close-auth-btn');
 const navAuthBtn = document.getElementById('nav-auth-btn');
@@ -23,115 +36,100 @@ const authError = document.getElementById('auth-error');
 
 let isLoginMode = true;
 
-// Modalı Aç/Kapat
-navAuthBtn.onclick = async () => {
-    if (currentUser) {
-        // Çıkış Yap
-        await supabase.auth.signOut();
-    } else {
-        authModal.style.display = 'flex';
-        authError.innerText = '';
-        authForm.reset();
-    }
-};
-
-closeAuthBtn.onclick = () => authModal.style.display = 'none';
-
-// Sekme Geçişleri (Giriş / Kayıt)
-tabLogin.onclick = () => {
-    isLoginMode = true;
-    tabLogin.classList.add('active');
-    tabRegister.classList.remove('active');
-    nameField.style.display = 'none';
-    authName.removeAttribute('required');
-    authSubmitBtn.innerText = currentLang === 'tr' ? 'Giriş Yap' : 'Log In';
-    authError.innerText = '';
-};
-
-tabRegister.onclick = () => {
-    isLoginMode = false;
-    tabRegister.classList.add('active');
-    tabLogin.classList.remove('active');
-    nameField.style.display = 'block';
-    authName.setAttribute('required', 'true');
-    authSubmitBtn.innerText = currentLang === 'tr' ? 'Kayıt Ol' : 'Register';
-    authError.innerText = '';
-};
-
-// Form Gönderimi (Giriş / Kayıt İşlemleri)
-authForm.onsubmit = async (e) => {
-    e.preventDefault();
-    authError.innerText = '';
-    authSubmitBtn.disabled = true;
-    authSubmitBtn.innerText = currentLang === 'tr' ? 'Bekleyin...' : 'Please wait...';
-
-    const email = authEmail.value;
-    const password = authPassword.value;
-    const fullName = authName.value;
-
-    try {
-        if (isLoginMode) {
-            const { error } = await supabase.auth.signInWithPassword({ email, password });
-            if (error) throw error;
+// DOM Elemanları varsa işlemleri tanımla (Yoksa çökmeyi engeller)
+if (navAuthBtn) {
+    navAuthBtn.onclick = async () => {
+        if (currentUser && supabase) {
+            await supabase.auth.signOut();
         } else {
-            const { error } = await supabase.auth.signUp({
-                email, password, options: { data: { full_name: fullName } }
-            });
-            if (error) throw error;
-            alert(currentLang === 'tr' ? "Kayıt başarılı! Giriş yapabilirsiniz." : "Registration successful! You can log in.");
-            tabLogin.click(); // Başarılı kayıttan sonra giriş sekmesine at
+            if(authModal) authModal.style.display = 'flex';
+            if(authError) authError.innerText = '';
+            if(authForm) authForm.reset();
         }
-        
-        if (isLoginMode) authModal.style.display = 'none'; // Sadece giriş başarılıysa kapat
-    } catch (err) {
-        authError.innerText = currentLang === 'tr' ? 'Hata: Bilgileri kontrol edin.' : 'Error: Please check your details.';
-    } finally {
-        authSubmitBtn.disabled = false;
-        authSubmitBtn.innerText = isLoginMode 
-            ? (currentLang === 'tr' ? 'Giriş Yap' : 'Log In') 
-            : (currentLang === 'tr' ? 'Kayıt Ol' : 'Register');
-    }
-};
+    };
+}
 
-// Auth Durumunu Dinle (Hibrit Yorum Mantığı)
-supabase.auth.onAuthStateChange((event, session) => {
-    currentUser = session?.user || null;
-    const revNameInput = document.getElementById('rev-name');
-    
-    if (currentUser) {
-        // Oturum açtıysa
-        navAuthBtn.innerText = currentLang === 'tr' ? 'Çıkış Yap' : 'Log Out';
-        navAuthBtn.style.background = '#ef4444'; // Kırmızı renk çıkış hissi için
-        
-        // İsmi otomatik doldur ve kitle (sönük yap)
-        const fullName = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
-        revNameInput.value = fullName;
-        revNameInput.disabled = true;
-    } else {
-        // Oturum kapalıysa
-        navAuthBtn.innerText = currentLang === 'tr' ? 'Giriş Yap' : 'Login';
-        navAuthBtn.style.background = 'var(--text-dark)';
-        
-        // İsmi serbest bırak ve boşalt
-        revNameInput.value = '';
-        revNameInput.disabled = false;
-    }
-});
+if (closeAuthBtn && authModal) {
+    closeAuthBtn.onclick = () => authModal.style.display = 'none';
+}
 
+if (tabLogin && tabRegister) {
+    tabLogin.onclick = () => {
+        isLoginMode = true;
+        tabLogin.classList.add('active');
+        tabRegister.classList.remove('active');
+        if(nameField) nameField.style.display = 'none';
+        if(authName) authName.removeAttribute('required');
+        if(authSubmitBtn) authSubmitBtn.innerText = currentLang === 'tr' ? 'Giriş Yap' : 'Log In';
+        if(authError) authError.innerText = '';
+    };
+
+    tabRegister.onclick = () => {
+        isLoginMode = false;
+        tabRegister.classList.add('active');
+        tabLogin.classList.remove('active');
+        if(nameField) nameField.style.display = 'block';
+        if(authName) authName.setAttribute('required', 'true');
+        if(authSubmitBtn) authSubmitBtn.innerText = currentLang === 'tr' ? 'Kayıt Ol' : 'Register';
+        if(authError) authError.innerText = '';
+    };
+}
+
+if (authForm) {
+    authForm.onsubmit = async (e) => {
+        e.preventDefault();
+        if(!supabase) {
+            alert("Sistem bağlantı hatası (Supabase yüklenemedi).");
+            return;
+        }
+        if(authError) authError.innerText = '';
+        if(authSubmitBtn) {
+            authSubmitBtn.disabled = true;
+            authSubmitBtn.innerText = currentLang === 'tr' ? 'Bekleyin...' : 'Please wait...';
+        }
+
+        const email = authEmail?.value;
+        const password = authPassword?.value;
+        const fullName = authName?.value;
+
+        try {
+            if (isLoginMode) {
+                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+            } else {
+                const { error } = await supabase.auth.signUp({
+                    email, password, options: { data: { full_name: fullName } }
+                });
+                if (error) throw error;
+                alert(currentLang === 'tr' ? "Kayıt başarılı! Giriş yapabilirsiniz." : "Registration successful! You can log in.");
+                tabLogin.click(); 
+            }
+            
+            if (isLoginMode && authModal) authModal.style.display = 'none'; 
+        } catch (err) {
+            if(authError) authError.innerText = currentLang === 'tr' ? 'Hata: Bilgileri kontrol edin.' : 'Error: Please check your details.';
+        } finally {
+            if(authSubmitBtn) {
+                authSubmitBtn.disabled = false;
+                authSubmitBtn.innerText = isLoginMode 
+                    ? (currentLang === 'tr' ? 'Giriş Yap' : 'Log In') 
+                    : (currentLang === 'tr' ? 'Kayıt Ol' : 'Register');
+            }
+        }
+    };
+}
 
 // ============================================
 // DİL DEĞİŞTİRME SİSTEMİ
 // ============================================
-let currentLang = 'tr';
-
 const langTrBtn = document.getElementById('lang-tr');
 const langEnBtn = document.getElementById('lang-en');
 
 function applyLanguage(lang) {
     currentLang = lang;
 
-    langTrBtn.classList.toggle('active', lang === 'tr');
-    langEnBtn.classList.toggle('active', lang === 'en');
+    if(langTrBtn) langTrBtn.classList.toggle('active', lang === 'tr');
+    if(langEnBtn) langEnBtn.classList.toggle('active', lang === 'en');
 
     document.querySelectorAll('[data-tr]').forEach(el => {
         const text = lang === 'tr' ? el.getAttribute('data-tr') : el.getAttribute('data-en');
@@ -149,11 +147,9 @@ function applyLanguage(lang) {
     const chatInput = document.getElementById('chat-input');
     if (chatInput) chatInput.placeholder = lang === 'tr' ? 'Mesajınızı yazın...' : 'Type your message...';
 
-    // Üst menü buton metni güncelleme (Auth statüsüne göre)
-    if(currentUser) {
-        navAuthBtn.innerText = lang === 'tr' ? 'Çıkış Yap' : 'Log Out';
-    } else {
-        navAuthBtn.innerText = lang === 'tr' ? 'Giriş Yap' : 'Login';
+    if(navAuthBtn) {
+        if(currentUser) navAuthBtn.innerText = lang === 'tr' ? 'Çıkış Yap' : 'Log Out';
+        else navAuthBtn.innerText = lang === 'tr' ? 'Giriş Yap' : 'Login';
     }
 
     renderColors();
@@ -161,8 +157,8 @@ function applyLanguage(lang) {
     document.documentElement.lang = lang === 'tr' ? 'tr' : 'en';
 }
 
-langTrBtn.addEventListener('click', () => applyLanguage('tr'));
-langEnBtn.addEventListener('click', () => applyLanguage('en'));
+if(langTrBtn) langTrBtn.addEventListener('click', () => applyLanguage('tr'));
+if(langEnBtn) langEnBtn.addEventListener('click', () => applyLanguage('en'));
 
 // ============================================
 // CHATBOT MANTIĞI & YAZIYOR ANİMASYONU
@@ -177,6 +173,7 @@ const chatMessages = document.getElementById('chat-messages');
 let chatInitialized = false;
 
 const addMessage = (text, type) => {
+    if(!chatMessages) return;
     const div = document.createElement('div');
     div.className = `msg msg-${type}`;
     div.textContent = text;
@@ -185,38 +182,38 @@ const addMessage = (text, type) => {
 };
 
 const showTypingIndicator = () => {
+    if(!chatMessages) return null;
     const div = document.createElement('div');
     div.className = 'typing-indicator';
-    div.innerHTML = `
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-    `;
+    div.innerHTML = `<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>`;
     chatMessages.appendChild(div);
     chatMessages.scrollTop = chatMessages.scrollHeight;
     return div;
 };
 
-openChatBtn.onclick = () => {
-    chatModal.style.display = 'flex';
-    if (!chatInitialized) {
-        chatInitialized = true;
-        const typingEl = showTypingIndicator();
-        setTimeout(() => {
-            typingEl.remove();
-            addMessage(
-                currentLang === 'tr' 
-                    ? 'Merhaba! Ben Öz Yapı Market asistanı. Boya, tesisat veya bataryalarımız hakkında size nasıl yardımcı olabilirim?'
-                    : 'Hello! I am the Öz Yapı Market assistant. How can I help you about our paints, plumbing or batteries?', 
-                'bot'
-            );
-        }, 1500);
-    }
-};
+if(openChatBtn) {
+    openChatBtn.onclick = () => {
+        if(chatModal) chatModal.style.display = 'flex';
+        if (!chatInitialized) {
+            chatInitialized = true;
+            const typingEl = showTypingIndicator();
+            setTimeout(() => {
+                if(typingEl) typingEl.remove();
+                addMessage(
+                    currentLang === 'tr' 
+                        ? 'Merhaba! Ben Öz Yapı Market asistanı. Boya, tesisat veya bataryalarımız hakkında size nasıl yardımcı olabilirim?'
+                        : 'Hello! I am the Öz Yapı Market assistant. How can I help you about our paints, plumbing or batteries?', 
+                    'bot'
+                );
+            }, 1500);
+        }
+    };
+}
 
-closeChatBtn.onclick = () => chatModal.style.display = 'none';
+if(closeChatBtn) closeChatBtn.onclick = () => { if(chatModal) chatModal.style.display = 'none'; };
 
 const handleSend = async () => {
+    if(!chatInput) return;
     const val = chatInput.value.trim();
     if (!val) return;
     
@@ -235,16 +232,16 @@ const handleSend = async () => {
         if (!res.ok) throw new Error('API Hatası');
         const data = await res.json();
         
-        typingEl.remove();
+        if(typingEl) typingEl.remove();
         addMessage(data.reply || (currentLang === 'tr' ? "Cevap alınamadı" : "No response received"), 'bot');
     } catch (e) {
-        typingEl.remove();
+        if(typingEl) typingEl.remove();
         addMessage(currentLang === 'tr' ? "Bağlantı hatası oluştu, lütfen tekrar deneyin." : "Connection error, please try again.", 'bot');
     }
 };
 
-chatSend.onclick = handleSend;
-chatInput.onkeypress = (e) => { if(e.key === 'Enter') handleSend(); };
+if(chatSend) chatSend.onclick = handleSend;
+if(chatInput) chatInput.onkeypress = (e) => { if(e.key === 'Enter') handleSend(); };
 
 // ============================================
 // KARTELA & PDF MANTIĞI
@@ -260,13 +257,14 @@ const openPdfBtn = document.getElementById('open-pdf-btn');
 const pdfModal = document.getElementById('pdf-modal');
 const closePdfModalBtn = document.getElementById('close-pdf-modal');
 
-if(openPdfBtn) openPdfBtn.onclick = () => { modal.style.display = 'none'; pdfModal.style.display = 'flex'; };
-if(closePdfModalBtn) closePdfModalBtn.onclick = () => { pdfModal.style.display = 'none'; modal.style.display = 'flex'; };
+if(openPdfBtn) openPdfBtn.onclick = () => { if(modal) modal.style.display = 'none'; if(pdfModal) pdfModal.style.display = 'flex'; };
+if(closePdfModalBtn) closePdfModalBtn.onclick = () => { if(pdfModal) pdfModal.style.display = 'none'; if(modal) modal.style.display = 'flex'; };
 
 let activeFilter = 'all';
 let searchTerm = '';
 
 function renderColors() {
+    if(!colorGrid) return;
     colorGrid.innerHTML = '';
     if (typeof colorList === 'undefined') return;
 
@@ -290,7 +288,7 @@ function renderColors() {
     });
 }
 
-colorSearch.addEventListener('input', (e) => { searchTerm = e.target.value; renderColors(); });
+if(colorSearch) colorSearch.addEventListener('input', (e) => { searchTerm = e.target.value; renderColors(); });
 
 filterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -301,8 +299,8 @@ filterBtns.forEach(btn => {
     });
 });
 
-openModalBtn.onclick = () => { modal.style.display = 'flex'; renderColors(); };
-closeModalBtn.onclick = () => modal.style.display = 'none';
+if(openModalBtn) openModalBtn.onclick = () => { if(modal) modal.style.display = 'flex'; renderColors(); };
+if(closeModalBtn) closeModalBtn.onclick = () => { if(modal) modal.style.display = 'none'; };
 
 // ============================================
 // DİNAMİK YORUM YAPMA VE LİSTELEME SİTEMİ
@@ -400,12 +398,12 @@ if(reviewForm) {
                     ? "Teşekkürler! Yorumunuz yönetici onayından sonra yayınlanacaktır." 
                     : "Thank you! Your review will be published after admin approval.");
                 
-                // Formu sıfırla, ama kullanıcı giriş yapmışsa ismini geri yazdır
                 reviewForm.reset();
                 selectedRating = 0;
                 updateStarDisplay(0);
                 if(currentUser) {
-                    document.getElementById('rev-name').value = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
+                    const revNameInput = document.getElementById('rev-name');
+                    if(revNameInput) revNameInput.value = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
                 }
             } else {
                 alert("Hata / Error: " + data.error);
@@ -418,7 +416,9 @@ if(reviewForm) {
     });
 }
 
-// --- UI GENEL MANTIĞI ---
+// ============================================
+// UI GENEL MANTIĞI & MOBİL MENÜ
+// ============================================
 window.onclick = (e) => { 
     if(e.target == modal) modal.style.display = 'none'; 
     if(e.target == chatModal) chatModal.style.display = 'none';
@@ -430,25 +430,30 @@ const mobileMenuBtn = document.getElementById('mobile-menu-btn');
 const navLinks = document.getElementById('nav-links');
 const navLinksItems = document.querySelectorAll('.nav-links a');
 
-mobileMenuBtn.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
-    const icon = mobileMenuBtn.querySelector('i');
-    icon.classList.toggle('fa-bars');
-    icon.classList.toggle('fa-xmark');
-});
-
-navLinksItems.forEach(item => {
-    item.addEventListener('click', () => {
-        navLinks.classList.remove('active');
-        mobileMenuBtn.querySelector('i').className = 'fa-solid fa-bars';
+if (mobileMenuBtn && navLinks) {
+    mobileMenuBtn.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+        const icon = mobileMenuBtn.querySelector('i');
+        if (icon) {
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-xmark');
+        }
     });
-});
+
+    navLinksItems.forEach(item => {
+        item.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+            const icon = mobileMenuBtn.querySelector('i');
+            if (icon) icon.className = 'fa-solid fa-bars';
+        });
+    });
+}
 
 const navbar = document.getElementById('navbar');
 const sections = document.querySelectorAll('section');
 
 window.addEventListener('scroll', () => {
-    navbar.classList.toggle('scrolled', window.scrollY > 50);
+    if(navbar) navbar.classList.toggle('scrolled', window.scrollY > 50);
     let current = '';
     sections.forEach(section => {
         if (pageYOffset >= (section.offsetTop - 200)) current = section.getAttribute('id');
@@ -478,23 +483,56 @@ swatches.forEach(swatch => {
         swatches.forEach(s => s.classList.remove('selected'));
         swatch.classList.add('selected');
         const hexColor = swatch.getAttribute('data-hex');
-        displayBox.style.backgroundColor = hexColor;
-        displayName.textContent = swatch.getAttribute('data-name');
-        displayHex.textContent = hexColor;
+        if(displayBox) displayBox.style.backgroundColor = hexColor;
+        if(displayName) displayName.textContent = swatch.getAttribute('data-name');
+        if(displayHex) displayHex.textContent = hexColor;
     });
 });
 
+// Sayfa Yüklenince Çalışacaklar
 document.addEventListener('DOMContentLoaded', () => {
-    // Sayfa yüklenince Supabase oturumunu kontrol et
-    supabase.auth.getSession().then(({ data: { session } }) => {
-        currentUser = session?.user || null;
-        if(currentUser) {
-            navAuthBtn.innerText = currentLang === 'tr' ? 'Çıkış Yap' : 'Log Out';
-            navAuthBtn.style.background = '#ef4444';
+    if(supabase) {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            currentUser = session?.user || null;
+            if(currentUser) {
+                if(navAuthBtn) {
+                    navAuthBtn.innerText = currentLang === 'tr' ? 'Çıkış Yap' : 'Log Out';
+                    navAuthBtn.style.background = '#ef4444';
+                }
+                const revNameInput = document.getElementById('rev-name');
+                if(revNameInput) {
+                    revNameInput.value = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
+                    revNameInput.disabled = true;
+                }
+            }
+        });
+        
+        // Supabase State Dinleyici
+        supabase.auth.onAuthStateChange((event, session) => {
+            currentUser = session?.user || null;
             const revNameInput = document.getElementById('rev-name');
-            revNameInput.value = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
-            revNameInput.disabled = true;
-        }
-    });
+            
+            if (currentUser) {
+                if(navAuthBtn) {
+                    navAuthBtn.innerText = currentLang === 'tr' ? 'Çıkış Yap' : 'Log Out';
+                    navAuthBtn.style.background = '#ef4444'; 
+                }
+                const fullName = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
+                if(revNameInput) {
+                    revNameInput.value = fullName;
+                    revNameInput.disabled = true;
+                }
+            } else {
+                if(navAuthBtn) {
+                    navAuthBtn.innerText = currentLang === 'tr' ? 'Giriş Yap' : 'Login';
+                    navAuthBtn.style.background = 'var(--text-dark)';
+                }
+                if(revNameInput) {
+                    revNameInput.value = '';
+                    revNameInput.disabled = false;
+                }
+            }
+        });
+    }
     fetchApprovedReviews();
 });
