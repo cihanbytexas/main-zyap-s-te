@@ -1,164 +1,55 @@
-// ============================================
-// GLOBAL DEĞİŞKENLER & SUPABASE İNİTİALİZATİON
-// ============================================
-let currentLang = 'tr';
-let supabase = null;
-let currentUser = null;
 
-// Supabase Kurulumunu Güvenli Şekilde Başlat (CDN yoksa çökmez)
-try {
-    if (window.supabase) {
-        const supabaseUrl = "https://ppdwtpjglkphayfxexhv.supabase.co";
-        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwZHd0cGpnbGtwaGF5ZnhleGh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNTc5ODEsImV4cCI6MjA5NjgzMzk4MX0.fJIyyxfU15EgrNARWkISFHJvU7-o-QpZbIKbRc3q_-s";
-        supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-    } else {
-        console.warn("Supabase CDN yüklenemedi. Auth özellikleri devre dışı kalabilir.");
-    }
-} catch (e) {
-    console.error("Supabase başlatılırken hata:", e);
-}
-
-// ============================================
-// AUTHENTİCATİON (GİRİŞ / KAYIT) MANTIĞI
-// ============================================
-const authModal = document.getElementById('auth-modal');
-const closeAuthBtn = document.getElementById('close-auth-btn');
-const navAuthBtn = document.getElementById('nav-auth-btn');
-const tabLogin = document.getElementById('tab-login');
-const tabRegister = document.getElementById('tab-register');
-const authForm = document.getElementById('auth-form');
-const nameField = document.getElementById('name-field');
-const authName = document.getElementById('auth-name');
-const authEmail = document.getElementById('auth-email');
-const authPassword = document.getElementById('auth-password');
-const authSubmitBtn = document.getElementById('auth-submit-btn');
-const authError = document.getElementById('auth-error');
-
-let isLoginMode = true;
-
-// DOM Elemanları varsa işlemleri tanımla (Yoksa çökmeyi engeller)
-if (navAuthBtn) {
-    navAuthBtn.onclick = async () => {
-        if (currentUser && supabase) {
-            await supabase.auth.signOut();
-        } else {
-            if(authModal) authModal.style.display = 'flex';
-            if(authError) authError.innerText = '';
-            if(authForm) authForm.reset();
-        }
-    };
-}
-
-if (closeAuthBtn && authModal) {
-    closeAuthBtn.onclick = () => authModal.style.display = 'none';
-}
-
-if (tabLogin && tabRegister) {
-    tabLogin.onclick = () => {
-        isLoginMode = true;
-        tabLogin.classList.add('active');
-        tabRegister.classList.remove('active');
-        if(nameField) nameField.style.display = 'none';
-        if(authName) authName.removeAttribute('required');
-        if(authSubmitBtn) authSubmitBtn.innerText = currentLang === 'tr' ? 'Giriş Yap' : 'Log In';
-        if(authError) authError.innerText = '';
-    };
-
-    tabRegister.onclick = () => {
-        isLoginMode = false;
-        tabRegister.classList.add('active');
-        tabLogin.classList.remove('active');
-        if(nameField) nameField.style.display = 'block';
-        if(authName) authName.setAttribute('required', 'true');
-        if(authSubmitBtn) authSubmitBtn.innerText = currentLang === 'tr' ? 'Kayıt Ol' : 'Register';
-        if(authError) authError.innerText = '';
-    };
-}
-
-if (authForm) {
-    authForm.onsubmit = async (e) => {
-        e.preventDefault();
-        if(!supabase) {
-            alert("Sistem bağlantı hatası (Supabase yüklenemedi).");
-            return;
-        }
-        if(authError) authError.innerText = '';
-        if(authSubmitBtn) {
-            authSubmitBtn.disabled = true;
-            authSubmitBtn.innerText = currentLang === 'tr' ? 'Bekleyin...' : 'Please wait...';
-        }
-
-        const email = authEmail?.value;
-        const password = authPassword?.value;
-        const fullName = authName?.value;
-
-        try {
-            if (isLoginMode) {
-                const { error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) throw error;
-            } else {
-                const { error } = await supabase.auth.signUp({
-                    email, password, options: { data: { full_name: fullName } }
-                });
-                if (error) throw error;
-                alert(currentLang === 'tr' ? "Kayıt başarılı! Giriş yapabilirsiniz." : "Registration successful! You can log in.");
-                tabLogin.click(); 
-            }
-            
-            if (isLoginMode && authModal) authModal.style.display = 'none'; 
-        } catch (err) {
-            if(authError) authError.innerText = currentLang === 'tr' ? 'Hata: Bilgileri kontrol edin.' : 'Error: Please check your details.';
-        } finally {
-            if(authSubmitBtn) {
-                authSubmitBtn.disabled = false;
-                authSubmitBtn.innerText = isLoginMode 
-                    ? (currentLang === 'tr' ? 'Giriş Yap' : 'Log In') 
-                    : (currentLang === 'tr' ? 'Kayıt Ol' : 'Register');
-            }
-        }
-    };
-}
-
-// ============================================
 // DİL DEĞİŞTİRME SİSTEMİ
 // ============================================
+let currentLang = 'tr';
+
 const langTrBtn = document.getElementById('lang-tr');
 const langEnBtn = document.getElementById('lang-en');
 
 function applyLanguage(lang) {
     currentLang = lang;
 
-    if(langTrBtn) langTrBtn.classList.toggle('active', lang === 'tr');
-    if(langEnBtn) langEnBtn.classList.toggle('active', lang === 'en');
+    // Nav butonlarını güncelle
+    langTrBtn.classList.toggle('active', lang === 'tr');
+    langEnBtn.classList.toggle('active', lang === 'en');
 
+    // Tüm data-tr / data-en attribute'lu elementleri güncelle
     document.querySelectorAll('[data-tr]').forEach(el => {
         const text = lang === 'tr' ? el.getAttribute('data-tr') : el.getAttribute('data-en');
         if (text) {
-            if (text.includes('<') && text.includes('>')) el.innerHTML = text;
-            else el.textContent = text;
+            // innerHTML kullanan elementler (strong tag içerenler)
+            if (text.includes('<') && text.includes('>')) {
+                el.innerHTML = text;
+            } else {
+                el.textContent = text;
+            }
         }
     });
 
+    // Placeholder'ları güncelle
     document.querySelectorAll('[data-tr-placeholder]').forEach(el => {
         const ph = lang === 'tr' ? el.getAttribute('data-tr-placeholder') : el.getAttribute('data-en-placeholder');
         if (ph) el.placeholder = ph;
     });
 
+    // Chat input placeholder
     const chatInput = document.getElementById('chat-input');
-    if (chatInput) chatInput.placeholder = lang === 'tr' ? 'Mesajınızı yazın...' : 'Type your message...';
-
-    if(navAuthBtn) {
-        if(currentUser) navAuthBtn.innerText = lang === 'tr' ? 'Çıkış Yap' : 'Log Out';
-        else navAuthBtn.innerText = lang === 'tr' ? 'Giriş Yap' : 'Login';
+    if (chatInput) {
+        chatInput.placeholder = lang === 'tr' ? 'Mesajınızı yazın...' : 'Type your message...';
     }
 
+    // Renk kartela filtreleme butonları (ic/dis etiket metni)
     renderColors();
+
+    // Dinamik yorumları yeniden listele (Dil değiştiğinde boş mesaj uyarısı güncellensin)
     fetchApprovedReviews();
+
+    // html lang attribute
     document.documentElement.lang = lang === 'tr' ? 'tr' : 'en';
 }
 
-if(langTrBtn) langTrBtn.addEventListener('click', () => applyLanguage('tr'));
-if(langEnBtn) langEnBtn.addEventListener('click', () => applyLanguage('en'));
+langTrBtn.addEventListener('click', () => applyLanguage('tr'));
+langEnBtn.addEventListener('click', () => applyLanguage('en'));
 
 // ============================================
 // CHATBOT MANTIĞI & YAZIYOR ANİMASYONU
@@ -172,8 +63,8 @@ const chatMessages = document.getElementById('chat-messages');
 
 let chatInitialized = false;
 
+// Animasyonlu mesaj ekleme
 const addMessage = (text, type) => {
-    if(!chatMessages) return;
     const div = document.createElement('div');
     div.className = `msg msg-${type}`;
     div.textContent = text;
@@ -181,71 +72,78 @@ const addMessage = (text, type) => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 };
 
+// Yazıyor... (Typing) göstergesi oluşturma
 const showTypingIndicator = () => {
-    if(!chatMessages) return null;
     const div = document.createElement('div');
     div.className = 'typing-indicator';
-    div.innerHTML = `<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>`;
+    div.innerHTML = `
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+    `;
     chatMessages.appendChild(div);
     chatMessages.scrollTop = chatMessages.scrollHeight;
     return div;
 };
 
-if(openChatBtn) {
-    openChatBtn.onclick = () => {
-        if(chatModal) chatModal.style.display = 'flex';
-        if (!chatInitialized) {
-            chatInitialized = true;
-            const typingEl = showTypingIndicator();
-            setTimeout(() => {
-                if(typingEl) typingEl.remove();
-                addMessage(
-                    currentLang === 'tr' 
-                        ? 'Merhaba! Ben Öz Yapı Market asistanı. Boya, tesisat veya bataryalarımız hakkında size nasıl yardımcı olabilirim?'
-                        : 'Hello! I am the Öz Yapı Market assistant. How can I help you about our paints, plumbing or batteries?', 
-                    'bot'
-                );
-            }, 1500);
-        }
-    };
-}
+// Modal açılışında botun ilk mesajı animasyonlu atması
+openChatBtn.onclick = () => {
+    chatModal.style.display = 'flex';
+    
+    if (!chatInitialized) {
+        chatInitialized = true;
+        const typingEl = showTypingIndicator();
+        
+        // 1.5 saniye sonra yazıyor balonunu kaldır ve mesajı gönder
+        setTimeout(() => {
+            typingEl.remove();
+            addMessage(
+                currentLang === 'tr' 
+                    ? 'Merhaba! Ben Öz Yapı Market asistanı. Boya, tesisat veya bataryalarımız hakkında size nasıl yardımcı olabilirim?'
+                    : 'Hello! I am the Öz Yapı Market assistant. How can I help you about our paints, plumbing or batteries?', 
+                'bot'
+            );
+        }, 1500);
+    }
+};
 
-if(closeChatBtn) closeChatBtn.onclick = () => { if(chatModal) chatModal.style.display = 'none'; };
+closeChatBtn.onclick = () => chatModal.style.display = 'none';
 
+// Yeni mesaj gönderme işlemi
 const handleSend = async () => {
-    if(!chatInput) return;
     const val = chatInput.value.trim();
     if (!val) return;
     
     addMessage(val, 'user');
     chatInput.value = '';
     
+    // Bot yazıyor animasyonu başlat
     const typingEl = showTypingIndicator();
 
     try {
-        const userName = currentUser ? (currentUser.user_metadata?.full_name || currentUser.email) : "Ziyaretçi Müşteri";
         const res = await fetch("/api/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: userName, message: val })
+            body: JSON.stringify({ username: "Cihan Yıldız", message: val })
         });
         if (!res.ok) throw new Error('API Hatası');
         const data = await res.json();
         
-        if(typingEl) typingEl.remove();
+        typingEl.remove();
         addMessage(data.reply || (currentLang === 'tr' ? "Cevap alınamadı" : "No response received"), 'bot');
     } catch (e) {
-        if(typingEl) typingEl.remove();
+        typingEl.remove();
         addMessage(currentLang === 'tr' ? "Bağlantı hatası oluştu, lütfen tekrar deneyin." : "Connection error, please try again.", 'bot');
     }
 };
 
-if(chatSend) chatSend.onclick = handleSend;
-if(chatInput) chatInput.onkeypress = (e) => { if(e.key === 'Enter') handleSend(); };
+chatSend.onclick = handleSend;
+chatInput.onkeypress = (e) => { if(e.key === 'Enter') handleSend(); };
 
 // ============================================
 // KARTELA & PDF MANTIĞI
 // ============================================
+
 const openModalBtn = document.getElementById('open-kartela-btn');
 const modal = document.getElementById('kartela-modal');
 const closeModalBtn = document.getElementById('close-modal');
@@ -253,20 +151,34 @@ const colorGrid = document.getElementById('modal-color-grid');
 const colorSearch = document.getElementById('color-search');
 const filterBtns = document.querySelectorAll('.filter-btn');
 
+// PDF Modal Tanımlamaları
 const openPdfBtn = document.getElementById('open-pdf-btn');
 const pdfModal = document.getElementById('pdf-modal');
 const closePdfModalBtn = document.getElementById('close-pdf-modal');
 
-if(openPdfBtn) openPdfBtn.onclick = () => { if(modal) modal.style.display = 'none'; if(pdfModal) pdfModal.style.display = 'flex'; };
-if(closePdfModalBtn) closePdfModalBtn.onclick = () => { if(pdfModal) pdfModal.style.display = 'none'; if(modal) modal.style.display = 'flex'; };
+if(openPdfBtn) {
+    openPdfBtn.onclick = () => {
+        modal.style.display = 'none';
+        pdfModal.style.display = 'flex';
+    };
+}
+if(closePdfModalBtn) {
+    closePdfModalBtn.onclick = () => {
+        pdfModal.style.display = 'none';
+        modal.style.display = 'flex';
+    };
+}
 
 let activeFilter = 'all';
 let searchTerm = '';
 
 function renderColors() {
-    if(!colorGrid) return;
     colorGrid.innerHTML = '';
-    if (typeof colorList === 'undefined') return;
+    
+    if (typeof colorList === 'undefined') {
+        console.error("colorList bulunamadı! colors.js dosyasının doğru yüklendiğinden emin olun.");
+        return;
+    }
 
     const filtered = colorList.filter(color => {
         const matchesSearch = color.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -274,7 +186,9 @@ function renderColors() {
         return matchesSearch && matchesType;
     });
 
-    const typeLabel = currentLang === 'tr' ? { ic: 'İç Cephe', dis: 'Dış Cephe' } : { ic: 'Interior', dis: 'Exterior' };
+    const typeLabel = currentLang === 'tr'
+        ? { ic: 'İç Cephe', dis: 'Dış Cephe' }
+        : { ic: 'Interior', dis: 'Exterior' };
 
     filtered.forEach(color => {
         const item = document.createElement('div');
@@ -288,32 +202,44 @@ function renderColors() {
     });
 }
 
-if(colorSearch) colorSearch.addEventListener('input', (e) => { searchTerm = e.target.value; renderColors(); });
+colorSearch.addEventListener('input', (e) => {
+    searchTerm = e.target.value;
+    renderColors();
+});
 
 filterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-        filterBtns.forEach(b => { b.classList.remove('active'); });
+        filterBtns.forEach(b => {
+            b.classList.remove('active');
+            b.style.background = 'rgba(255,255,255,0.05)';
+        });
         btn.classList.add('active');
         activeFilter = btn.getAttribute('data-type');
         renderColors();
     });
 });
 
-if(openModalBtn) openModalBtn.onclick = () => { if(modal) modal.style.display = 'flex'; renderColors(); };
-if(closeModalBtn) closeModalBtn.onclick = () => { if(modal) modal.style.display = 'none'; };
+openModalBtn.onclick = () => {
+    modal.style.display = 'flex';
+    renderColors();
+};
+closeModalBtn.onclick = () => modal.style.display = 'none';
 
 // ============================================
 // DİNAMİK YORUM YAPMA VE LİSTELEME SİTEMİ
 // ============================================
 let selectedRating = 0;
 
+// Yıldız Seçme ve Hover Efektleri
 document.querySelectorAll('#star-rating-container .review-star').forEach(star => {
     star.addEventListener('click', function() {
         selectedRating = parseInt(this.getAttribute('data-value'));
         updateStarDisplay(selectedRating);
     });
+
     star.addEventListener('mouseover', function() {
-        updateStarDisplay(parseInt(this.getAttribute('data-value')));
+        const hoverValue = parseInt(this.getAttribute('data-value'));
+        updateStarDisplay(hoverValue);
     });
 });
 
@@ -324,11 +250,15 @@ document.getElementById('star-rating-container')?.addEventListener('mouseleave',
 function updateStarDisplay(value) {
     document.querySelectorAll('#star-rating-container .review-star').forEach(star => {
         const starValue = parseInt(star.getAttribute('data-value'));
-        if(starValue <= value) star.style.color = '#f59e0b';
-        else star.style.color = '#cbd5e1';
+        if(starValue <= value) {
+            star.style.color = '#f59e0b'; // Altın sarısı aktif
+        } else {
+            star.style.color = '#cbd5e1'; // Gri inaktif
+        }
     });
 }
 
+// Onaylı Yorumları Backend'den Çekip Basma
 async function fetchApprovedReviews() {
     const grid = document.getElementById('dynamic-testimonials-list');
     if (!grid) return;
@@ -368,6 +298,7 @@ async function fetchApprovedReviews() {
     }
 }
 
+// Form Gönderme Tetikleyicisi
 const reviewForm = document.getElementById('user-review-form');
 if(reviewForm) {
     reviewForm.addEventListener('submit', async function(e) {
@@ -397,14 +328,9 @@ if(reviewForm) {
                 alert(currentLang === 'tr' 
                     ? "Teşekkürler! Yorumunuz yönetici onayından sonra yayınlanacaktır." 
                     : "Thank you! Your review will be published after admin approval.");
-                
                 reviewForm.reset();
                 selectedRating = 0;
                 updateStarDisplay(0);
-                if(currentUser) {
-                    const revNameInput = document.getElementById('rev-name');
-                    if(revNameInput) revNameInput.value = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
-                }
             } else {
                 alert("Hata / Error: " + data.error);
             }
@@ -416,44 +342,36 @@ if(reviewForm) {
     });
 }
 
-// ============================================
-// UI GENEL MANTIĞI & MOBİL MENÜ
-// ============================================
+// --- UI GENEL MANTIĞI ---
 window.onclick = (e) => { 
-    if(e.target == modal) { if(modal) modal.style.display = 'none'; }
-    if(e.target == chatModal) { if(chatModal) chatModal.style.display = 'none'; }
-    if(e.target == pdfModal) { if(pdfModal) pdfModal.style.display = 'none'; }
-    if(e.target == authModal) { if(authModal) authModal.style.display = 'none'; }
+    if(e.target == modal) modal.style.display = 'none'; 
+    if(e.target == chatModal) chatModal.style.display = 'none';
+    if(e.target == pdfModal) pdfModal.style.display = 'none';
 }
 
 const mobileMenuBtn = document.getElementById('mobile-menu-btn');
 const navLinks = document.getElementById('nav-links');
 const navLinksItems = document.querySelectorAll('.nav-links a');
 
-if (mobileMenuBtn && navLinks) {
-    mobileMenuBtn.addEventListener('click', () => {
-        navLinks.classList.toggle('active');
-        const icon = mobileMenuBtn.querySelector('i');
-        if (icon) {
-            icon.classList.toggle('fa-bars');
-            icon.classList.toggle('fa-xmark');
-        }
-    });
+mobileMenuBtn.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+    const icon = mobileMenuBtn.querySelector('i');
+    icon.classList.toggle('fa-bars');
+    icon.classList.toggle('fa-xmark');
+});
 
-    navLinksItems.forEach(item => {
-        item.addEventListener('click', () => {
-            navLinks.classList.remove('active');
-            const icon = mobileMenuBtn.querySelector('i');
-            if (icon) icon.className = 'fa-solid fa-bars';
-        });
+navLinksItems.forEach(item => {
+    item.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+        mobileMenuBtn.querySelector('i').className = 'fa-solid fa-bars';
     });
-}
+});
 
 const navbar = document.getElementById('navbar');
 const sections = document.querySelectorAll('section');
 
 window.addEventListener('scroll', () => {
-    if(navbar) navbar.classList.toggle('scrolled', window.scrollY > 50);
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
     let current = '';
     sections.forEach(section => {
         if (pageYOffset >= (section.offsetTop - 200)) current = section.getAttribute('id');
@@ -483,56 +401,11 @@ swatches.forEach(swatch => {
         swatches.forEach(s => s.classList.remove('selected'));
         swatch.classList.add('selected');
         const hexColor = swatch.getAttribute('data-hex');
-        if(displayBox) displayBox.style.backgroundColor = hexColor;
-        if(displayName) displayName.textContent = swatch.getAttribute('data-name');
-        if(displayHex) displayHex.textContent = hexColor;
+        displayBox.style.backgroundColor = hexColor;
+        displayName.textContent = swatch.getAttribute('data-name');
+        displayHex.textContent = hexColor;
     });
 });
 
-// Sayfa Yüklenince Çalışacaklar
-document.addEventListener('DOMContentLoaded', () => {
-    if(supabase) {
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            currentUser = session?.user || null;
-            if(currentUser) {
-                if(navAuthBtn) {
-                    navAuthBtn.innerText = currentLang === 'tr' ? 'Çıkış Yap' : 'Log Out';
-                    navAuthBtn.style.background = '#ef4444';
-                }
-                const revNameInput = document.getElementById('rev-name');
-                if(revNameInput) {
-                    revNameInput.value = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
-                    revNameInput.disabled = true;
-                }
-            }
-        });
-        
-        // Supabase State Dinleyici
-        supabase.auth.onAuthStateChange((event, session) => {
-            currentUser = session?.user || null;
-            const revNameInput = document.getElementById('rev-name');
-            
-            if (currentUser) {
-                if(navAuthBtn) {
-                    navAuthBtn.innerText = currentLang === 'tr' ? 'Çıkış Yap' : 'Log Out';
-                    navAuthBtn.style.background = '#ef4444'; 
-                }
-                const fullName = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
-                if(revNameInput) {
-                    revNameInput.value = fullName;
-                    revNameInput.disabled = true;
-                }
-            } else {
-                if(navAuthBtn) {
-                    navAuthBtn.innerText = currentLang === 'tr' ? 'Giriş Yap' : 'Login';
-                    navAuthBtn.style.background = 'var(--text-dark)';
-                }
-                if(revNameInput) {
-                    revNameInput.value = '';
-                    revNameInput.disabled = false;
-                }
-            }
-        });
-    }
-    fetchApprovedReviews();
-});
+// Sayfa ilk yüklendiğinde onaylı yorumları veritabanından çek
+document.addEventListener('DOMContentLoaded', fetchApprovedReviews);
