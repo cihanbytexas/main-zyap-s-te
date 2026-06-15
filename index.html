@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -9,8 +10,6 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <link rel="stylesheet" href="style.css">
 
@@ -64,39 +63,7 @@
 </head>
 <body>
 
-    <div class="auth-modal" id="auth-modal" style="display: none;">
-        <div class="auth-content">
-            <button class="close-auth" id="close-auth-btn"><i class="fa-solid fa-xmark"></i></button>
-            <div class="auth-header">
-                <h2 id="auth-title" data-tr="Giriş Yap" data-en="Log In">Giriş Yap</h2>
-                <p id="auth-subtitle" data-tr="Öz Yapı hesabınıza erişin." data-en="Access your Öz Yapı account.">Öz Yapı hesabınıza erişin.</p>
-            </div>
-            
-            <div class="auth-tabs">
-                <button class="auth-tab active" id="tab-login" data-tr="Giriş" data-en="Login">Giriş</button>
-                <button class="auth-tab" id="tab-register" data-tr="Kayıt Ol" data-en="Register">Kayıt Ol</button>
-            </div>
-
-            <form id="auth-form" class="auth-form">
-                <div id="name-field" style="display: none; margin-bottom: 15px;">
-                    <label data-tr="Ad Soyad" data-en="Full Name">Ad Soyad</label>
-                    <input type="text" id="auth-name" placeholder="Adınız Soyadınız">
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label data-tr="E-posta" data-en="Email">E-posta</label>
-                    <input type="email" id="auth-email" required placeholder="ornek@mail.com">
-                </div>
-                <div style="margin-bottom: 25px;">
-                    <label data-tr="Şifre" data-en="Password">Şifre</label>
-                    <input type="password" id="auth-password" required placeholder="••••••••">
-                </div>
-                <button type="submit" class="btn auth-submit-btn" id="auth-submit-btn" data-tr="Giriş Yap" data-en="Log In">Giriş Yap</button>
-                <div id="auth-error" class="auth-error"></div>
-            </form>
-        </div>
-    </div>
-
-    <div class="chat-modal" id="chat-modal" style="display: none;">
+    <div class="chat-modal" id="chat-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>
@@ -126,7 +93,7 @@
         </div>
     </div>
 
-    <div class="pdf-modal" id="pdf-modal" style="display: none;">
+    <div class="pdf-modal" id="pdf-modal">
         <div class="modal-content pdf-modal-content">
             <div class="modal-header">
                 <h2><i class="fa-solid fa-file-pdf"></i> <span data-tr="Filli İç Cephe Kataloğu" data-en="Filli Interior Catalog">Filli İç Cephe Kataloğu</span></h2>
@@ -143,7 +110,7 @@
         </div>
     </div>
 
-    <div class="kartela-modal" id="kartela-modal" style="display: none;">
+    <div class="kartela-modal" id="kartela-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2><i class="fa-solid fa-palette"></i> <span data-tr="Renk Kataloğu" data-en="Color Catalog">Renk Kataloğu</span></h2>
@@ -180,7 +147,6 @@
                 <span>Öz Yapı Market</span>
             </a>
             <div class="nav-right">
-                <button id="nav-auth-btn" class="nav-login-btn" data-tr="Giriş Yap" data-en="Login">Giriş Yap</button>
                 <div class="lang-switcher">
                     <button class="lang-btn active" id="lang-tr">TR</button>
                     <button class="lang-btn" id="lang-en">EN</button>
@@ -428,17 +394,16 @@
             
             <div class="grid-container" id="dynamic-testimonials-list"></div>
 
-            <div class="review-form-container">
-                <h3 data-tr="Yorum Yapın" data-en="Write a Review">Yorum Yapın</h3>
-                <p style="text-align: center; color: var(--text-light); margin-bottom: 20px; font-size: 0.9rem;" data-tr="Dilerseniz hesabınızla giriş yaparak hızlıca yorum bırakabilirsiniz." data-en="You can quickly leave a review by logging into your account.">Dilerseniz hesabınızla giriş yaparak hızlıca yorum bırakabilirsiniz.</p>
+            <div class="review-form-container" style="margin-top: 50px; max-width: 600px; margin-left: auto; margin-right: auto; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255,255,255,0.08); padding: 30px; border-radius: 12px; backdrop-filter: blur(10px);">
+                <h3 style="margin-bottom: 20px; text-align: center; color: white;" data-tr="Yorum Yapın" data-en="Write a Review">Yorum Yapın</h3>
                 <form id="user-review-form">
                     <div style="margin-bottom: 15px;">
-                        <label data-tr="Adınız Soyadınız" data-en="Your Name">Adınız Soyadınız</label>
-                        <input type="text" id="rev-name" required data-tr-placeholder="Örn: Ahmet Yılmaz" data-en-placeholder="e.g. John Doe" placeholder="Örn: Ahmet Yılmaz">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #e2e8f0;" data-tr="Adınız Soyadınız" data-en="Your Name">Adınız Soyadınız</label>
+                        <input type="text" id="rev-name" required style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white; outline: none;" data-tr-placeholder="Örn: Ahmet Yılmaz" data-en-placeholder="e.g. John Doe" placeholder="Örn: Ahmet Yılmaz">
                     </div>
                     <div style="margin-bottom: 15px;">
-                        <label data-tr="Kategori / Unvan" data-en="Category / Title">Kategori / Unvan</label>
-                        <select id="rev-category" required>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #e2e8f0;" data-tr="Kategori / Unvan" data-en="Category / Title">Kategori / Unvan</label>
+                        <select id="rev-category" required style="width: 100%; padding: 10px; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white; outline: none;">
                             <option value="Ev Sahibi" data-tr="Ev Sahibi" data-en="Homeowner">Ev Sahibi</option>
                             <option value="Dekorasyon Ustası" data-tr="Dekorasyon Ustası" data-en="Decoration Master">Dekorasyon Ustası</option>
                             <option value="Tesisat Ustası" data-tr="Tesisat Ustası" data-en="Plumbing Master">Tesisat Ustası</option>
@@ -446,18 +411,18 @@
                         </select>
                     </div>
                     <div style="margin-bottom: 15px;">
-                        <label data-tr="Puanınız" data-en="Your Rating">Puanınız</label>
-                        <div id="star-rating-container" class="star-rating-container">
-                            <i class="fa-solid fa-star review-star" data-value="1"></i>
-                            <i class="fa-solid fa-star review-star" data-value="2"></i>
-                            <i class="fa-solid fa-star review-star" data-value="3"></i>
-                            <i class="fa-solid fa-star review-star" data-value="4"></i>
-                            <i class="fa-solid fa-star review-star" data-value="5"></i>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #e2e8f0;" data-tr="Puanınız" data-en="Your Rating">Puanınız</label>
+                        <div id="star-rating-container" style="display: flex; gap: 6px; font-size: 1.6rem; cursor: pointer;">
+                            <i class="fa-solid fa-star review-star" data-value="1" style="color: #cbd5e1; transition: 0.2s;"></i>
+                            <i class="fa-solid fa-star review-star" data-value="2" style="color: #cbd5e1; transition: 0.2s;"></i>
+                            <i class="fa-solid fa-star review-star" data-value="3" style="color: #cbd5e1; transition: 0.2s;"></i>
+                            <i class="fa-solid fa-star review-star" data-value="4" style="color: #cbd5e1; transition: 0.2s;"></i>
+                            <i class="fa-solid fa-star review-star" data-value="5" style="color: #cbd5e1; transition: 0.2s;"></i>
                         </div>
                     </div>
                     <div style="margin-bottom: 20px;">
-                        <label data-tr="Yorumunuz" data-en="Your Review">Yorumunuz</label>
-                        <textarea id="rev-text" required rows="4" data-tr-placeholder="Görüşlerinizi buraya yazın..." data-en-placeholder="Write your review here..." placeholder="Görüşlerinizi buraya yazın..."></textarea>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #e2e8f0;" data-tr="Yorumunuz" data-en="Your Review">Yorumunuz</label>
+                        <textarea id="rev-text" required rows="4" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white; outline: none; resize: none;" data-tr-placeholder="Görüşlerinizi buraya yazın..." data-en-placeholder="Write your review here..." placeholder="Görüşlerinizi buraya yazın..."></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;" data-tr="Yorumu Gönder" data-en="Submit Review">Yorumu Gönder</button>
                 </form>
