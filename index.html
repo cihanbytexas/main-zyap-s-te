@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -140,6 +139,51 @@
         </div>
     </div>
 
+    <div class="kartela-modal" id="review-modal" style="display: none; z-index: 3000;">
+        <div class="modal-content" style="background: var(--bg-white); color: var(--text-dark); max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            
+            <div class="modal-header" style="border-bottom: 1px solid #e5e7eb; background: #f9fafb; border-radius: 15px 15px 0 0;">
+                <h2 style="color: var(--primary-color); font-size: 1.3rem;">
+                    <i class="fa-solid fa-star" style="color: var(--accent-color);"></i> <span data-tr="Yorum Yapın" data-en="Write a Review">Yorum Yapın</span>
+                </h2>
+                <button class="close-modal" id="close-review-modal" style="background: rgba(0,0,0,0.05); color: var(--text-dark);"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="modal-body" style="padding: 25px;">
+                <form id="user-review-form">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-dark);" data-tr="Adınız Soyadınız" data-en="Your Name">Adınız Soyadınız</label>
+                        <input type="text" id="rev-name" required style="width: 100%; padding: 10px; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; outline: none; color: var(--text-dark);" data-tr-placeholder="Örn: Ahmet Yılmaz" data-en-placeholder="e.g. John Doe" placeholder="Örn: Ahmet Yılmaz">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-dark);" data-tr="Kategori / Unvan" data-en="Category / Title">Kategori / Unvan</label>
+                        <select id="rev-category" required style="width: 100%; padding: 10px; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; outline: none; color: var(--text-dark);">
+                            <option value="Ev Sahibi" data-tr="Ev Sahibi" data-en="Homeowner">Ev Sahibi</option>
+                            <option value="Dekorasyon Ustası" data-tr="Dekorasyon Ustası" data-en="Decoration Master">Dekorasyon Ustası</option>
+                            <option value="Tesisat Ustası" data-tr="Tesisat Ustası" data-en="Plumbing Master">Tesisat Ustası</option>
+                            <option value="Müteahhit" data-tr="Müteahhit" data-en="Contractor">Müteahhit</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-dark);" data-tr="Puanınız" data-en="Your Rating">Puanınız</label>
+                        <div id="star-rating-container" style="display: flex; gap: 8px; font-size: 1.8rem; cursor: pointer;">
+                            <i class="fa-solid fa-star review-star" data-value="1" style="color: #cbd5e1; transition: 0.2s;"></i>
+                            <i class="fa-solid fa-star review-star" data-value="2" style="color: #cbd5e1; transition: 0.2s;"></i>
+                            <i class="fa-solid fa-star review-star" data-value="3" style="color: #cbd5e1; transition: 0.2s;"></i>
+                            <i class="fa-solid fa-star review-star" data-value="4" style="color: #cbd5e1; transition: 0.2s;"></i>
+                            <i class="fa-solid fa-star review-star" data-value="5" style="color: #cbd5e1; transition: 0.2s;"></i>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-dark);" data-tr="Yorumunuz" data-en="Your Review">Yorumunuz</label>
+                        <textarea id="rev-text" required rows="3" style="width: 100%; padding: 10px; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; outline: none; resize: none; color: var(--text-dark);" data-tr-placeholder="Görüşlerinizi buraya yazın..." data-en-placeholder="Write your review here..." placeholder="Görüşlerinizi buraya yazın..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 1.1rem;" data-tr="Yorumu Gönder" data-en="Submit Review">Yorumu Gönder</button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
     <nav class="navbar" id="navbar">
         <div class="nav-container">
             <a href="#" class="logo">
@@ -394,39 +438,12 @@
             
             <div class="grid-container" id="dynamic-testimonials-list"></div>
 
-            <div class="review-form-container" style="margin-top: 50px; max-width: 600px; margin-left: auto; margin-right: auto; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255,255,255,0.08); padding: 30px; border-radius: 12px; backdrop-filter: blur(10px);">
-                <h3 style="margin-bottom: 20px; text-align: center; color: white;" data-tr="Yorum Yapın" data-en="Write a Review">Yorum Yapın</h3>
-                <form id="user-review-form">
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #e2e8f0;" data-tr="Adınız Soyadınız" data-en="Your Name">Adınız Soyadınız</label>
-                        <input type="text" id="rev-name" required style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white; outline: none;" data-tr-placeholder="Örn: Ahmet Yılmaz" data-en-placeholder="e.g. John Doe" placeholder="Örn: Ahmet Yılmaz">
-                    </div>
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #e2e8f0;" data-tr="Kategori / Unvan" data-en="Category / Title">Kategori / Unvan</label>
-                        <select id="rev-category" required style="width: 100%; padding: 10px; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white; outline: none;">
-                            <option value="Ev Sahibi" data-tr="Ev Sahibi" data-en="Homeowner">Ev Sahibi</option>
-                            <option value="Dekorasyon Ustası" data-tr="Dekorasyon Ustası" data-en="Decoration Master">Dekorasyon Ustası</option>
-                            <option value="Tesisat Ustası" data-tr="Tesisat Ustası" data-en="Plumbing Master">Tesisat Ustası</option>
-                            <option value="Müteahhit" data-tr="Müteahhit" data-en="Contractor">Müteahhit</option>
-                        </select>
-                    </div>
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #e2e8f0;" data-tr="Puanınız" data-en="Your Rating">Puanınız</label>
-                        <div id="star-rating-container" style="display: flex; gap: 6px; font-size: 1.6rem; cursor: pointer;">
-                            <i class="fa-solid fa-star review-star" data-value="1" style="color: #cbd5e1; transition: 0.2s;"></i>
-                            <i class="fa-solid fa-star review-star" data-value="2" style="color: #cbd5e1; transition: 0.2s;"></i>
-                            <i class="fa-solid fa-star review-star" data-value="3" style="color: #cbd5e1; transition: 0.2s;"></i>
-                            <i class="fa-solid fa-star review-star" data-value="4" style="color: #cbd5e1; transition: 0.2s;"></i>
-                            <i class="fa-solid fa-star review-star" data-value="5" style="color: #cbd5e1; transition: 0.2s;"></i>
-                        </div>
-                    </div>
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #e2e8f0;" data-tr="Yorumunuz" data-en="Your Review">Yorumunuz</label>
-                        <textarea id="rev-text" required rows="4" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white; outline: none; resize: none;" data-tr-placeholder="Görüşlerinizi buraya yazın..." data-en-placeholder="Write your review here..." placeholder="Görüşlerinizi buraya yazın..."></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;" data-tr="Yorumu Gönder" data-en="Submit Review">Yorumu Gönder</button>
-                </form>
+            <div style="text-align: center; margin-top: 40px;">
+                <button id="open-review-modal" class="btn btn-primary" style="padding: 12px 25px; font-size: 1.1rem; border-radius: 30px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);">
+                    <i class="fa-solid fa-pen-to-square"></i> <span data-tr="Deneyiminizi Paylaşın" data-en="Share Your Experience">Deneyiminizi Paylaşın</span>
+                </button>
             </div>
+
         </div>
     </section>
 
