@@ -1,4 +1,3 @@
-
 // DİL DEĞİŞTİRME SİSTEMİ
 // ============================================
 let currentLang = 'tr';
@@ -124,15 +123,21 @@ const handleSend = async () => {
         const res = await fetch("/api/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: "Cihan Yıldız", message: val })
+            body: JSON.stringify({ username: "Ziyaretçi", message: val }) // İsim dinamikleştirildi
         });
-        if (!res.ok) throw new Error('API Hatası');
+        
+        if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(`HTTP ${res.status} - ${errorText}`);
+        }
+
         const data = await res.json();
         
         typingEl.remove();
         addMessage(data.reply || (currentLang === 'tr' ? "Cevap alınamadı" : "No response received"), 'bot');
     } catch (e) {
         typingEl.remove();
+        console.error("🚨 CHATBOT HATASI:", e.message);
         addMessage(currentLang === 'tr' ? "Bağlantı hatası oluştu, lütfen tekrar deneyin." : "Connection error, please try again.", 'bot');
     }
 };
@@ -226,8 +231,21 @@ openModalBtn.onclick = () => {
 closeModalBtn.onclick = () => modal.style.display = 'none';
 
 // ============================================
-// DİNAMİK YORUM YAPMA VE LİSTELEME SİTEMİ
+// DİNAMİK YORUM YAPMA VE LİSTELEME SİSTEMİ
 // ============================================
+
+// YORUM MODALI MANTIĞI EKLENDİ
+const reviewModal = document.getElementById('review-modal');
+const openReviewBtn = document.getElementById('open-review-modal');
+const closeReviewBtn = document.getElementById('close-review-modal');
+
+if (openReviewBtn) {
+    openReviewBtn.onclick = () => reviewModal.style.display = 'flex';
+}
+if (closeReviewBtn) {
+    closeReviewBtn.onclick = () => reviewModal.style.display = 'none';
+}
+
 let selectedRating = 0;
 
 // Yıldız Seçme ve Hover Efektleri
@@ -331,6 +349,7 @@ if(reviewForm) {
                 reviewForm.reset();
                 selectedRating = 0;
                 updateStarDisplay(0);
+                reviewModal.style.display = 'none'; // Gönderim başarılı olunca modalı kapat
             } else {
                 alert("Hata / Error: " + data.error);
             }
@@ -347,6 +366,7 @@ window.onclick = (e) => {
     if(e.target == modal) modal.style.display = 'none'; 
     if(e.target == chatModal) chatModal.style.display = 'none';
     if(e.target == pdfModal) pdfModal.style.display = 'none';
+    if(e.target == reviewModal) reviewModal.style.display = 'none'; // Yorum modalı boşluk tıklaması eklendi
 }
 
 const mobileMenuBtn = document.getElementById('mobile-menu-btn');
