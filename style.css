@@ -7,7 +7,7 @@
     --bg-light: #f3f4f6;
     --bg-white: #ffffff;
     --transition: all 0.3s ease;
-    /* Modal Colors (Discord Style) */
+    /* Modal Colors (Discord/Bot Style) */
     --modal-bg: #111827;
     --modal-card: #1f2937;
     --modal-text: #f3f4f6;
@@ -87,7 +87,7 @@ section { padding: 80px 0; }
 .mobile-menu-btn { display: none; font-size: 1.5rem; cursor: pointer; color: var(--primary-color); }
 .nav-right { display: flex; align-items: center; gap: 10px; }
 
-/* KARTELA MODAL (Discord Style) */
+/* MODALLAR (Eski Kurumsal Yapı İçin) */
 .kartela-modal, .chat-modal, .pdf-modal {
     position: fixed;
     top: 0;
@@ -178,7 +178,7 @@ section { padding: 80px 0; }
     100% { transform: scale(1); opacity: 1; }
 }
 
-/* YAZIYOR (TYPING) ANİMASYONU EFEKTİ */
+/* YAZIYOR (TYPING) ANİMASYONU EFEKTİ (Bot İçin) */
 .typing-indicator {
     background: var(--bot-bubble);
     padding: 14px 18px;
@@ -205,6 +205,7 @@ section { padding: 80px 0; }
     40% { transform: scale(1); opacity: 1; }
 }
 
+/* Kartela & Grid */
 .kartela-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
@@ -322,23 +323,21 @@ footer { background-color: var(--text-dark); color: white; padding: 60px 0 20px;
 .social-links a:hover { background-color: var(--secondary-color); transform: translateY(-3px); }
 .footer-bottom { text-align: center; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); color: #9ca3af; font-size: 0.9rem; }
 
-/* Floating Action Buttons & Chatbot Animations */
+/* Floating Action Buttons & Animations */
 @keyframes lookAround {
     0%, 100% { transform: translate(0, 0); }
-    10% { transform: translate(-2.5px, 0); }     /* sola bak */
-    20% { transform: translate(-2.5px, -2.5px); } /* sol yukarı bak */
-    30% { transform: translate(-2.5px, -2.5px); } /* bekle */
-    40% { transform: translate(2.5px, -2.5px); }  /* sağ yukarı bak */
-    50% { transform: translate(2.5px, 0); }      /* sağa bak */
-    60% { transform: translate(2.5px, 0); }      /* bekle */
-    70% { transform: translate(2.5px, 2.5px); }   /* sağ aşağı bak */
-    80% { transform: translate(-2.5px, 2.5px); }  /* sol aşağı bak */
-    90% { transform: translate(0, 0); }          /* ortaya dön */
+    10% { transform: translate(-2.5px, 0); }     
+    20% { transform: translate(-2.5px, -2.5px); } 
+    30% { transform: translate(-2.5px, -2.5px); } 
+    40% { transform: translate(2.5px, -2.5px); }  
+    50% { transform: translate(2.5px, 0); }      
+    60% { transform: translate(2.5px, 0); }      
+    70% { transform: translate(2.5px, 2.5px); }   
+    80% { transform: translate(-2.5px, 2.5px); }  
+    90% { transform: translate(0, 0); }          
 }
 
-.pupil {
-    animation: lookAround 6s infinite;
-}
+.pupil { animation: lookAround 6s infinite; }
 
 .chatbot-btn { 
     position: fixed; 
@@ -362,11 +361,50 @@ footer { background-color: var(--text-dark); color: white; padding: 60px 0 20px;
 .whatsapp-btn { position: fixed; bottom: 30px; right: 30px; background-color: #25D366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4); z-index: 100; transition: var(--transition); }
 .chatbot-btn:hover, .whatsapp-btn:hover { transform: scale(1.1); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); }
 
-/* Animations */
+/* Genel Animasyonlar */
 @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s ease; }
 .reveal.active { opacity: 1; transform: translateY(0); }
+
+
+/* ==========================================
+   ÖZ SOCIAL ÖZEL STİLLERİ (Tailwind'e Destek) 
+   ========================================== */
+
+/* Resim yükleme efekti */
+.avatar-upload:hover .avatar-overlay { opacity: 1; }
+
+/* Scrollbar Gizleme */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Seçimi Engelleme (Mobil Çift Tıklama Hataları İçin) */
+.no-select { 
+    -webkit-touch-callout: none; 
+    -webkit-user-select: none; 
+    -khtml-user-select: none; 
+    -moz-user-select: none; 
+    -ms-user-select: none; 
+    user-select: none; 
+}
+
+/* Gönderi Çift Tıklama Kalp Animasyonu (Büyük Kalp) */
+@keyframes pop {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+}
+.heart-pop { animation: pop 0.8s ease-out forwards; }
+
+/* Mesaj (DM) Çift Tıklama Kalp Animasyonu (Kalıcı Küçük Kalp) */
+@keyframes chatHeartBounce {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+.chat-heart-anim { animation: chatHeartBounce 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
 
 /* Mobile Responsive */
 @media (max-width: 991px) { 
@@ -392,4 +430,4 @@ footer { background-color: var(--text-dark); color: white; padding: 60px 0 20px;
 @media (max-width: 480px) {
     .logo { font-size: 1.15rem; }
     .lang-btn { padding: 4px 9px; font-size: 0.72rem; }
-                }
+}
