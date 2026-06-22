@@ -7,8 +7,9 @@
     <meta name="keywords" content="Öz Yapı Market, Filli Boya, Fawori, Fırat Boru, Kare Batarya, Güven Batarya, boya makinesi, renk kataloğu, Mut nalbur,Öz Yapı,">
     <title>Öz Yapı Market | Profesyonel Boya ve Tesisat Çözümleri</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
@@ -31,51 +32,9 @@
         "postalCode": "33600",
         "addressCountry": "TR"
       },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": 36.6444, 
-        "longitude": 33.4383
-      },
-      "openingHoursSpecification": [
-        {
-          "@type": "OpeningHoursSpecification",
-          "dayOfWeek": [
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday"
-          ],
-          "opens": "08:00",
-          "closes": "19:30"
-        }
-      ],
-      "brands": [
-        {"@type": "Brand", "name": "Filli Boya"},
-        {"@type": "Brand", "name": "Fawori"},
-        {"@type": "Brand", "name": "Fırat Boru"},
-        {"@type": "Brand", "name": "Kare Batarya"},
-        {"@type": "Brand", "name": "Güven Batarya"}
-      ],
       "url": "https://www.ozyapimarket.com"
     }
     </script>
-    <style>
-        /* ÇİFT TIKLAMA VE MESAJ ANİMASYONLARI */
-        @keyframes pop {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-            50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
-        }
-        .heart-pop { animation: pop 0.8s ease-out forwards; }
-        @keyframes chatHeartBounce {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.4); }
-            100% { transform: scale(1); }
-        }
-        .chat-heart-anim { animation: chatHeartBounce 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-    </style>
 </head>
 <body>
 
@@ -136,19 +95,15 @@
                 <div class="filter-container" style="margin-bottom: 20px;">
                     <div style="position: relative; margin-bottom: 15px;">
                         <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af;"></i>
-                        <input type="text" id="color-search" 
-                               data-tr-placeholder="Renk veya kod ara..."
-                               data-en-placeholder="Search color or code..."
-                               placeholder="Renk veya kod ara..." 
-                               style="width: 100%; padding: 10px 10px 10px 35px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none;">
+                        <input type="text" id="color-search" placeholder="Renk veya kod ara..." style="width: 100%; padding: 10px 10px 10px 35px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none;">
                     </div>
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <button id="open-pdf-btn" style="flex: 1; min-width: 120px; padding: 8px; border-radius: 6px; border: 1px solid #3b82f6; cursor: pointer; background: rgba(59, 130, 246, 0.15); color: white; font-size: 0.8rem; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px;" data-tr="Filli İç Cephe" data-en="Filli Interior">
+                        <button id="open-pdf-btn" style="flex: 1; min-width: 120px; padding: 8px; border-radius: 6px; border: 1px solid #3b82f6; cursor: pointer; background: rgba(59, 130, 246, 0.15); color: white; font-size: 0.8rem; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px;">
                             <i class="fa-solid fa-file-pdf" style="color: #ef4444;"></i> Filli İç Cephe
                         </button>
-                        <button class="filter-btn active" data-type="all" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;" data-tr="Tümü" data-en="All">Tümü</button>
-                        <button class="filter-btn" data-type="ic" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;" data-tr="İç Cephe" data-en="Interior">İç Cephe</button>
-                        <button class="filter-btn" data-type="dis" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;" data-tr="Dış Cephe" data-en="Exterior">Dış Cephe</button>
+                        <button class="filter-btn active" data-type="all" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;">Tümü</button>
+                        <button class="filter-btn" data-type="ic" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;">İç Cephe</button>
+                        <button class="filter-btn" data-type="dis" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;">Dış Cephe</button>
                     </div>
                 </div>
                 <div class="kartela-grid" id="modal-color-grid"></div>
@@ -164,20 +119,19 @@
                 </h2>
                 <button class="close-modal" id="close-review-modal" style="background: rgba(0,0,0,0.05); color: var(--text-dark);"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            
             <div class="modal-body" style="padding: 25px;">
                 <form id="user-review-form">
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-dark);" data-tr="Adınız Soyadınız" data-en="Your Name">Adınız Soyadınız</label>
-                        <input type="text" id="rev-name" required style="width: 100%; padding: 10px; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; outline: none; color: var(--text-dark);" data-tr-placeholder="Örn: Ahmet Yılmaz" data-en-placeholder="e.g. John Doe" placeholder="Örn: Ahmet Yılmaz">
+                        <input type="text" id="rev-name" required style="width: 100%; padding: 10px; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; outline: none; color: var(--text-dark); transition: 0.3s;" placeholder="Örn: Ahmet Yılmaz">
                     </div>
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-dark);" data-tr="Kategori / Unvan" data-en="Category / Title">Kategori / Unvan</label>
                         <select id="rev-category" required style="width: 100%; padding: 10px; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; outline: none; color: var(--text-dark);">
-                            <option value="Ev Sahibi" data-tr="Ev Sahibi" data-en="Homeowner">Ev Sahibi</option>
-                            <option value="Dekorasyon Ustası" data-tr="Dekorasyon Ustası" data-en="Decoration Master">Dekorasyon Ustası</option>
-                            <option value="Tesisat Ustası" data-tr="Tesisat Ustası" data-en="Plumbing Master">Tesisat Ustası</option>
-                            <option value="Müteahhit" data-tr="Müteahhit" data-en="Contractor">Müteahhit</option>
+                            <option value="Ev Sahibi">Ev Sahibi</option>
+                            <option value="Dekorasyon Ustası">Dekorasyon Ustası</option>
+                            <option value="Tesisat Ustası">Tesisat Ustası</option>
+                            <option value="Müteahhit">Müteahhit</option>
                         </select>
                     </div>
                     <div style="margin-bottom: 15px;">
@@ -192,7 +146,7 @@
                     </div>
                     <div style="margin-bottom: 20px;">
                         <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-dark);" data-tr="Yorumunuz" data-en="Your Review">Yorumunuz</label>
-                        <textarea id="rev-text" required rows="3" style="width: 100%; padding: 10px; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; outline: none; resize: none; color: var(--text-dark);" data-tr-placeholder="Görüşlerinizi buraya yazın..." data-en-placeholder="Write your review here..." placeholder="Görüşlerinizi buraya yazın..."></textarea>
+                        <textarea id="rev-text" required rows="3" style="width: 100%; padding: 10px; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; outline: none; resize: none; color: var(--text-dark);" placeholder="Görüşlerinizi buraya yazın..."></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 1.1rem;" data-tr="Yorumu Gönder" data-en="Submit Review">Yorumu Gönder</button>
                 </form>
@@ -200,284 +154,6 @@
         </div>
     </div>
 
-    <div id="auth-modal" class="fixed inset-0 bg-slate-900/80 z-[1500] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md relative">
-            <button id="close-auth-modal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
-            <div class="text-center mb-6">
-                <h2 class="text-2xl font-bold text-slate-800"><i class="fa-solid fa-helmet-safety text-blue-600"></i> Öz Yapı Portal</h2>
-                <p class="text-xs text-slate-400 mt-1">Sosyal ağa ve usta paneline bağlanın</p>
-            </div>
-
-            <form id="login-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">E-posta</label>
-                    <input type="email" id="login-email" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="ornek@mail.com">
-                </div>
-                <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="block text-sm font-semibold text-slate-700">Şifre</label>
-                        <button type="button" id="show-forgot-password" class="text-xs text-blue-600 font-semibold hover:underline">Şifremi Unuttum?</button>
-                    </div>
-                    <input type="password" id="login-password" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="••••••••">
-                </div>
-                <button type="submit" id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition-colors">Giriş Yap</button>
-                <p class="text-center text-xs text-slate-600 mt-3">Hesabın yok mu? <button type="button" id="show-register" class="text-blue-600 font-bold hover:underline">Kayıt Ol</button></p>
-            </form>
-
-            <form id="register-form" class="space-y-3 hidden">
-                <div class="flex justify-center mb-2">
-                    <label for="reg-avatar" class="relative cursor-pointer group">
-                        <div id="avatar-preview" class="w-16 h-16 rounded-full bg-slate-100 border border-dashed border-slate-300 flex items-center justify-center overflow-hidden">
-                            <i class="fa-solid fa-camera text-slate-400 text-lg"></i>
-                        </div>
-                        <input type="file" id="reg-avatar" accept="image/*" class="hidden">
-                    </label>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-0.5">Ad Soyad</label>
-                    <input type="text" id="reg-name" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none" placeholder="Ad Soyad">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-0.5">Hesap Türü</label>
-                    <select id="reg-role" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none">
-                        <option value="Müşteri">Müşteri / Ziyaretçi</option>
-                        <option value="Usta">Usta (Boya/Tesisat/Dekorasyon)</option>
-                        <option value="Müteahhit">Müteahhit / Firma</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-0.5">E-posta</label>
-                    <input type="email" id="reg-email" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-0.5">Şifre (En az 6 Karakter)</label>
-                    <input type="password" id="reg-password" required minlength="6" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none">
-                </div>
-                <button type="submit" id="register-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg transition-colors">Kayıt Ol</button>
-                <p class="text-center text-xs text-slate-600 mt-2">Zaten üye misin? <button type="button" id="show-login" class="text-blue-600 font-bold hover:underline">Giriş Yap</button></p>
-            </form>
-
-            <form id="forgot-password-form" class="space-y-4 hidden">
-                <p class="text-xs text-slate-500 text-center">Sistem e-postanızı girin, sıfırlama linki gönderelim.</p>
-                <div>
-                    <input type="email" id="forgot-email" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none" placeholder="ornek@mail.com">
-                </div>
-                <button type="submit" id="forgot-btn" class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg">Bağlantı Gönder</button>
-                <button type="button" id="back-to-login" class="w-full text-xs text-center text-blue-600 hover:underline">Giriş Ekranına Dön</button>
-            </form>
-
-            <form id="reset-password-form" class="space-y-4 hidden">
-                <h3 class="text-sm font-bold text-center text-slate-800">Yeni Şifre Belirle</h3>
-                <div>
-                    <input type="password" id="new-password" required minlength="6" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none" placeholder="••••••••">
-                </div>
-                <button type="submit" id="reset-btn" class="w-full bg-emerald-600 text-white font-bold py-2 rounded-lg">Şifreyi Güncelle</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="oz-social-portal" class="fixed inset-0 bg-slate-100 z-[2500] hidden flex-col overflow-hidden animate-fade-in">
-        <header class="bg-white border-b border-slate-200 h-16 px-4 flex items-center justify-between shadow-sm flex-shrink-0">
-            <div class="flex items-center gap-2">
-                <button id="close-social-portal-btn" class="text-slate-800 text-xl w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-arrow-left"></i></button>
-                <span class="font-bold text-lg text-slate-800 tracking-tight"><i class="fa-solid fa-users text-blue-600"></i> Öz Social</span>
-            </div>
-            
-            <div class="flex-1 max-w-xs mx-4 relative hidden sm:block">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                <input type="text" id="portal-user-search" class="w-full pl-9 pr-4 py-1.5 bg-slate-100 text-xs rounded-full focus:outline-none focus:bg-white border border-transparent focus:border-slate-300" placeholder="Usta veya müşteri ara...">
-                <div id="search-results-box" class="absolute left-0 top-full mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto hidden z-50"></div>
-            </div>
-
-            <div class="flex items-center gap-2">
-                <button id="portal-messages-btn" class="relative w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center transition-colors">
-                    <i class="fa-regular fa-paper-plane text-sm"></i>
-                    <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-blue-500 border-2 border-white rounded-full hidden" id="messages-badge"></span>
-                </button>
-                <button id="portal-notification-btn" class="relative w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center transition-colors">
-                    <i class="fa-regular fa-bell text-sm"></i>
-                    <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full hidden" id="notification-badge"></span>
-                </button>
-                <button id="portal-logout-btn" class="w-9 h-9 bg-red-50 hover:bg-red-500 hover:text-white text-red-500 rounded-full flex items-center justify-center transition-colors" title="Çıkış Yap">
-                    <i class="fa-solid fa-power-off text-sm"></i>
-                </button>
-            </div>
-        </header>
-
-        <div class="p-3 bg-white border-b border-slate-200 sm:hidden flex-shrink-0 relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-            <input type="text" id="portal-user-search-mobile" class="w-full pl-9 pr-4 py-1.5 bg-slate-100 text-xs rounded-full focus:outline-none" placeholder="Usta veya müşteri ara...">
-            <div id="search-results-box-mobile" class="absolute left-3 right-3 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto hidden z-50"></div>
-        </div>
-
-        <div class="flex-1 overflow-y-auto p-4 flex flex-col items-center hide-scrollbar">
-            <div class="w-full max-w-2xl space-y-6 pb-12">
-                
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4 relative">
-                    <button id="portal-edit-profile-btn" class="absolute top-4 right-4 text-slate-400 hover:text-blue-600 transition-colors"><i class="fa-solid fa-pen-to-square"></i></button>
-                    <div class="w-16 h-16 rounded-full bg-white border overflow-hidden flex-shrink-0 cursor-pointer user-profile-trigger" id="portal-dash-avatar-trigger">
-                        <img id="portal-dash-avatar" src="" class="w-full h-full object-cover">
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <h3 id="portal-dash-name" class="text-base font-bold text-slate-800 truncate cursor-pointer user-profile-trigger hover:underline">Yükleniyor...</h3>
-                        <div class="flex items-center gap-2 mt-0.5">
-                            <span id="portal-dash-role" class="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-bold uppercase tracking-wide border border-blue-100">...</span>
-                            <span class="text-xs text-slate-400 truncate" id="portal-dash-email">...</span>
-                        </div>
-                        <p id="portal-dash-bio" class="text-xs text-slate-500 mt-1 line-clamp-1"></p>
-                    </div>
-                </div>
-
-                <form id="portal-edit-profile-form" class="hidden bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-                    <div class="flex gap-4 items-center">
-                        <label for="portal-edit-avatar-input" class="relative cursor-pointer group">
-                            <div class="w-16 h-16 rounded-full border-2 border-dashed border-slate-300 overflow-hidden flex items-center justify-center bg-slate-50">
-                                <img id="portal-edit-avatar-img" src="" class="w-full h-full object-cover">
-                            </div>
-                            <input type="file" id="portal-edit-avatar-input" accept="image/*" class="hidden">
-                        </label>
-                        <div class="flex-1 space-y-2">
-                            <input type="text" id="portal-edit-name" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500">
-                            <textarea id="portal-edit-bio" rows="2" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs resize-none focus:outline-none focus:border-blue-500" placeholder="Biyografinizi yazın..."></textarea>
-                        </div>
-                    </div>
-                    <div class="flex gap-2 justify-end">
-                        <button type="button" id="portal-cancel-edit-btn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-1.5 px-4 rounded-lg">İptal</button>
-                        <button type="submit" id="portal-save-edit-btn" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 px-4 rounded-lg">Kaydet</button>
-                    </div>
-                </form>
-
-                <div class="flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-slate-200">
-                    <div class="flex gap-1.5">
-                        <button class="portal-feed-filter active px-3 py-1 rounded-full bg-slate-800 text-white text-xs font-semibold" data-filter="all">Tümü</button>
-                        <button class="portal-feed-filter px-3 py-1 rounded-full bg-slate-50 text-slate-600 border border-slate-200 text-xs font-semibold" data-filter="soru">Sorular</button>
-                        <button class="portal-feed-filter px-3 py-1 rounded-full bg-slate-50 text-slate-600 border border-slate-200 text-xs font-semibold" data-filter="medya">Medya & Reels</button>
-                    </div>
-                    <button id="portal-open-create-post" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 px-4 rounded-full flex items-center gap-1 shadow-sm"><i class="fa-solid fa-plus"></i> Paylaşım Yap</button>
-                </div>
-
-                <div id="portal-feed-list" class="space-y-6"></div>
-
-            </div>
-        </div>
-    </div>
-
-    <div id="portal-create-post-modal" class="fixed inset-0 bg-slate-900/60 z-[3000] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
-            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-bold text-slate-800 text-base">Yeni Gönderi Paylaş</h3>
-                <button id="portal-close-post-modal" class="text-slate-400 hover:text-red-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <form id="portal-create-post-form" class="p-5 space-y-4">
-                <div class="grid grid-cols-2 gap-3">
-                    <label class="cursor-pointer">
-                        <input type="radio" name="portal_post_type" value="soru" class="peer hidden" checked>
-                        <div class="text-center p-2.5 border-2 border-slate-100 rounded-xl peer-checked:border-blue-500 peer-checked:bg-blue-50/50 transition-all">
-                            <div class="font-bold text-xs text-slate-600 peer-checked:text-blue-700">Soru Sor</div>
-                        </div>
-                    </label>
-                    <label class="cursor-pointer">
-                        <input type="radio" name="portal_post_type" value="medya" class="peer hidden">
-                        <div class="text-center p-2.5 border-2 border-slate-100 rounded-xl peer-checked:border-blue-500 peer-checked:bg-blue-50/50 transition-all">
-                            <div class="font-bold text-xs text-slate-600 peer-checked:text-blue-700">Fotoğraf/Reels</div>
-                        </div>
-                    </label>
-                </div>
-                <div id="portal-media-upload-container" class="hidden">
-                    <input type="file" id="portal-post-media" accept="image/*,video/mp4" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 file:font-bold cursor-pointer">
-                </div>
-                <div>
-                    <textarea id="portal-post-text" required rows="4" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 resize-none" placeholder="Açıklama veya teknik sorunuzu buraya ekleyin..."></textarea>
-                </div>
-                <button type="submit" id="portal-submit-post-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl shadow-md">Paylaş</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="chat-modal-dm" class="fixed inset-0 bg-slate-50 z-[2900] hidden flex-col transition-transform transform translate-x-full duration-300">
-        <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-20 shadow-sm">
-            <button id="close-chat-dm-btn" class="text-slate-800 text-xl mr-4"><i class="fa-solid fa-arrow-left"></i></button>
-            <img id="chat-dm-avatar" src="" class="w-9 h-9 rounded-full object-cover mr-3 cursor-pointer user-profile-trigger">
-            <div class="flex-1">
-                <h2 id="chat-dm-name" class="text-[15px] font-bold text-slate-800 cursor-pointer user-profile-trigger hover:underline">...</h2>
-            </div>
-        </div>
-        <div id="chat-dm-history" class="flex-1 overflow-y-auto p-4 flex flex-col pb-[85px] bg-slate-50 relative"></div>
-        <div id="chat-dm-typing-indicator" class="absolute bottom-[75px] left-4 hidden bg-white border border-slate-200 rounded-full shadow-sm px-4 py-2 flex items-center gap-1.5 z-10">
-            <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span>
-            <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay:0.15s"></span>
-            <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay:0.3s"></span>
-        </div>
-        <form id="chat-dm-form" class="p-2 bg-white border-t border-slate-200 flex gap-2 items-center fixed bottom-0 left-0 w-full z-20 shadow-md">
-            <label class="cursor-pointer text-slate-400 hover:text-blue-600 p-2">
-                <i class="fa-solid fa-image text-[22px]"></i>
-                <input type="file" id="chat-dm-media-input" accept="image/*" class="hidden">
-            </label>
-            <input type="text" id="chat-dm-input" autocomplete="off" class="flex-1 px-4 py-2 bg-slate-100 border border-slate-200 rounded-full text-sm focus:outline-none focus:bg-white" placeholder="Mesaj yaz...">
-            <button type="submit" class="w-10 h-10 bg-slate-800 text-white rounded-full flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-paper-plane text-xs"></i></button>
-        </form>
-    </div>
-
-    <div id="messages-list-modal" class="fixed inset-0 bg-slate-900/60 z-[2800] hidden flex justify-end p-0 backdrop-blur-sm transition-opacity">
-        <div class="bg-white w-full max-w-sm h-full shadow-2xl flex flex-col transform transition-transform duration-300">
-            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-bold text-slate-800 text-base"><i class="fa-regular fa-paper-plane text-blue-500 mr-2"></i>Mesajlar</h3>
-                <button id="close-messages-list-modal-btn" class="text-slate-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="conversations-list" class="flex-1 overflow-y-auto p-4 space-y-1 bg-white"></div>
-        </div>
-    </div>
-
-    <div id="likes-modal" class="fixed inset-0 bg-slate-900/60 z-[2800] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl">
-            <div class="px-5 py-3 border-b flex justify-between items-center bg-slate-50">
-                <h3 class="font-bold text-slate-800 text-sm"><i class="fa-solid fa-heart text-red-500 mr-2"></i>Beğenenler</h3>
-                <button id="close-likes-modal-btn" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="likes-list" class="p-4 max-h-64 overflow-y-auto space-y-3"></div>
-        </div>
-    </div>
-
-    <div id="user-profile-modal" class="fixed inset-0 bg-white z-[2700] hidden flex-col transition-transform transform translate-x-full duration-300">
-        <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm">
-            <button id="close-user-profile-btn" class="text-slate-800 text-xl mr-4"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 id="up-header-name" class="text-base font-bold text-slate-800 flex-1">Kullanıcı</h2>
-        </div>
-        <div class="p-4 border-b border-slate-100">
-            <div class="flex items-center justify-between mb-4">
-                <img id="up-avatar" src="" class="w-16 h-16 rounded-full object-cover border border-slate-200 p-0.5">
-                <div class="flex flex-1 justify-center gap-5 text-center">
-                    <div><div id="up-post-count" class="font-bold text-base text-slate-800">0</div><div class="text-[11px] text-slate-400">Gönderi</div></div>
-                    <div><div id="up-follower-count" class="font-bold text-base text-slate-800">0</div><div class="text-[11px] text-slate-400">Takipçi</div></div>
-                    <div><div id="up-following-count" class="font-bold text-base text-slate-800">0</div><div class="text-[11px] text-slate-400">Takip</div></div>
-                </div>
-            </div>
-            <div>
-                <h3 id="up-name" class="font-bold text-sm text-slate-800">...</h3>
-                <span id="up-role" class="text-[9px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-bold uppercase mt-1 inline-block">Rol</span>
-                <p id="up-bio" class="text-xs text-slate-600 mt-1.5 whitespace-pre-wrap"></p>
-            </div>
-            <div class="mt-4 flex gap-2">
-                <button id="follow-btn" class="flex-1 bg-blue-600 text-white font-bold py-1.5 rounded-lg text-xs hidden">Takip Et</button>
-                <button id="unfollow-btn" class="flex-1 bg-slate-200 text-slate-800 font-bold py-1.5 rounded-lg text-xs hidden">Takipten Çık</button>
-                <button id="message-user-btn" class="flex-1 bg-slate-800 text-white font-bold py-1.5 rounded-lg text-xs hidden">Mesaj</button>
-            </div>
-        </div>
-        <div class="flex border-b border-slate-200 bg-white sticky top-[53px] z-10">
-            <button id="tab-grid" class="flex-1 py-2.5 border-b-2 border-slate-800 text-slate-800 flex justify-center"><i class="fa-solid fa-table-cells text-lg"></i></button>
-            <button id="tab-questions" class="flex-1 py-2.5 border-b-2 border-transparent text-slate-400 flex justify-center"><i class="fa-solid fa-circle-question text-lg"></i></button>
-        </div>
-        <div id="up-grid" class="flex-1 overflow-y-auto grid grid-cols-3 gap-0.5 bg-slate-100"></div>
-        <div id="up-questions-list" class="flex-1 overflow-y-auto hidden p-4 space-y-4 bg-slate-50"></div>
-    </div>
-
-    <div id="single-post-modal" class="fixed inset-0 bg-slate-100 z-[2800] hidden flex-col transition-transform transform translate-x-full duration-300">
-        <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm">
-            <button id="close-single-post-btn" class="text-slate-800 text-xl mr-4"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 class="text-base font-bold text-slate-800 flex-1">Gönderi Detayı</h2>
-        </div>
-        <div id="single-post-container" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
-    </div>
 
     <nav class="navbar" id="navbar">
         <div class="nav-container">
@@ -485,24 +161,33 @@
                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLBB90v1MlBr1Ik4_NhKhz3Mr_7kQ9_el-qo-X3hBIEg&s" alt="Öz Yapı Market Logo">
                 <span>Öz Yapı Market</span>
             </a>
-            <div class="nav-right">
-                <button id="nav-auth-trigger-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-4 rounded-full text-xs transition-all tracking-wide shadow-sm flex items-center gap-1">
-                    <i class="fa-solid fa-user-gear"></i> <span id="nav-auth-btn-text">Giriş Yap</span>
+            
+            <div class="nav-right" style="display: flex; align-items: center; gap: 12px;">
+                <div class="lang-switcher hidden md:flex">
+                    <button class="lang-btn active" id="lang-tr">TR</button>
+                    <button class="lang-btn" id="lang-en">EN</button>
+                </div>
+
+                <button id="nav-auth-trigger-btn" class="btn btn-primary flex items-center justify-center gap-2" style="padding: 8px 16px; font-size: 0.9rem;">
+                    <i class="fa-solid fa-user"></i>
+                    <span id="nav-auth-btn-text" class="hidden sm:inline">Giriş Yap</span>
                 </button>
+                
                 <div class="mobile-menu-btn" id="mobile-menu-btn">
                     <i class="fa-solid fa-bars"></i>
                 </div>
             </div>
+
             <ul class="nav-links" id="nav-links">
-                <li class="p-3 border-b border-slate-100 md:border-none flex justify-center md:block">
+                <li class="md:hidden" style="padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: center;">
                     <div class="lang-switcher">
-                        <button class="lang-btn active" id="lang-tr">TR</button>
-                        <button class="lang-btn" id="lang-en">EN</button>
+                        <button class="lang-btn active" id="lang-tr-mobile">TR</button>
+                        <button class="lang-btn" id="lang-en-mobile">EN</button>
                     </div>
                 </li>
-                <li><a href="#hero" class="active" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
+                <li><a href="#hero" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
                 <li><a href="#about" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
-                <li><a id="open-kartela-btn" data-tr="Kartelalar" data-en="Color Charts">Kartelalar</a></li> 
+                <li><a id="open-kartela-btn" data-tr="Kartelalar" data-en="Color Charts" style="cursor: pointer;">Kartelalar</a></li> 
                 <li><a href="#services" data-tr="Hizmetler" data-en="Services">Hizmetler</a></li>
                 <li><a href="#products" data-tr="Ürünler" data-en="Products">Ürünler</a></li>
                 <li><a href="#color-machine" data-tr="Renk Makinesi" data-en="Color Machine">Renk Makinesi</a></li>
@@ -531,7 +216,7 @@
                 <div class="about-text">
                     <h2 class="section-title" style="text-align: left;" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</h2>
                     <p data-tr="<strong>Öz Yapı Market</strong> olarak, uzun yıllardır yapı, dekorasyon ve tesisat sektöründe güvenilir hizmet sunmaktayız. Amacımız, müşterilerimizin ihtiyaç duydukları en kaliteli malzemelere en uygun fiyatlarla ulaşmalarını sağlamaktır." data-en="As <strong>Öz Yapı Market</strong>, we have been providing reliable services in the construction, decoration and plumbing sector for many years. Our goal is to ensure our customers access the highest quality materials at the most affordable prices."><strong>Öz Yapı Market</strong> olarak, uzun yıllardır yapı, dekorasyon ve tesisat sektöründe güvenilir hizmet sunmaktayız. Amacımız, müşterilerimizin ihtiyaç duydukları en kaliteli malzemelere en uygun fiyatlarla ulaşmalarını sağlamaktır.</p>
-                    <p data-tr="Filli Boya ve Fawori'nin eşsiz renk dünyasından Fırat Boru'nun sağlam tesisat çözümlerine, Kare ve Güven bataryaların şıklığına kadar geniş bir product yelpazesiyle Mut'ta hizmetinizdeyiz." data-en="From the unique color world of Filli Boya and Fawori to the robust plumbing solutions of Fırat Boru, and the elegance of Kare and Güven batteries, we serve you in Mut with a wide product range.">Filli Boya ve Fawori'nin eşsiz renk dünyasından Fırat Boru'nun sağlam tesisat çözümlerine, Kare ve Güven bataryaların şıklığına kadar geniş bir ürün yelpazesiyle Mut'ta hizmetinizdeyiz.</p>
+                    <p data-tr="Filli Boya ve Fawori'nin eşsiz renk dünyasından Fırat Boru'nun sağlam tesisat çözümlerine, Kare ve Güven bataryaların şıklığına kadar geniş bir ürün yelpazesiyle Mut'ta hizmetinizdeyiz." data-en="From the unique color world of Filli Boya and Fawori to the robust plumbing solutions of Fırat Boru, and the elegance of Kare and Güven batteries, we serve you in Mut with a wide product range.">Filli Boya ve Fawori'nin eşsiz renk dünyasından Fırat Boru'nun sağlam tesisat çözümlerine, Kare ve Güven bataryaların şıklığına kadar geniş bir ürün yelpazesiyle Mut'ta hizmetinizdeyiz.</p>
                     
                     <div class="about-features">
                         <div class="feature-item">
@@ -644,20 +329,32 @@
         </div>
     </section>
 
-    <section id="brands" class="reveal bg-gray">
+    <section id="brands" class="reveal bg-gray" style="border-top: 1px solid #eaeaea; border-bottom: 1px solid #eaeaea;">
         <div class="container">
             <h2 class="section-title" data-tr="Resmi Bayiliklerimiz" data-en="Our Official Dealerships">Resmi Bayiliklerimiz</h2>
             <div class="brands-container">
                 <div class="brand-logo">
-                    <svg width="65" height="65" viewBox="0 0 64 64"><path d="M32 6C20 18 12 30 12 42C12 53.046 20.954 62 32 62C43.046 62 52 53.046 52 42C52 30 44 18 32 6Z" fill="#1e3a8a"/></svg>
+                    <svg width="65" height="65" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <defs><linearGradient id="filliGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6" /><stop offset="100%" stop-color="#1e3a8a" /></linearGradient></defs>
+                        <path d="M32 6C20 18 12 30 12 42C12 53.046 20.954 62 32 62C43.046 62 52 53.046 52 42C52 30 44 18 32 6Z" fill="url(#filliGrad)"/>
+                        <path d="M32 18C25 28 20 36 20 44C20 50.627 25.373 56 32 56C38.627 56 44 50.627 44 44C44 36 39 28 32 18Z" fill="#ffffff" opacity="0.2"/>
+                        <circle cx="26" cy="42" r="5" fill="#ffffff"/>
+                    </svg>
                     <span class="brand-name">FİLLİ BOYA</span>
                 </div>
                 <div class="brand-logo">
-                    <svg width="65" height="65" viewBox="0 0 64 64"><path d="M32 4 L41 22 L61 25 L46 39 L50 59 L32 49 L14 59 L18 39 L3 25 L23 22 Z" fill="#ef4444"/></svg>
+                    <svg width="65" height="65" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <defs><linearGradient id="faworiGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ef4444" /><stop offset="100%" stop-color="#991b1b" /></linearGradient></defs>
+                        <path d="M32 4 L41 22 L61 25 L46 39 L50 59 L32 49 L14 59 L18 39 L3 25 L23 22 Z" fill="url(#faworiGrad)"/>
+                    </svg>
                     <span class="brand-name">FAWORİ</span>
                 </div>
                 <div class="brand-logo">
-                    <svg width="65" height="65" viewBox="0 0 64 64"><path d="M10 26 H34 A14 14 0 0 1 48 40 V60" fill="none" stroke="#f59e0b" stroke-width="12"/></svg>
+                    <svg width="65" height="65" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <defs><linearGradient id="firatGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b" /><stop offset="100%" stop-color="#d97706" /></linearGradient></defs>
+                        <path d="M10 26 H34 A14 14 0 0 1 48 40 V60" fill="none" stroke="url(#firatGrad)" stroke-width="12" stroke-linecap="round"/>
+                        <path d="M10 44 H20 A14 14 0 0 0 34 30 V10" fill="none" stroke="#1e3a8a" stroke-width="12" stroke-linecap="round"/>
+                    </svg>
                     <span class="brand-name">FIRAT BORU</span>
                 </div>
             </div>
@@ -667,9 +364,11 @@
     <section id="testimonials" class="bg-gray reveal">
         <div class="container">
             <h2 class="section-title" data-tr="Müşterilerimiz Ne Diyor?" data-en="What Our Customers Say?">Müşterilerimiz Ne Diyor?</h2>
+            
             <div class="grid-container" id="dynamic-testimonials-list"></div>
+
             <div style="text-align: center; margin-top: 40px;">
-                <button id="open-review-modal" class="btn btn-primary" style="padding: 12px 25px; font-size: 1.1rem; border-radius: 30px;">
+                <button id="open-review-modal" class="btn btn-primary" style="padding: 12px 25px; font-size: 1.1rem; border-radius: 30px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);">
                     <i class="fa-solid fa-pen-to-square"></i> <span data-tr="Deneyiminizi Paylaşın" data-en="Share Your Experience">Deneyiminizi Paylaşın</span>
                 </button>
             </div>
@@ -682,26 +381,52 @@
             <div class="contact-wrapper">
                 <div class="contact-info">
                     <h3 data-tr="Bize Ulaşın" data-en="Get In Touch">Bize Ulaşın</h3>
+                    <p style="margin-bottom: 20px; color: var(--text-light);" data-tr="Boya fiyatları, Fırat Boru tesisat çözümleri veya batarya modellerimiz hakkında bilgi almak için bizimle iletişime geçebilirsiniz." data-en="You can contact us for information about paint prices, Fırat Boru plumbing solutions or our battery models.">Boya fiyatları, Fırat Boru tesisat çözümleri veya batarya modellerimiz hakkında bilgi almak için bizimle iletişime geçebilirsiniz.</p>
+                    
                     <ul class="contact-list">
-                        <li><i class="fa-solid fa-location-dot"></i><div>Pınarbaşı, Gazi İlkokulu Cd. 3/D, Mut/Mersin</div></li>
-                        <li><i class="fa-solid fa-phone"></i><div><a href="tel:+905538730344">+90 553 873 03 44</a></div></li>
-                        <li><i class="fa-solid fa-envelope"></i><div><a href="mailto:enka1733yapimarket@gmail.com">enka1733yapimarket@gmail.com</a></div></li>
+                        <li>
+                            <i class="fa-solid fa-location-dot"></i>
+                            <div>
+                                <strong data-tr="Adres:" data-en="Address:">Adres:</strong><br>
+                                Pınarbaşı, Gazi İlkokulu Cd. 3/D, 33600 Mut/Mersin
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-phone"></i>
+                            <div>
+                                <strong data-tr="Telefon:" data-en="Phone:">Telefon:</strong><br>
+                                <a href="tel:+905538730344">+90 553 873 03 44</a>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-envelope"></i>
+                            <div>
+                                <strong data-tr="E-posta:" data-en="E-mail:">E-posta:</strong><br>
+                                <a href="mailto:enka1733yapimarket@gmail.com">enka1733yapimarket@gmail.com</a>
+                            </div>
+                        </li>
                     </ul>
+                    
+                    <a href="https://wa.me/905538730344?text=Merhaba%2C%20boya%20ve%20tesisat%20fiyatlar%C4%B1%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" class="btn btn-primary" data-tr="WhatsApp'tan Yazın" data-en="Message on WhatsApp">
+                        <i class="fa-brands fa-whatsapp"></i> <span data-tr="WhatsApp'tan Yazın" data-en="Message on WhatsApp">WhatsApp'tan Yazın</span>
+                    </a>
                 </div>
+                
                 <div class="map-container">
-                    <iframe src="https://maps.google.com/maps?q=Mut%20Gazi%20%C4%B0lkokulu&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3224.288926207865!2d33.4383303!3d36.645779!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14d96cd34226557b%3A0xd3cb914c839737fa!2sMarshall%20-%20Keskin%20Yap%C4%B1%20Market!5e0!3m2!1str!2str!4v1715000000000!5m2!1str!2str" allowfullscreen="" loading="lazy"></iframe>
                 </div>
             </div>
         </div>
     </section>
 
     <footer>
-        <div class="container text-center text-xs opacity-60">
-            <p>© 2026 Öz Yapı Market. Tüm hakları saklıdır.</p>
+        <div class="container text-center text-xs opacity-60 pb-8">
+            <p>© 2026 Öz Yapı Market. <span data-tr="Tüm hakları saklıdır." data-en="All rights reserved.">Tüm hakları saklıdır.</span></p>
         </div>
     </footer>
 
-    <button id="open-oz-social-btn" class="fixed bottom-24 right-[30px] w-[65px] h-[65px] rounded-full bg-slate-900/90 text-white shadow-xl flex flex-col items-center justify-center border-2 border-slate-700 cursor-pointer hidden z-[1000] hover:scale-105 transition-all text-center no-select">
+
+    <button id="open-oz-social-btn" class="fixed bottom-24 right-[30px] w-[60px] h-[60px] rounded-full bg-slate-900/90 text-white shadow-xl flex flex-col items-center justify-center border-2 border-slate-700 cursor-pointer hidden z-[1000] hover:scale-105 transition-all text-center no-select">
         <i class="fa-solid fa-users text-lg"></i>
         <span class="text-[9px] font-bold tracking-tight mt-0.5">Öz Social</span>
     </button>
@@ -722,7 +447,303 @@
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
+    <div id="auth-modal" class="fixed inset-0 bg-slate-900/80 z-[3100] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md relative border border-slate-100">
+            <button id="close-auth-modal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-slate-800"><i class="fa-solid fa-helmet-safety text-blue-600"></i> Öz Yapı Portal</h2>
+                <p class="text-xs text-slate-400 mt-1">Sosyal ağa ve usta paneline bağlanın</p>
+            </div>
+
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">E-posta</label>
+                    <input type="email" id="login-email" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="ornek@mail.com">
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-sm font-semibold text-slate-700">Şifre</label>
+                        <button type="button" id="show-forgot-password" class="text-xs text-blue-600 font-semibold hover:underline">Şifremi Unuttum?</button>
+                    </div>
+                    <input type="password" id="login-password" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="••••••••">
+                </div>
+                <button type="submit" id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition-colors shadow-md">Giriş Yap</button>
+                <p class="text-center text-xs text-slate-600 mt-3">Hesabın yok mu? <button type="button" id="show-register" class="text-blue-600 font-bold hover:underline">Kayıt Ol</button></p>
+            </form>
+
+            <form id="register-form" class="space-y-3 hidden">
+                <div class="flex justify-center mb-2">
+                    <label for="reg-avatar" class="relative cursor-pointer group">
+                        <div id="avatar-preview" class="w-16 h-16 rounded-full bg-slate-100 border border-dashed border-slate-300 flex items-center justify-center overflow-hidden">
+                            <i class="fa-solid fa-camera text-slate-400 text-lg"></i>
+                        </div>
+                        <input type="file" id="reg-avatar" accept="image/*" class="hidden">
+                    </label>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-0.5">Ad Soyad</label>
+                    <input type="text" id="reg-name" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none" placeholder="Ad Soyad">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-0.5">Hesap Türü</label>
+                    <select id="reg-role" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none">
+                        <option value="Müşteri">Müşteri / Ziyaretçi</option>
+                        <option value="Usta">Usta (Boya/Tesisat/Dekorasyon)</option>
+                        <option value="Müteahhit">Müteahhit / Firma</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-0.5">E-posta</label>
+                    <input type="email" id="reg-email" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-0.5">Şifre (En az 6 Karakter)</label>
+                    <input type="password" id="reg-password" required minlength="6" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none">
+                </div>
+                <button type="submit" id="register-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg transition-colors shadow-md">Kayıt Ol</button>
+                <p class="text-center text-xs text-slate-600 mt-2">Zaten üye misin? <button type="button" id="show-login" class="text-blue-600 font-bold hover:underline">Giriş Yap</button></p>
+            </form>
+
+            <form id="forgot-password-form" class="space-y-4 hidden">
+                <p class="text-xs text-slate-500 text-center">Sistem e-postanızı girin, sıfırlama linki gönderelim.</p>
+                <div>
+                    <input type="email" id="forgot-email" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none" placeholder="ornek@mail.com">
+                </div>
+                <button type="submit" id="forgot-btn" class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg shadow-md">Bağlantı Gönder</button>
+                <button type="button" id="back-to-login" class="w-full text-xs text-center text-blue-600 hover:underline">Giriş Ekranına Dön</button>
+            </form>
+
+            <form id="reset-password-form" class="space-y-4 hidden">
+                <h3 class="text-sm font-bold text-center text-slate-800">Yeni Şifre Belirle</h3>
+                <div>
+                    <input type="password" id="new-password" required minlength="6" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none" placeholder="••••••••">
+                </div>
+                <button type="submit" id="reset-btn" class="w-full bg-emerald-600 text-white font-bold py-2 rounded-lg shadow-md">Şifreyi Güncelle</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="oz-social-portal" class="fixed inset-0 bg-slate-100 z-[3000] hidden flex-col overflow-hidden">
+        
+        <header class="bg-white border-b border-slate-200 h-16 px-4 flex items-center justify-between shadow-sm flex-shrink-0">
+            <div class="flex items-center gap-2">
+                <button id="close-social-portal-btn" class="text-slate-800 text-xl w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-arrow-left"></i></button>
+                <span class="font-bold text-lg text-slate-800 tracking-tight hidden sm:inline"><i class="fa-solid fa-users text-blue-600"></i> Öz Social</span>
+                <span class="font-bold text-lg text-slate-800 tracking-tight sm:hidden"><i class="fa-solid fa-users text-blue-600"></i></span>
+            </div>
+            
+            <div class="flex-1 max-w-xs mx-4 relative hidden sm:block">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="portal-user-search" class="w-full pl-9 pr-4 py-1.5 bg-slate-100 text-xs rounded-full focus:outline-none focus:bg-white border border-transparent focus:border-slate-300" placeholder="Usta veya müşteri ara...">
+                <div id="search-results-box" class="absolute left-0 top-full mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto hidden z-50"></div>
+            </div>
+
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <button id="portal-messages-btn" class="relative w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center transition-colors">
+                    <i class="fa-regular fa-paper-plane text-sm"></i>
+                    <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-blue-500 border-2 border-white rounded-full hidden" id="messages-badge"></span>
+                </button>
+                <button id="portal-notification-btn" class="relative w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center transition-colors">
+                    <i class="fa-regular fa-bell text-sm"></i>
+                    <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full hidden" id="notification-badge"></span>
+                </button>
+                <button id="portal-logout-btn" class="w-9 h-9 bg-red-50 hover:bg-red-500 hover:text-white text-red-500 rounded-full flex items-center justify-center transition-colors" title="Çıkış Yap">
+                    <i class="fa-solid fa-power-off text-sm"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="p-3 bg-white border-b border-slate-200 sm:hidden flex-shrink-0 relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="text" id="portal-user-search-mobile" class="w-full pl-9 pr-4 py-2 bg-slate-100 text-sm rounded-full focus:outline-none border border-transparent focus:border-slate-300" placeholder="Usta veya müşteri ara...">
+            <div id="search-results-box-mobile" class="absolute left-3 right-3 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto hidden z-50"></div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 flex flex-col items-center hide-scrollbar pb-24">
+            <div class="w-full max-w-2xl space-y-6">
+                
+                <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-3 sm:gap-4 relative">
+                    <button id="portal-edit-profile-btn" class="absolute top-3 right-3 text-slate-400 hover:text-blue-600 transition-colors"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 cursor-pointer user-profile-trigger" id="portal-dash-avatar-trigger">
+                        <img id="portal-dash-avatar" src="" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1 min-w-0 pr-6">
+                        <h3 id="portal-dash-name" class="text-base font-bold text-slate-800 truncate cursor-pointer user-profile-trigger hover:underline">Yükleniyor...</h3>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-0.5">
+                            <span id="portal-dash-role" class="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-bold uppercase tracking-wide border border-blue-100 w-fit">...</span>
+                            <span class="text-[11px] sm:text-xs text-slate-400 truncate" id="portal-dash-email">...</span>
+                        </div>
+                        <p id="portal-dash-bio" class="text-[11px] sm:text-xs text-slate-500 mt-1.5 line-clamp-1"></p>
+                    </div>
+                </div>
+
+                <form id="portal-edit-profile-form" class="hidden bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <div class="flex gap-4 items-center">
+                        <label for="portal-edit-avatar-input" class="relative cursor-pointer group">
+                            <div class="w-16 h-16 rounded-full border-2 border-dashed border-slate-300 overflow-hidden flex items-center justify-center bg-slate-50">
+                                <img id="portal-edit-avatar-img" src="" class="w-full h-full object-cover">
+                            </div>
+                            <input type="file" id="portal-edit-avatar-input" accept="image/*" class="hidden">
+                        </label>
+                        <div class="flex-1 space-y-2">
+                            <input type="text" id="portal-edit-name" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500">
+                            <textarea id="portal-edit-bio" rows="2" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs resize-none focus:outline-none focus:border-blue-500" placeholder="Biyografinizi yazın..."></textarea>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 justify-end">
+                        <button type="button" id="portal-cancel-edit-btn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-1.5 px-4 rounded-lg">İptal</button>
+                        <button type="submit" id="portal-save-edit-btn" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 px-4 rounded-lg shadow-sm">Kaydet</button>
+                    </div>
+                </form>
+
+                <div class="flex justify-between items-center bg-white p-2.5 sm:p-3 rounded-xl shadow-sm border border-slate-200">
+                    <div class="flex gap-1.5 overflow-x-auto hide-scrollbar">
+                        <button class="portal-feed-filter active px-3 py-1.5 rounded-full bg-slate-800 text-white text-[11px] sm:text-xs font-semibold whitespace-nowrap" data-filter="all">Tümü</button>
+                        <button class="portal-feed-filter px-3 py-1.5 rounded-full bg-slate-50 text-slate-600 border border-slate-200 text-[11px] sm:text-xs font-semibold whitespace-nowrap" data-filter="soru">Sorular</button>
+                        <button class="portal-feed-filter px-3 py-1.5 rounded-full bg-slate-50 text-slate-600 border border-slate-200 text-[11px] sm:text-xs font-semibold whitespace-nowrap" data-filter="medya">Medya & Reels</button>
+                    </div>
+                    <button id="portal-open-create-post" class="hidden sm:flex bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 px-4 rounded-full items-center gap-1 shadow-sm flex-shrink-0"><i class="fa-solid fa-plus"></i> Paylaşım Yap</button>
+                </div>
+
+                <div id="portal-feed-list" class="space-y-6"></div>
+
+            </div>
+        </div>
+
+        <button id="portal-open-create-post-mobile" class="sm:hidden fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg shadow-blue-600/40 flex items-center justify-center text-xl z-[3050] hover:scale-105 transition-transform">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+    </div>
+
+    <div id="portal-create-post-modal" class="fixed inset-0 bg-slate-900/60 z-[3200] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-slate-800 text-base">Yeni Gönderi Paylaş</h3>
+                <button id="portal-close-post-modal" class="text-slate-400 hover:text-red-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="portal-create-post-form" class="p-5 space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="portal_post_type" value="soru" class="peer hidden" checked>
+                        <div class="text-center p-2.5 border-2 border-slate-100 rounded-xl peer-checked:border-blue-500 peer-checked:bg-blue-50/50 transition-all">
+                            <div class="font-bold text-xs text-slate-600 peer-checked:text-blue-700">Soru Sor</div>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="portal_post_type" value="medya" class="peer hidden">
+                        <div class="text-center p-2.5 border-2 border-slate-100 rounded-xl peer-checked:border-blue-500 peer-checked:bg-blue-50/50 transition-all">
+                            <div class="font-bold text-xs text-slate-600 peer-checked:text-blue-700">Fotoğraf/Reels</div>
+                        </div>
+                    </label>
+                </div>
+                <div id="portal-media-upload-container" class="hidden">
+                    <input type="file" id="portal-post-media" accept="image/*,video/mp4" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 file:font-bold cursor-pointer">
+                </div>
+                <div>
+                    <textarea id="portal-post-text" required rows="4" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 resize-none" placeholder="Açıklama veya teknik sorunuzu buraya ekleyin..."></textarea>
+                </div>
+                <button type="submit" id="portal-submit-post-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl shadow-md">Paylaş</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="chat-modal-dm" class="fixed inset-0 bg-slate-50 z-[3200] hidden flex-col transition-transform transform translate-x-full duration-300">
+        <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-20 shadow-sm">
+            <button id="close-chat-dm-btn" class="text-slate-800 text-xl mr-4"><i class="fa-solid fa-arrow-left"></i></button>
+            <img id="chat-dm-avatar" src="" class="w-9 h-9 rounded-full object-cover mr-3 cursor-pointer user-profile-trigger">
+            <div class="flex-1">
+                <h2 id="chat-dm-name" class="text-[15px] font-bold text-slate-800 cursor-pointer user-profile-trigger hover:underline">...</h2>
+            </div>
+        </div>
+        <div id="chat-dm-history" class="flex-1 overflow-y-auto p-4 flex flex-col pb-[85px] bg-slate-50 relative"></div>
+        <div id="chat-dm-typing-indicator" class="absolute bottom-[75px] left-4 hidden bg-white border border-slate-200 rounded-full shadow-sm px-4 py-2 flex items-center gap-1.5 z-10">
+            <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span>
+            <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay:0.15s"></span>
+            <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay:0.3s"></span>
+        </div>
+        <form id="chat-dm-form" class="p-2 bg-white border-t border-slate-200 flex gap-2 items-center fixed bottom-0 left-0 w-full z-20 shadow-md">
+            <label class="cursor-pointer text-slate-400 hover:text-blue-600 p-2">
+                <i class="fa-solid fa-image text-[22px]"></i>
+                <input type="file" id="chat-dm-media-input" accept="image/*" class="hidden">
+            </label>
+            <input type="text" id="chat-dm-input" autocomplete="off" class="flex-1 px-4 py-2 bg-slate-100 border border-slate-200 rounded-full text-sm focus:outline-none focus:bg-white" placeholder="Mesaj yaz...">
+            <button type="submit" class="w-10 h-10 bg-slate-800 text-white rounded-full flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+        </form>
+    </div>
+
+    <div id="messages-list-modal" class="fixed inset-0 bg-slate-900/60 z-[3100] hidden flex justify-end p-0 backdrop-blur-sm transition-opacity">
+        <div class="bg-white w-full max-w-sm h-full shadow-2xl flex flex-col transform transition-transform duration-300">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-slate-800 text-base"><i class="fa-regular fa-paper-plane text-blue-500 mr-2"></i>Mesajlar</h3>
+                <button id="close-messages-list-modal-btn" class="text-slate-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="conversations-list" class="flex-1 overflow-y-auto p-4 space-y-1 bg-white"></div>
+        </div>
+    </div>
+
+    <div id="notification-modal" class="fixed inset-0 bg-slate-900/60 z-[3100] hidden flex justify-end p-0 backdrop-blur-sm transition-opacity">
+        <div class="bg-white w-full max-w-sm h-full shadow-2xl flex flex-col transform transition-transform duration-300">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-slate-800 text-base"><i class="fa-regular fa-bell text-red-500 mr-2"></i>Bildirimler</h3>
+                <button id="close-notification-modal-btn" class="text-slate-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="notification-list" class="flex-1 overflow-y-auto p-4 space-y-2 bg-white"></div>
+        </div>
+    </div>
+
+    <div id="likes-modal" class="fixed inset-0 bg-slate-900/60 z-[3200] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl">
+            <div class="px-5 py-3 border-b flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-slate-800 text-sm"><i class="fa-solid fa-heart text-red-500 mr-2"></i>Beğenenler</h3>
+                <button id="close-likes-modal-btn" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="likes-list" class="p-4 max-h-64 overflow-y-auto space-y-3"></div>
+        </div>
+    </div>
+
+    <div id="user-profile-modal" class="fixed inset-0 bg-white z-[3100] hidden flex-col transition-transform transform translate-x-full duration-300">
+        <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm">
+            <button id="close-user-profile-btn" class="text-slate-800 text-xl mr-4"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2 id="up-header-name" class="text-base font-bold text-slate-800 flex-1 truncate">Kullanıcı</h2>
+        </div>
+        <div class="p-4 border-b border-slate-100">
+            <div class="flex items-center justify-between mb-4 gap-2">
+                <img id="up-avatar" src="" class="w-16 h-16 rounded-full object-cover border border-slate-200 p-0.5 flex-shrink-0">
+                <div class="flex flex-1 justify-around text-center">
+                    <div><div id="up-post-count" class="font-bold text-base text-slate-800">0</div><div class="text-[11px] text-slate-400">Gönderi</div></div>
+                    <div><div id="up-follower-count" class="font-bold text-base text-slate-800">0</div><div class="text-[11px] text-slate-400">Takipçi</div></div>
+                    <div><div id="up-following-count" class="font-bold text-base text-slate-800">0</div><div class="text-[11px] text-slate-400">Takip</div></div>
+                </div>
+            </div>
+            <div>
+                <h3 id="up-name" class="font-bold text-sm text-slate-800 truncate">...</h3>
+                <span id="up-role" class="text-[9px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-bold uppercase mt-1 inline-block">Rol</span>
+                <p id="up-bio" class="text-xs text-slate-600 mt-1.5 whitespace-pre-wrap"></p>
+            </div>
+            <div class="mt-4 flex gap-2">
+                <button id="follow-btn" class="flex-1 bg-blue-600 text-white font-bold py-1.5 rounded-lg text-xs hidden">Takip Et</button>
+                <button id="unfollow-btn" class="flex-1 bg-slate-200 text-slate-800 font-bold py-1.5 rounded-lg text-xs hidden">Takipten Çık</button>
+                <button id="message-user-btn" class="flex-1 bg-slate-800 text-white font-bold py-1.5 rounded-lg text-xs hidden">Mesaj</button>
+            </div>
+        </div>
+        <div class="flex border-b border-slate-200 bg-white sticky top-[53px] z-10">
+            <button id="tab-grid" class="flex-1 py-2.5 border-b-2 border-slate-800 text-slate-800 flex justify-center"><i class="fa-solid fa-table-cells text-lg"></i></button>
+            <button id="tab-questions" class="flex-1 py-2.5 border-b-2 border-transparent text-slate-400 flex justify-center"><i class="fa-solid fa-circle-question text-lg"></i></button>
+        </div>
+        <div id="up-grid" class="flex-1 overflow-y-auto grid grid-cols-3 gap-0.5 bg-slate-100"></div>
+        <div id="up-questions-list" class="flex-1 overflow-y-auto hidden p-4 space-y-4 bg-slate-50"></div>
+    </div>
+
+    <div id="single-post-modal" class="fixed inset-0 bg-slate-100 z-[3200] hidden flex-col transition-transform transform translate-x-full duration-300">
+        <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm">
+            <button id="close-single-post-btn" class="text-slate-800 text-xl mr-4"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2 class="text-base font-bold text-slate-800 flex-1 truncate">Gönderi Detayı</h2>
+        </div>
+        <div id="single-post-container" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
+    </div>
+
     <script src="colors.js"></script>
     <script type="module" src="app.js"></script>
 </body>
 </html>
+
