@@ -20,7 +20,7 @@
       "@context": "https://schema.org",
       "@type": "HardwareStore",
       "name": "Öz Yapı Market",
-      "description": "Filli Boya, Fawori ve Fırat Boru bayiliği. Kare ve Güven batarya çeşitleri. Bilgisayarlı anında renk karışım teknolojisi.",
+      "description": "Filli Boya, Fawori and Fırat Boru bayiliği. Kare ve Güven batarya çeşitleri. Bilgisayarlı anında renk karışım teknolojisi.",
       "image": "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=800&q=80",
       "telephone": "+905538730344",
       "email": "enka1733yapimarket@gmail.com",
@@ -95,15 +95,15 @@
                 <div class="filter-container" style="margin-bottom: 20px;">
                     <div style="position: relative; margin-bottom: 15px;">
                         <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af;"></i>
-                        <input type="text" id="color-search" placeholder="Renk veya kod ara..." style="width: 100%; padding: 10px 10px 10px 35px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none;">
+                        <input type="text" id="color-search" data-tr-placeholder="Renk veya kod ara..." data-en-placeholder="Search color or code..." placeholder="Renk veya kod ara..." style="width: 100%; padding: 10px 10px 10px 35px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none;">
                     </div>
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                         <button id="open-pdf-btn" style="flex: 1; min-width: 120px; padding: 8px; border-radius: 6px; border: 1px solid #3b82f6; cursor: pointer; background: rgba(59, 130, 246, 0.15); color: white; font-size: 0.8rem; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px;">
                             <i class="fa-solid fa-file-pdf" style="color: #ef4444;"></i> Filli İç Cephe
                         </button>
-                        <button class="filter-btn active" data-type="all" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;">Tümü</button>
-                        <button class="filter-btn" data-type="ic" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;">İç Cephe</button>
-                        <button class="filter-btn" data-type="dis" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;">Dış Cephe</button>
+                        <button class="filter-btn active" data-type="all" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;" data-tr="Tümü" data-en="All">Tümü</button>
+                        <button class="filter-btn" data-type="ic" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;" data-tr="İç Cephe" data-en="Interior">İç Cephe</button>
+                        <button class="filter-btn" data-type="dis" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s;" data-tr="Dış Cephe" data-en="Exterior">Dış Cephe</button>
                     </div>
                 </div>
                 <div class="kartela-grid" id="modal-color-grid"></div>
@@ -162,13 +162,13 @@
                 <span>Öz Yapı Market</span>
             </a>
             
-            <div class="nav-right" style="display: flex; align-items: center; gap: 12px;">
+            <div class="nav-right">
                 <div class="lang-switcher hidden md:flex">
                     <button class="lang-btn active" id="lang-tr">TR</button>
                     <button class="lang-btn" id="lang-en">EN</button>
                 </div>
 
-                <button id="nav-auth-trigger-btn" class="btn btn-primary flex items-center justify-center gap-2" style="padding: 8px 16px; font-size: 0.9rem;">
+                <button id="nav-auth-trigger-btn" class="btn btn-primary">
                     <i class="fa-solid fa-user"></i>
                     <span id="nav-auth-btn-text" class="hidden sm:inline">Giriş Yap</span>
                 </button>
@@ -215,8 +215,8 @@
                 </div>
                 <div class="about-text">
                     <h2 class="section-title" style="text-align: left;" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</h2>
-                    <p data-tr="<strong>Öz Yapı Market</strong> olarak, uzun yıllardır yapı, dekorasyon ve tesisat sektöründe güvenilir hizmet sunmaktayız. Amacımız, müşterilerimizin ihtiyaç duydukları en kaliteli malzemelere en uygun fiyatlarla ulaşmalarını sağlamaktır." data-en="As <strong>Öz Yapı Market</strong>, we have been providing reliable services in the construction, decoration and plumbing sector for many years. Our goal is to ensure our customers access the highest quality materials at the most affordable prices."><strong>Öz Yapı Market</strong> olarak, uzun yıllardır yapı, dekorasyon ve tesisat sektöründe güvenilir hizmet sunmaktayız. Amacımız, müşterilerimizin ihtiyaç duydukları en kaliteli malzemelere en uygun fiyatlarla ulaşmalarını sağlamaktır.</p>
-                    <p data-tr="Filli Boya ve Fawori'nin eşsiz renk dünyasından Fırat Boru'nun sağlam tesisat çözümlerine, Kare ve Güven bataryaların şıklığına kadar geniş bir ürün yelpazesiyle Mut'ta hizmetinizdeyiz." data-en="From the unique color world of Filli Boya and Fawori to the robust plumbing solutions of Fırat Boru, and the elegance of Kare and Güven batteries, we serve you in Mut with a wide product range.">Filli Boya ve Fawori'nin eşsiz renk dünyasından Fırat Boru'nun sağlam tesisat çözümlerine, Kare ve Güven bataryaların şıklığına kadar geniş bir ürün yelpazesiyle Mut'ta hizmetinizdeyiz.</p>
+                    <p data-tr="<strong>Öz Yapı Market</strong> olarak, uzun yıllardır yapı, dekorasyon ve tesisat sektöründe güvenilir hizmet sunmaktayız. Amacımız, müşterilerimizin ihtiyaç duydukları en kaliteli malzemelere en uygun fiyatlarla ulaşmalarını sağlamaktır."><strong>Öz Yapı Market</strong> olarak, uzun yıllardır yapı, dekorasyon ve tesisat sektöründe güvenilir hizmet sunmaktayız. Amacımız, müşterilerimizin ihtiyaç duydukları en kaliteli malzemelere en uygun fiyatlarla ulaşmalarını sağlamaktır.</p>
+                    <p data-tr="Filli Boya ve Fawori'nin eşsiz renk dünyasından Fırat Boru'nun sağlam tesisat çözümlerine, Kare ve Güven bataryaların şıklığına kadar geniş bir ürün yelpazesiyle Mut'ta hizmetinizdeyiz.">Filli Boya ve Fawori'nin eşsiz renk dünyasından Fırat Boru'nun sağlam tesisat çözümlerine, Kare ve Güven bataryaların şıklığına kadar geniş bir ürün yelpazesiyle Mut'ta hizmetinizdeyiz.</p>
                     
                     <div class="about-features">
                         <div class="feature-item">
@@ -230,7 +230,7 @@
                             <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
                             <div>
                                 <h4 data-tr="Hızlı Teslimat" data-en="Fast Delivery">Hızlı Teslimat</h4>
-                                <span style="font-size: 0.9rem; color: var(--text-light);" data-tr="Aynı gün sevkiyat" data-en="Same day shipping">Aynı gün sevkiyat</span>
+                                <span style="font-size: 0.9rem; color: var(--text-light);" data-tr="Aynı gün sevkiyat">Aynı gün sevkiyat</span>
                             </div>
                         </div>
                     </div>
@@ -245,18 +245,18 @@
             <div class="grid-container">
                 <div class="card">
                     <div class="card-icon"><i class="fa-solid fa-fill-drip"></i></div>
-                    <h3 data-tr="Bilgisayarlı Renk Karışımı" data-en="Computerized Color Mixing">Bilgisayarlı Renk Karışımı</h3>
-                    <p data-tr="Filli Boya ve Fawori kataloglarından seçtiğiniz rengi, hassas makinelerimiz ile dakikalar içinde hazırlayalım." data-en="We prepare the color you choose from Filli Boya and Fawori catalogs with our precision machines within minutes.">Filli Boya ve Fawori kataloglarından seçtiğiniz rengi, hassas makinelerimiz ile dakikalar içinde hazırlayalım.</p>
+                    <h3 data-tr="Bilgisayarlı Renk Karışımı">Bilgisayarlı Renk Karışımı</h3>
+                    <p data-tr="Filli Boya ve Fawori kataloglarından seçtiğiniz rengi, hassas makinelerimiz ile dakikalar içinde hazırlayalım.">Filli Boya ve Fawori kataloglarından seçtiğiniz rengi, hassas makinelerimiz ile dakikalar içinde hazırlayalım.</p>
                 </div>
                 <div class="card">
                     <div class="card-icon"><i class="fa-solid fa-faucet"></i></div>
-                    <h3 data-tr="Batarya & Armatür Seçimi" data-en="Battery & Fixture Selection">Batarya & Armatür Seçimi</h3>
-                    <p data-tr="Kare ve Güven marka bataryalar ile banyo ve mutfaklarınıza modern, dayanıklı dokunuşlar katın." data-en="Add modern, durable touches to your bathrooms and kitchens with Kare and Güven brand batteries.">Kare ve Güven marka bataryalar ile banyo ve mutfaklarınıza modern, dayanıklı dokunuşlar katın.</p>
+                    <h3 data-tr="Batarya & Armatür Seçimi">Batarya & Armatür Seçimi</h3>
+                    <p data-tr="Kare ve Güven marka bataryalar ile banyo ve mutfaklarınıza modern, dayanıklı dokunuşlar katın.">Kare ve Güven marka bataryalar ile banyo ve mutfaklarınıza modern, dayanıklı dokunuşlar katın.</p>
                 </div>
                 <div class="card">
                     <div class="card-icon"><i class="fa-solid fa-toolbox"></i></div>
-                    <h3 data-tr="Tesisat Danışmanlığı" data-en="Plumbing Consultancy">Tesisat Danışmanlığı</h3>
-                    <p data-tr="Fırat Boru ürünleri ile sızdırmaz ve uzun ömürlü tesisat projeleriniz için profesyonel malzeme tedariği." data-en="Professional material supply for your leak-proof and long-lasting plumbing projects with Fırat Boru products.">Fırat Boru ürünleri ile sızdırmaz ve uzun ömürlü tesisat projeleriniz için profesyonel malzeme tedariği.</p>
+                    <h3 data-tr="Tesisat Danışmanlığı">Tesisat Danışmanlığı</h3>
+                    <p data-tr="Fırat Boru ürünleri ile sızdırmaz ve uzun ömürlü tesisat projeleriniz için profesyonel malzeme tedariği.">Fırat Boru ürünleri ile sızdırmaz ve uzun ömürlü tesisat projeleriniz için profesyonel malzeme tedariği.</p>
                 </div>
             </div>
         </div>
@@ -270,21 +270,21 @@
                     <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=600&q=80" alt="İç ve Dış Cephe Boyaları" class="product-img">
                     <div class="product-info">
                         <h3>Filli Boya & Fawori</h3>
-                        <p data-tr="Plastik, silikonlu boyalar and binlerce renk seçeneği ile estetik çözümler." data-en="Aesthetic solutions with plastic, silicone paints and thousands of color options.">Plastik, silikonlu boyalar ve binlerce renk seçeneği ile estetik çözümler.</p>
+                        <p data-tr="Plastik, silikonlu boyalar ve binlerce renk seçeneği ile estetik çözümler.">Plastik, silikonlu boyalar ve binlerce renk seçeneği ile estetik çözümler.</p>
                     </div>
                 </div>
                 <div class="card product-card">
                     <img src="https://images.unsplash.com/photo-1581166397057-235af2b3c6dd?auto=format&fit=crop&w=600&q=80" alt="Tesisat Malzemeleri" class="product-img">
                     <div class="product-info">
-                        <h3 data-tr="Fırat Boru Tesisat" data-en="Fırat Pipe Plumbing">Fırat Boru Tesisat</h3>
-                        <p data-tr="PPRC boru, ek parçaları ve dayanıklı altyapı-üstyapı tesisat ürünleri." data-en="PPRC pipes, fittings and durable infrastructure-superstructure plumbing products.">PPRC boru, ek parçaları ve dayanıklı altyapı-üstyapı tesisat ürünleri.</p>
+                        <h3 data-tr="Fırat Boru Tesisat">Fırat Boru Tesisat</h3>
+                        <p data-tr="PPRC boru, ek parçaları ve dayanıklı altyapı-üstyapı tesisat ürünleri.">PPRC boru, ek parçaları ve dayanıklı altyapı-üstyapı tesisat ürünleri.</p>
                     </div>
                 </div>
                 <div class="card product-card">
                     <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80" alt="Batarya ve Armatür" class="product-img">
                     <div class="product-info">
-                        <h3 data-tr="Kare & Güven Batarya" data-en="Kare & Güven Batteries">Kare & Güven Batarya</h3>
-                        <p data-tr="Aç-kapa bataryalar, mutfak armatürleri ve lüks banyo setleri." data-en="On-off batteries, kitchen faucets and luxury bathroom sets.">Aç-kapa bataryalar, mutfak armatürleri ve lüks banyo setleri.</p>
+                        <h3 data-tr="Kare & Güven Batarya">Kare & Güven Batarya</h3>
+                        <p data-tr="Aç-kapa bataryalar, mutfak armatürleri ve lüks banyo setleri.">Aç-kapa bataryalar, mutfak armatürleri ve lüks banyo setleri.</p>
                     </div>
                 </div>
             </div>
@@ -293,11 +293,11 @@
 
     <section id="color-machine" class="bg-gray reveal">
         <div class="container">
-            <h2 class="section-title" data-tr="Siz Hayal Edin, Biz Karalım" data-en="You Dream It, We'll Paint It">Siz Hayal Edin, Biz Karalım</h2>
+            <h2 class="section-title" data-tr="Siz Hayal Edin, Biz Karalım">Siz Hayal Edin, Biz Karalım</h2>
             <div class="color-system">
                 <div class="color-header">
-                    <h3 data-tr="Makineli Renk Seçim Sistemi" data-en="Machine Color Selection System">Makineli Renk Seçim Sistemi</h3>
-                    <p data-tr="Filli Boya ve Fawori renk kartelalarından zevkinize uygun olanı seçin. Renk kodunu saniyeler içinde sıfır hata ile hazırlayıp teslim ediyoruz." data-en="Choose the one that suits your taste from Filli Boya and Fawori color charts. We prepare and deliver the color code within seconds with zero errors.">Filli Boya ve Fawori renk kartelalarından zevkinize uygun olanı seçin. Renk kodunu saniyeler içinde sıfır hata ile hazırlayıp teslim ediyoruz.</p>
+                    <h3>Makineli Renk Seçim Sistemi</h3>
+                    <p>Filli Boya ve Fawori renk kartelalarından zevkinize uygun olanı seçin. Renk kodunu saniyeler içinde hazırlayıp teslim ediyoruz.</p>
                 </div>
                 <div class="interactive-palette">
                     <div class="palette-grid" id="palette">
@@ -322,7 +322,7 @@
                         <div class="selected-color-box" id="selected-color-box"></div>
                         <h3 id="selected-color-name">Buz Beyazı</h3>
                         <p id="selected-color-hex" style="color: var(--text-light); margin-bottom: 15px;">#f8fafc</p>
-                        <a href="https://wa.me/905538730344?text=Merhaba%2C%20renk%20sipari%C5%9Fi%20vermek%20istiyorum." class="btn btn-primary" style="padding: 8px 20px; font-size: 0.9rem;" data-tr="Bu Rengi Sipariş Ver" data-en="Order This Color">Bu Rengi Sipariş Ver</a>
+                        <a href="https://wa.me/905538730344?text=Merhaba%2C%20renk%20sipari%C5%9Fi%20vermek%20istiyorum." class="btn btn-primary" style="padding: 8px 20px; font-size: 0.9rem;">Bu Rengi Sipariş Ver</a>
                     </div>
                 </div>
             </div>
@@ -331,30 +331,18 @@
 
     <section id="brands" class="reveal bg-gray" style="border-top: 1px solid #eaeaea; border-bottom: 1px solid #eaeaea;">
         <div class="container">
-            <h2 class="section-title" data-tr="Resmi Bayiliklerimiz" data-en="Our Official Dealerships">Resmi Bayiliklerimiz</h2>
+            <h2 class="section-title">Resmi Bayiliklerimiz</h2>
             <div class="brands-container">
                 <div class="brand-logo">
-                    <svg width="65" height="65" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                        <defs><linearGradient id="filliGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6" /><stop offset="100%" stop-color="#1e3a8a" /></linearGradient></defs>
-                        <path d="M32 6C20 18 12 30 12 42C12 53.046 20.954 62 32 62C43.046 62 52 53.046 52 42C52 30 44 18 32 6Z" fill="url(#filliGrad)"/>
-                        <path d="M32 18C25 28 20 36 20 44C20 50.627 25.373 56 32 56C38.627 56 44 50.627 44 44C44 36 39 28 32 18Z" fill="#ffffff" opacity="0.2"/>
-                        <circle cx="26" cy="42" r="5" fill="#ffffff"/>
-                    </svg>
+                    <svg width="65" height="65" viewBox="0 0 64 64"><defs><linearGradient id="filliGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6" /><stop offset="100%" stop-color="#1e3a8a" /></linearGradient></defs><path d="M32 6C20 18 12 30 12 42C12 53.046 20.954 62 32 62C43.046 62 52 53.046 52 42C52 30 44 18 32 6Z" fill="url(#filliGrad)"/><circle cx="26" cy="42" r="5" fill="#ffffff"/></svg>
                     <span class="brand-name">FİLLİ BOYA</span>
                 </div>
                 <div class="brand-logo">
-                    <svg width="65" height="65" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                        <defs><linearGradient id="faworiGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ef4444" /><stop offset="100%" stop-color="#991b1b" /></linearGradient></defs>
-                        <path d="M32 4 L41 22 L61 25 L46 39 L50 59 L32 49 L14 59 L18 39 L3 25 L23 22 Z" fill="url(#faworiGrad)"/>
-                    </svg>
+                    <svg width="65" height="65" viewBox="0 0 64 64"><defs><linearGradient id="faworiGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ef4444" /><stop offset="100%" stop-color="#991b1b" /></linearGradient></defs><path d="M32 4 L41 22 L61 25 L46 39 L50 59 L32 49 L14 59 L18 39 L3 25 L23 22 Z" fill="url(#faworiGrad)"/></svg>
                     <span class="brand-name">FAWORİ</span>
                 </div>
                 <div class="brand-logo">
-                    <svg width="65" height="65" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                        <defs><linearGradient id="firatGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b" /><stop offset="100%" stop-color="#d97706" /></linearGradient></defs>
-                        <path d="M10 26 H34 A14 14 0 0 1 48 40 V60" fill="none" stroke="url(#firatGrad)" stroke-width="12" stroke-linecap="round"/>
-                        <path d="M10 44 H20 A14 14 0 0 0 34 30 V10" fill="none" stroke="#1e3a8a" stroke-width="12" stroke-linecap="round"/>
-                    </svg>
+                    <svg width="65" height="65" viewBox="0 0 64 64"><defs><linearGradient id="firatGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b" /><stop offset="100%" stop-color="#d97706" /></linearGradient></defs><path d="M10 26 H34 A14 14 0 0 1 48 40 V60" fill="none" stroke="url(#firatGrad)" stroke-width="12" stroke-linecap="round"/><path d="M10 44 H20 A14 14 0 0 0 34 30 V10" fill="none" stroke="#1e3a8a" stroke-width="12" stroke-linecap="round"/></svg>
                     <span class="brand-name">FIRAT BORU</span>
                 </div>
             </div>
@@ -363,13 +351,11 @@
 
     <section id="testimonials" class="bg-gray reveal">
         <div class="container">
-            <h2 class="section-title" data-tr="Müşterilerimiz Ne Diyor?" data-en="What Our Customers Say?">Müşterilerimiz Ne Diyor?</h2>
-            
+            <h2 class="section-title" data-tr="Müşterilerimiz Ne Diyor?">Müşterilerimiz Ne Diyor?</h2>
             <div class="grid-container" id="dynamic-testimonials-list"></div>
-
             <div style="text-align: center; margin-top: 40px;">
-                <button id="open-review-modal" class="btn btn-primary" style="padding: 12px 25px; font-size: 1.1rem; border-radius: 30px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);">
-                    <i class="fa-solid fa-pen-to-square"></i> <span data-tr="Deneyiminizi Paylaşın" data-en="Share Your Experience">Deneyiminizi Paylaşın</span>
+                <button id="open-review-modal" class="btn btn-primary" style="padding: 12px 25px; font-size: 1.1rem; border-radius: 30px;">
+                    <i class="fa-solid fa-pen-to-square"></i> <span data-tr="Deneyiminizi Paylaşın">Deneyiminizi Paylaşın</span>
                 </button>
             </div>
         </div>
@@ -377,43 +363,19 @@
 
     <section id="contact" class="reveal">
         <div class="container">
-            <h2 class="section-title" data-tr="İletişim" data-en="Contact">İletişim</h2>
+            <h2 class="section-title" data-tr="İletişim">İletişim</h2>
             <div class="contact-wrapper">
                 <div class="contact-info">
-                    <h3 data-tr="Bize Ulaşın" data-en="Get In Touch">Bize Ulaşın</h3>
-                    <p style="margin-bottom: 20px; color: var(--text-light);" data-tr="Boya fiyatları, Fırat Boru tesisat çözümleri veya batarya modellerimiz hakkında bilgi almak için bizimle iletişime geçebilirsiniz." data-en="You can contact us for information about paint prices, Fırat Boru plumbing solutions or our battery models.">Boya fiyatları, Fırat Boru tesisat çözümleri veya batarya modellerimiz hakkında bilgi almak için bizimle iletişime geçebilirsiniz.</p>
-                    
+                    <h3>Bize Ulaşın</h3>
                     <ul class="contact-list">
-                        <li>
-                            <i class="fa-solid fa-location-dot"></i>
-                            <div>
-                                <strong data-tr="Adres:" data-en="Address:">Adres:</strong><br>
-                                Pınarbaşı, Gazi İlkokulu Cd. 3/D, 33600 Mut/Mersin
-                            </div>
-                        </li>
-                        <li>
-                            <i class="fa-solid fa-phone"></i>
-                            <div>
-                                <strong data-tr="Telefon:" data-en="Phone:">Telefon:</strong><br>
-                                <a href="tel:+905538730344">+90 553 873 03 44</a>
-                            </div>
-                        </li>
-                        <li>
-                            <i class="fa-solid fa-envelope"></i>
-                            <div>
-                                <strong data-tr="E-posta:" data-en="E-mail:">E-posta:</strong><br>
-                                <a href="mailto:enka1733yapimarket@gmail.com">enka1733yapimarket@gmail.com</a>
-                            </div>
-                        </li>
+                        <li><i class="fa-solid fa-location-dot"></i><div>Pınarbaşı, Gazi İlkokulu Cd. 3/D, 33600 Mut/Mersin</div></li>
+                        <li><i class="fa-solid fa-phone"></i><div><a href="tel:+905538730344">+90 553 873 03 44</a></div></li>
+                        <li><i class="fa-solid fa-envelope"></i><div><a href="mailto:enka1733yapimarket@gmail.com">enka1733yapimarket@gmail.com</a></div></li>
                     </ul>
-                    
-                    <a href="https://wa.me/905538730344?text=Merhaba%2C%20boya%20ve%20tesisat%20fiyatlar%C4%B1%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" class="btn btn-primary" data-tr="WhatsApp'tan Yazın" data-en="Message on WhatsApp">
-                        <i class="fa-brands fa-whatsapp"></i> <span data-tr="WhatsApp'tan Yazın" data-en="Message on WhatsApp">WhatsApp'tan Yazın</span>
-                    </a>
+                    <a href="https://wa.me/905538730344" target="_blank" class="btn btn-primary"><i class="fa-brands fa-whatsapp"></i> WhatsApp'tan Yazın</a>
                 </div>
-                
                 <div class="map-container">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3224.288926207865!2d33.4383303!3d36.645779!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14d96cd34226557b%3A0xd3cb914c839737fa!2sMarshall%20-%20Keskin%20Yap%C4%B1%20Market!5e0!3m2!1str!2str!4v1715000000000!5m2!1str!2str" allowfullscreen="" loading="lazy"></iframe>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3224.288926207865!2d33.4383303!3d36.645779!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14d96cd34226557b%3A0xd3cb914c839737fa!2sMarshall%20-%20Keskin%20Yap%C4%B1%20Market!5e0!3m2!1str!2str!4v1715000000000!5m2!1str!2str" loading="lazy"></iframe>
                 </div>
             </div>
         </div>
@@ -421,110 +383,17 @@
 
     <footer>
         <div class="container text-center text-xs opacity-60 pb-8">
-            <p>© 2026 Öz Yapı Market. <span data-tr="Tüm hakları saklıdır." data-en="All rights reserved.">Tüm hakları saklıdır.</span></p>
+            <p>© 2026 Öz Yapı Market. Tüm hakları saklıdır.</p>
         </div>
     </footer>
 
 
-    <button id="open-oz-social-btn" class="fixed bottom-24 right-[30px] w-[60px] h-[60px] rounded-full bg-slate-900/90 text-white shadow-xl flex flex-col items-center justify-center border-2 border-slate-700 cursor-pointer hidden z-[1000] hover:scale-105 transition-all text-center no-select">
+    <button id="open-oz-social-btn" class="fixed bottom-24 right-[30px] w-[60px] h-[60px] rounded-full bg-slate-900/90 text-white shadow-2xl flex flex-col items-center justify-center border-2 border-slate-700 cursor-pointer hidden z-[1000] hover:scale-105 transition-all text-center no-select">
         <i class="fa-solid fa-users text-lg"></i>
         <span class="text-[9px] font-bold tracking-tight mt-0.5">Öz Social</span>
     </button>
 
-    <button class="chatbot-btn" id="open-chatbot" aria-label="Asistan">
-        <svg viewBox="0 0 100 100" width="45" height="45" xmlns="http://www.w3.org/2000/svg">
-            <path d="M 25 40 C 25 10, 75 10, 75 40" fill="none" stroke="#9ca3af" stroke-width="5" stroke-linecap="round"/>
-            <path d="M 25 38 L 30 85 C 31 92, 69 92, 70 85 L 75 38 Z" fill="#3b82f6"/>
-            <rect x="22" y="34" width="56" height="8" rx="3" fill="#1e3a8a"/>
-            <circle cx="40" cy="65" r="7" fill="#ffffff"/>
-            <circle cx="60" cy="65" r="7" fill="#ffffff"/>
-            <circle class="pupil" cx="40" cy="65" r="3.5" fill="#111827"/>
-            <circle class="pupil" cx="60" cy="65" r="3.5" fill="#111827"/>
-        </svg>
-    </button>
-
-    <a href="https://wa.me/905538730344" class="whatsapp-btn" target="_blank" aria-label="WhatsApp İletişim">
-        <i class="fa-brands fa-whatsapp"></i>
-    </a>
-
-    <div id="auth-modal" class="fixed inset-0 bg-slate-900/80 z-[3100] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md relative border border-slate-100">
-            <button id="close-auth-modal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
-            <div class="text-center mb-6">
-                <h2 class="text-2xl font-bold text-slate-800"><i class="fa-solid fa-helmet-safety text-blue-600"></i> Öz Yapı Portal</h2>
-                <p class="text-xs text-slate-400 mt-1">Sosyal ağa ve usta paneline bağlanın</p>
-            </div>
-
-            <form id="login-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">E-posta</label>
-                    <input type="email" id="login-email" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="ornek@mail.com">
-                </div>
-                <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="block text-sm font-semibold text-slate-700">Şifre</label>
-                        <button type="button" id="show-forgot-password" class="text-xs text-blue-600 font-semibold hover:underline">Şifremi Unuttum?</button>
-                    </div>
-                    <input type="password" id="login-password" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="••••••••">
-                </div>
-                <button type="submit" id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition-colors shadow-md">Giriş Yap</button>
-                <p class="text-center text-xs text-slate-600 mt-3">Hesabın yok mu? <button type="button" id="show-register" class="text-blue-600 font-bold hover:underline">Kayıt Ol</button></p>
-            </form>
-
-            <form id="register-form" class="space-y-3 hidden">
-                <div class="flex justify-center mb-2">
-                    <label for="reg-avatar" class="relative cursor-pointer group">
-                        <div id="avatar-preview" class="w-16 h-16 rounded-full bg-slate-100 border border-dashed border-slate-300 flex items-center justify-center overflow-hidden">
-                            <i class="fa-solid fa-camera text-slate-400 text-lg"></i>
-                        </div>
-                        <input type="file" id="reg-avatar" accept="image/*" class="hidden">
-                    </label>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-0.5">Ad Soyad</label>
-                    <input type="text" id="reg-name" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none" placeholder="Ad Soyad">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-0.5">Hesap Türü</label>
-                    <select id="reg-role" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none">
-                        <option value="Müşteri">Müşteri / Ziyaretçi</option>
-                        <option value="Usta">Usta (Boya/Tesisat/Dekorasyon)</option>
-                        <option value="Müteahhit">Müteahhit / Firma</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-0.5">E-posta</label>
-                    <input type="email" id="reg-email" required class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-0.5">Şifre (En az 6 Karakter)</label>
-                    <input type="password" id="reg-password" required minlength="6" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none">
-                </div>
-                <button type="submit" id="register-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg transition-colors shadow-md">Kayıt Ol</button>
-                <p class="text-center text-xs text-slate-600 mt-2">Zaten üye misin? <button type="button" id="show-login" class="text-blue-600 font-bold hover:underline">Giriş Yap</button></p>
-            </form>
-
-            <form id="forgot-password-form" class="space-y-4 hidden">
-                <p class="text-xs text-slate-500 text-center">Sistem e-postanızı girin, sıfırlama linki gönderelim.</p>
-                <div>
-                    <input type="email" id="forgot-email" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none" placeholder="ornek@mail.com">
-                </div>
-                <button type="submit" id="forgot-btn" class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg shadow-md">Bağlantı Gönder</button>
-                <button type="button" id="back-to-login" class="w-full text-xs text-center text-blue-600 hover:underline">Giriş Ekranına Dön</button>
-            </form>
-
-            <form id="reset-password-form" class="space-y-4 hidden">
-                <h3 class="text-sm font-bold text-center text-slate-800">Yeni Şifre Belirle</h3>
-                <div>
-                    <input type="password" id="new-password" required minlength="6" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none" placeholder="••••••••">
-                </div>
-                <button type="submit" id="reset-btn" class="w-full bg-emerald-600 text-white font-bold py-2 rounded-lg shadow-md">Şifreyi Güncelle</button>
-            </form>
-        </div>
-    </div>
-
     <div id="oz-social-portal" class="fixed inset-0 bg-slate-100 z-[3000] hidden flex-col overflow-hidden">
-        
         <header class="bg-white border-b border-slate-200 h-16 px-4 flex items-center justify-between shadow-sm flex-shrink-0">
             <div class="flex items-center gap-2">
                 <button id="close-social-portal-btn" class="text-slate-800 text-xl w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-arrow-left"></i></button>
@@ -602,7 +471,7 @@
                         <button class="portal-feed-filter px-3 py-1.5 rounded-full bg-slate-50 text-slate-600 border border-slate-200 text-[11px] sm:text-xs font-semibold whitespace-nowrap" data-filter="soru">Sorular</button>
                         <button class="portal-feed-filter px-3 py-1.5 rounded-full bg-slate-50 text-slate-600 border border-slate-200 text-[11px] sm:text-xs font-semibold whitespace-nowrap" data-filter="medya">Medya & Reels</button>
                     </div>
-                    <button id="portal-open-create-post" class="hidden sm:flex bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 px-4 rounded-full items-center gap-1 shadow-sm flex-shrink-0"><i class="fa-solid fa-plus"></i> Paylaşım Yap</button>
+                    <button id="portal-open-create-post" class="hidden sm:flex bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 px-4 rounded-full items-center gap-1 shadow-sm"><i class="fa-solid fa-plus"></i> Paylaşım Yap</button>
                 </div>
 
                 <div id="portal-feed-list" class="space-y-6"></div>
@@ -610,7 +479,7 @@
             </div>
         </div>
 
-        <button id="portal-open-create-post-mobile" class="sm:hidden fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg shadow-blue-600/40 flex items-center justify-center text-xl z-[3050] hover:scale-105 transition-transform">
+        <button id="portal-open-create-post-mobile" class="sm:hidden fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg shadow-blue-600/40 flex items-center justify-center text-xl z-[3050]">
             <i class="fa-solid fa-plus"></i>
         </button>
     </div>
@@ -656,7 +525,7 @@
             </div>
         </div>
         <div id="chat-dm-history" class="flex-1 overflow-y-auto p-4 flex flex-col pb-[85px] bg-slate-50 relative"></div>
-        <div id="chat-dm-typing-indicator" class="absolute bottom-[75px] left-4 hidden bg-white border border-slate-200 rounded-full shadow-sm px-4 py-2 flex items-center gap-1.5 z-10">
+        <div id="chat-dm-typing-indicator" class="absolute bottom-[75px] left-4 hidden bg-white border border-slate-200 rounded-full shadow-sm px-4 py-2 items-center gap-1.5 z-10">
             <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span>
             <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay:0.15s"></span>
             <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay:0.3s"></span>
