@@ -8,7 +8,7 @@ const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // ============================================
-// GLOBAL DEĞİŞKENLER (SOSYAL AĞ İÇİN)
+// GLOBAL DEĞİŞKENLER
 // ============================================
 let currentUserSession = null;
 let activeReplyData = {};
@@ -34,7 +34,6 @@ const langEnMobileBtn = document.getElementById('lang-en-mobile');
 function applyLanguage(lang) {
     currentLang = lang;
     
-    // Sınıfları güncelle
     if(langTrBtn) langTrBtn.classList.toggle('active', lang === 'tr');
     if(langEnBtn) langEnBtn.classList.toggle('active', lang === 'en');
     if(langTrMobileBtn) langTrMobileBtn.classList.toggle('active', lang === 'tr');
@@ -69,7 +68,7 @@ if(langTrMobileBtn) langTrMobileBtn.addEventListener('click', () => applyLanguag
 if(langEnMobileBtn) langEnMobileBtn.addEventListener('click', () => applyLanguage('en'));
 
 // ============================================
-// 2. CHATBOT MANTIĞI & YAZIYOR ANİMASYONU
+// 2. YAPAY ZEKA (CHATBOT) MANTIĞI
 // ============================================
 const openChatBtn = document.getElementById('open-chatbot');
 const chatModal = document.getElementById('chat-modal');
@@ -81,6 +80,7 @@ const chatMessages = document.getElementById('chat-messages');
 let chatInitialized = false;
 
 const addMessage = (text, type) => {
+    if(!chatMessages) return;
     const div = document.createElement('div');
     div.className = `msg msg-${type}`;
     div.textContent = text;
@@ -89,6 +89,7 @@ const addMessage = (text, type) => {
 };
 
 const showBotTypingIndicator = () => {
+    if(!chatMessages) return null;
     const div = document.createElement('div');
     div.className = 'typing-indicator';
     div.innerHTML = `<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>`;
@@ -104,7 +105,7 @@ if(openChatBtn) {
             chatInitialized = true;
             const typingEl = showBotTypingIndicator();
             setTimeout(() => {
-                typingEl.remove();
+                if(typingEl) typingEl.remove();
                 addMessage(currentLang === 'tr' ? `Merhaba ${loggedInUserName}! Ben Öz Yapı Market asistanı. Boya veya tesisat ürünlerimiz hakkında size nasıl yardımcı olabilirim?` : `Hello ${loggedInUserName}! I am the Öz Yapı Market assistant. How can I help you?`, 'bot');
             }, 1500);
         }
@@ -113,6 +114,7 @@ if(openChatBtn) {
 if(closeChatBtn) closeChatBtn.onclick = () => chatModal.style.display = 'none';
 
 const handleBotSend = async () => {
+    if(!chatBotInput) return;
     const val = chatBotInput.value.trim();
     if (!val) return;
     addMessage(val, 'user');
@@ -126,10 +128,10 @@ const handleBotSend = async () => {
         });
         if (!res.ok) throw new Error("HTTP Error");
         const data = await res.json();
-        typingEl.remove();
+        if(typingEl) typingEl.remove();
         addMessage(data.reply || (currentLang === 'tr' ? "Cevap alınamadı" : "No response"), 'bot');
     } catch (e) {
-        typingEl.remove();
+        if(typingEl) typingEl.remove();
         addMessage(currentLang === 'tr' ? "Bağlantı hatası oluştu." : "Connection error.", 'bot');
     }
 };
@@ -185,7 +187,7 @@ if(openModalBtn) openModalBtn.onclick = () => { kartelaModal.style.display = 'fl
 if(closeModalBtn) closeModalBtn.onclick = () => kartelaModal.style.display = 'none';
 
 // ============================================
-// 4. MÜŞTERİ YORUM YAPMA VE LİSTELEME
+// 4. MÜŞTERİ VİTRİN YORUMLARI
 // ============================================
 const reviewModal = document.getElementById('review-modal');
 const openReviewBtn = document.getElementById('open-review-modal');
@@ -261,7 +263,7 @@ if(reviewForm) {
 
 
 // ============================================
-// 5. GENEL UI (NAVBAR, SCROLL EFEKTLERİ)
+// 5. GENEL VİTRİN UI (NAVBAR, SCROLL EFEKTLERİ)
 // ============================================
 window.onclick = (e) => { 
     if(e.target == kartelaModal) kartelaModal.style.display = 'none'; 
@@ -274,19 +276,24 @@ const mobileMenuBtn = document.getElementById('mobile-menu-btn');
 const navLinks = document.getElementById('nav-links');
 const navLinksItems = document.querySelectorAll('.nav-links a');
 
-if(mobileMenuBtn) {
+if(mobileMenuBtn && navLinks) {
     mobileMenuBtn.addEventListener('click', () => {
         navLinks.classList.toggle('active');
         const icon = mobileMenuBtn.querySelector('i');
-        icon.classList.toggle('fa-bars');
-        icon.classList.toggle('fa-xmark');
+        if(icon) {
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-xmark');
+        }
     });
 }
 
 navLinksItems.forEach(item => {
     item.addEventListener('click', () => {
-        navLinks.classList.remove('active');
-        if(mobileMenuBtn) mobileMenuBtn.querySelector('i').className = 'fa-solid fa-bars';
+        if(navLinks) navLinks.classList.remove('active');
+        if(mobileMenuBtn) {
+            const icon = mobileMenuBtn.querySelector('i');
+            if(icon) icon.className = 'fa-solid fa-bars';
+        }
     });
 });
 
@@ -395,6 +402,7 @@ const messagesListModal = document.getElementById('messages-list-modal');
 const closeMessagesListModalBtn = document.getElementById('close-messages-list-modal-btn');
 const conversationsList = document.getElementById('conversations-list');
 
+// DÜZELTİLMİŞ DM ID'LERİ
 const chatModalDm = document.getElementById('chat-modal-dm');
 const closeChatDmBtn = document.getElementById('close-chat-dm-btn');
 const chatDmHistory = document.getElementById('chat-dm-history');
@@ -601,7 +609,7 @@ function setupRealtime() {
                         if (!isMine) supabase.from('mesajlar').update({okundu: true}).eq('id', payload.new.id).then(()=>{});
                     } else if (payload.new.alici_id === currentUserSession.user.id) {
                         checkMessagesBadge();
-                        if (!messagesListModal.classList.contains('hidden')) loadConversations();
+                        if (messagesListModal && !messagesListModal.classList.contains('hidden')) loadConversations();
                     }
                 }
                 else if (payload.eventType === 'UPDATE') {
@@ -627,7 +635,7 @@ function setupRealtime() {
             if (p.payload.to === currentUserSession.user.id && p.payload.from === currentChatUserId && chatModalDm && !chatModalDm.classList.contains('hidden')) {
                 if(chatDmTypingIndicator) {
                     chatDmTypingIndicator.classList.remove('hidden'); chatDmTypingIndicator.classList.add('flex');
-                    chatDmHistory.scrollTop = chatDmHistory.scrollHeight;
+                    if(chatDmHistory) chatDmHistory.scrollTop = chatDmHistory.scrollHeight;
                     clearTimeout(typingTimeout);
                     typingTimeout = setTimeout(() => { chatDmTypingIndicator.classList.remove('flex'); chatDmTypingIndicator.classList.add('hidden'); }, 2000);
                 }
@@ -642,7 +650,7 @@ document.getElementById('portal-logout-btn')?.addEventListener('click', () => {
         if(res.isConfirmed) {
             if(realtimeChannel) { supabase.removeChannel(realtimeChannel); realtimeChannel = null; }
             await supabase.auth.signOut();
-            ozSocialPortal.classList.add('hidden');
+            if(ozSocialPortal) ozSocialPortal.classList.add('hidden');
             checkSession();
         }
     });
@@ -728,18 +736,20 @@ if(portalUserSearch) portalUserSearch.addEventListener('input', (e) => searchUse
 if(portalUserSearchMobile) portalUserSearchMobile.addEventListener('input', (e) => searchUsers(e.target.value, searchResultsBoxMobile));
 
 document.addEventListener('click', (e) => {
-    if(portalUserSearch && !portalUserSearch.contains(e.target)) searchResultsBox.classList.add('hidden');
-    if(portalUserSearchMobile && !portalUserSearchMobile.contains(e.target)) searchResultsBoxMobile.classList.add('hidden');
+    if(portalUserSearch && !portalUserSearch.contains(e.target) && searchResultsBox) searchResultsBox.classList.add('hidden');
+    if(portalUserSearchMobile && !portalUserSearchMobile.contains(e.target) && searchResultsBoxMobile) searchResultsBoxMobile.classList.add('hidden');
 });
 
 // --- GÖNDERİ OLUŞTURMA VE AKIŞ ---
 const portalPostTypeRadios = document.getElementsByName('portal_post_type');
-portalPostTypeRadios.forEach(radio => {
-    radio.addEventListener('change', (e) => {
-        if(e.target.value === 'medya') portalMediaUploadContainer.classList.remove('hidden');
-        else { portalMediaUploadContainer.classList.add('hidden'); portalPostMedia.value = ''; }
+if(portalPostTypeRadios) {
+    portalPostTypeRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if(e.target.value === 'medya') portalMediaUploadContainer.classList.remove('hidden');
+            else { portalMediaUploadContainer.classList.add('hidden'); portalPostMedia.value = ''; }
+        });
     });
-});
+}
 
 if(portalOpenCreatePost) portalOpenCreatePost.addEventListener('click', () => portalCreatePostModal.classList.remove('hidden'));
 if(portalOpenCreatePostMobile) portalOpenCreatePostMobile.addEventListener('click', () => portalCreatePostModal.classList.remove('hidden'));
@@ -858,7 +868,7 @@ function generatePostHTML(post, isSingleView = false) {
             mediaHTML = `<video controls class="w-full h-auto max-h-96 object-cover bg-black mt-3 rounded-xl pointer-events-auto"><source src="${post.medya_url}"></video>`;
         } else {
             mediaHTML = `
-                <div class="relative mt-3 rounded-xl overflow-hidden bg-slate-100 border border-slate-100">
+                <div class="relative mt-3 rounded-xl overflow-hidden bg-slate-50 border border-slate-100">
                     <img src="${post.medya_url}" class="post-media-item w-full h-auto max-h-[500px] object-cover pointer-events-auto cursor-pointer" data-post-id="${post.id}" data-author-id="${post.user_id}">
                     <i class="fa-solid fa-heart absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-6xl opacity-0 pointer-events-none drop-shadow-md z-10" id="big-heart-${post.id}"></i>
                 </div>
@@ -1345,7 +1355,7 @@ if(chatDmForm) chatDmForm.addEventListener('submit', async (e) => {
     chatDmInput.value = ''; 
     try {
         await supabase.from('mesajlar').insert([{ gonderen_id: currentUserSession.user.id, alici_id: currentChatUserId, metin: text }]);
-        if(!messagesListModal.classList.contains('hidden')) loadConversations();
+        if(messagesListModal && !messagesListModal.classList.contains('hidden')) loadConversations();
     } catch (err) {}
 });
 
@@ -1408,3 +1418,4 @@ function handleDmPressStart(e) {
     }
 }
 function handleDmPressEnd() { clearTimeout(dmPressTimer); }
+
