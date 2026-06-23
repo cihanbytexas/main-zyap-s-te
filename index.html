@@ -11,11 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
-        window.tailwind = {
-            config: {
-                corePlugins: { preflight: false }
-            }
-        };
+        window.tailwind = { config: { corePlugins: { preflight: false } } };
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -25,51 +21,9 @@
     </style>
     
     <link rel="stylesheet" href="style.css">
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "HardwareStore",
-      "name": "Öz Yapı Market",
-      "description": "Filli Boya, Fawori ve Fırat Boru bayiliği. Kare ve Güven batarya çeşitleri. Bilgisayarlı anında renk karışım teknolojisi.",
-      "image": "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=800&q=80",
-      "telephone": "+905538730344",
-      "email": "enka1733yapimarket@gmail.com",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Pınarbaşı, Gazi İlkokulu Cd. 3/D",
-        "addressLocality": "Mut",
-        "addressRegion": "Mersin",
-        "postalCode": "33600",
-        "addressCountry": "TR"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": 36.6444, 
-        "longitude": 33.4383
-      },
-      "openingHoursSpecification": [
-        {
-          "@type": "OpeningHoursSpecification",
-          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-          "opens": "08:00",
-          "closes": "19:30"
-        }
-      ],
-      "brands": [
-        {"@type": "Brand", "name": "Filli Boya"},
-        {"@type": "Brand", "name": "Fawori"},
-        {"@type": "Brand", "name": "Fırat Boru"},
-        {"@type": "Brand", "name": "Kare Batarya"},
-        {"@type": "Brand", "name": "Güven Batarya"}
-      ],
-      "url": "https://www.ozyapimarket.com"
-    }
-    </script>
 </head>
 <body>
 
-    <!-- CHATBOT MODAL -->
     <div class="chat-modal" id="chat-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -100,7 +54,6 @@
         </div>
     </div>
 
-    <!-- PDF MODAL -->
     <div class="pdf-modal" id="pdf-modal">
         <div class="modal-content pdf-modal-content">
             <div class="modal-header">
@@ -118,7 +71,6 @@
         </div>
     </div>
 
-    <!-- KARTELA MODAL -->
     <div class="kartela-modal" id="kartela-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -149,7 +101,6 @@
         </div>
     </div>
 
-    <!-- REVIEW YORUM MODAL -->
     <div class="kartela-modal" id="review-modal" style="display: none; z-index: 3000;">
         <div class="modal-content" style="background: var(--bg-white); color: var(--text-dark); max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
             <div class="modal-header" style="border-bottom: 1px solid #e5e7eb; background: #f9fafb; border-radius: 15px 15px 0 0;">
@@ -193,7 +144,6 @@
         </div>
     </div>
 
-    <!-- MAIN NAVBAR -->
     <nav class="navbar" id="navbar">
         <div class="nav-container">
             <a href="#" class="logo">
@@ -202,7 +152,6 @@
             </a>
             
             <div class="nav-right">
-                <!-- GİRİŞ YAP / KAYIT OL MOBİL UYUMLU TEK BUTON -->
                 <div id="nav-auth-buttons" class="tw-modal-hidden flex items-center gap-2 mr-2">
                     <button id="nav-main-auth-btn" class="btn btn-primary shadow-md hover:shadow-lg flex items-center gap-2" style="padding: 8px 16px; font-size: 0.85rem; border: none; outline: none;">
                         <i class="fa-solid fa-user"></i> <span class="hidden sm:inline-block" data-tr="Giriş / Kayıt" data-en="Login / Register">Giriş / Kayıt</span>
@@ -223,7 +172,6 @@
                 <li><a href="#color-machine" data-tr="Renk Makinesi" data-en="Color Machine">Renk Makinesi</a></li>
                 <li><a href="#contact" data-tr="İletişim" data-en="Contact">İletişim</a></li>
                 
-                <!-- DİL SEÇİCİ HAMBURGER MENÜ İÇİNE TAŞINDI -->
                 <li style="margin-top: 10px; display: flex; justify-content: center;">
                     <div class="lang-switcher">
                         <button class="lang-btn active" id="lang-tr" style="border: none; outline: none;">TR</button>
@@ -234,7 +182,6 @@
         </div>
     </nav>
 
-    <!-- ANA SAYFA İÇERİĞİ -->
     <section id="hero">
         <div class="container hero-content">
             <h1 class="hero-title" data-tr="Kaliteli Markalar, Güçlü Yapılar" data-en="Quality Brands, Strong Structures">Kaliteli Markalar, Güçlü Yapılar</h1>
@@ -500,7 +447,6 @@
         </div>
     </footer>
 
-    <!-- SABİT BUTONLAR (Chatbot & WhatsApp) -->
     <button class="chatbot-btn" id="open-chatbot" aria-label="Asistan" style="border: 2px solid var(--secondary-color); outline: none;">
         <svg viewBox="0 0 100 100" width="45" height="45" xmlns="http://www.w3.org/2000/svg">
             <path d="M 25 40 C 25 10, 75 10, 75 40" fill="none" stroke="#9ca3af" stroke-width="5" stroke-linecap="round"/>
@@ -519,7 +465,6 @@
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
-    <!-- PROFİL FAB VE ÖZ SOCIAL BALONCUĞU -->
     <div id="profile-fab-container" class="tw-modal-hidden fixed bottom-[180px] right-[30px] z-[90] flex-col items-center gap-2">
         <div class="bg-blue-600 text-white text-[12px] font-bold px-3 py-1.5 rounded-lg shadow-lg relative animate-bounce" style="white-space: nowrap;">
             Öz Social'e katıl
@@ -530,8 +475,7 @@
         </button>
     </div>
 
-    <!-- ÖZ SOCIAL: AUTH MODAL WRAPPER (OTP SİSTEMİ EKLENDİ) -->
-    <div id="auth-modal-wrapper" class="fixed inset-0 bg-slate-900/70 z-[200] tw-modal-hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+    <div id="auth-modal-wrapper" class="fixed inset-0 bg-slate-900/70 z-[2000] tw-modal-hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
         <div class="relative w-full max-w-md">
             <button id="close-auth-modal" class="absolute -top-12 right-0 text-white text-3xl hover:text-red-500 transition-colors border-none bg-transparent outline-none"><i class="fa-solid fa-xmark"></i></button>
             <div id="auth-container" class="bg-white p-8 rounded-2xl shadow-xl w-full transition-all duration-300">
@@ -588,7 +532,6 @@
                     <p class="text-center text-sm text-slate-600 mt-4">Zaten üye misin? <a href="#" id="show-login" class="text-blue-600 font-bold hover:underline">Giriş Yap</a></p>
                 </form>
 
-                <!-- OTP DOĞRULAMA FORMU (KAYIT İÇİN) -->
                 <form id="otp-verify-form" class="space-y-4 tw-modal-hidden">
                     <div class="text-center mb-4">
                         <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-envelope-circle-check text-2xl text-blue-600"></i></div>
@@ -612,7 +555,6 @@
                     <p class="text-center text-sm text-slate-600 mt-4"><a href="#" id="back-to-login" class="text-blue-600 font-bold hover:underline"><i class="fa-solid fa-arrow-left"></i> Giriş Ekranına Dön</a></p>
                 </form>
 
-                <!-- ŞİFRE SIFIRLAMA OTP FORMU -->
                 <form id="reset-otp-form" class="space-y-4 tw-modal-hidden">
                     <div class="text-center mb-4">
                         <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-unlock-keyhole text-2xl text-emerald-600"></i></div>
@@ -634,8 +576,7 @@
         </div>
     </div>
 
-    <!-- ÖZ SOCIAL: ANA DASHBOARD -->
-    <div id="social-dashboard-modal" class="fixed top-0 left-0 w-full h-[100dvh] bg-slate-100 z-[150] tw-modal-hidden flex-col overflow-y-auto overflow-x-hidden">
+    <div id="social-dashboard-modal" class="fixed top-0 left-0 w-full h-[100dvh] bg-slate-100 z-[1500] tw-modal-hidden flex-col overflow-y-auto overflow-x-hidden">
         <div class="p-4 bg-white shadow-sm flex justify-between items-center sticky top-0 z-20 border-b border-slate-200">
             <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-helmet-safety text-blue-600"></i> Öz Social</h2>
             <button id="close-social-dashboard" class="text-slate-500 hover:text-red-500 text-2xl transition-colors border-none bg-transparent outline-none"><i class="fa-solid fa-xmark"></i></button>
@@ -673,7 +614,6 @@
                         </div>
                     </div>
                     
-                    <!-- ÇIKIŞ YAP BÜYÜK BUTON EKLENTİSİ -->
                     <button id="logout-text-btn" class="w-full mt-5 bg-red-50 hover:bg-red-500 hover:text-white text-red-500 font-bold py-2.5 rounded-lg transition-colors border-none outline-none shadow-none flex justify-center items-center gap-2">
                         <i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap / Hesap Değiştir
                     </button>
@@ -723,14 +663,12 @@
         </div>
     </div>
 
-    <!-- ÖZ SOCIAL YAN/KAYAN MODALLAR (Tam Güvenlikli Wrapper/Panel Yapısı) -->
-    
-    <div id="create-post-modal" class="fixed inset-0 bg-slate-900/60 z-[200] tw-modal-hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) { this.classList.add('tw-modal-hidden'); document.getElementById('create-post-form').reset(); document.getElementById('media-upload-container').classList.add('hidden'); }">
-        <div class="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl transform transition-transform scale-100 relative z-10">
-            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-bold text-slate-800 text-lg">Yeni Paylaşım</h3>
-                <button id="close-post-modal" class="text-slate-400 hover:text-red-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 transition-colors border-none bg-transparent outline-none"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
+    <div id="create-post-modal" class="fixed inset-0 bg-white z-[2000] tw-modal-hidden flex-col transition-transform transform translate-x-full duration-300">
+        <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm">
+            <button id="close-post-modal" class="text-slate-800 text-xl mr-4 border-none bg-transparent outline-none"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2 class="text-lg font-bold text-slate-800 flex-1">Yeni Paylaşım</h2>
+        </div>
+        <div class="flex-1 overflow-y-auto bg-slate-50">
             <form id="create-post-form" class="p-6 space-y-5">
                 <div>
                     <div class="grid grid-cols-2 gap-3">
@@ -750,117 +688,107 @@
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Açıklama / Soru Detayı</label>
-                    <textarea id="post-text" required rows="4" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white resize-none transition-colors" placeholder="Düşüncelerini veya sorunu buraya yaz..." style="outline: none;"></textarea>
+                    <textarea id="post-text" required rows="4" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 resize-none transition-colors" placeholder="Düşüncelerini veya sorunu buraya yaz..." style="outline: none;"></textarea>
                 </div>
                 <button type="submit" id="submit-post-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-blue-200 transition-all border-none outline-none">Paylaş</button>
             </form>
         </div>
     </div>
 
-    <!-- Güvenli Side-Panel Yapısı (Tıkla-Kapat ve X butonu 100% çalışır) -->
-    <div id="notification-modal" class="fixed inset-0 bg-slate-900/60 z-[200] tw-modal-hidden flex justify-end p-0 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) closeSideModal('notification-modal', 'notification-panel')">
-        <div id="notification-panel" class="bg-white w-full max-w-sm h-full shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative z-10">
-            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-bold text-slate-800 text-lg"><i class="fa-regular fa-bell text-blue-500 mr-2"></i>Bildirimler</h3>
-                <button onclick="closeSideModal('notification-modal', 'notification-panel')" class="text-slate-400 hover:text-red-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 transition-colors border-none bg-transparent outline-none"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <div id="notification-list" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50"></div>
+    <div id="notification-modal" class="fixed inset-0 bg-white z-[2000] tw-modal-hidden flex-col transition-transform transform translate-x-full duration-300">
+        <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm">
+            <button id="close-notification-modal" class="text-slate-800 text-xl mr-4 border-none bg-transparent outline-none"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2 class="text-lg font-bold text-slate-800 flex-1">Bildirimler</h2>
         </div>
+        <div id="notification-list" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50"></div>
     </div>
 
-    <div id="messages-list-modal" class="fixed inset-0 bg-slate-900/60 z-[200] tw-modal-hidden flex justify-end p-0 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) closeSideModal('messages-list-modal', 'messages-list-panel')">
-        <div id="messages-list-panel" class="bg-white w-full max-w-sm h-full shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative z-10">
-            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-bold text-slate-800 text-lg"><i class="fa-regular fa-paper-plane text-blue-500 mr-2"></i>Mesajlar</h3>
-                <button onclick="closeSideModal('messages-list-modal', 'messages-list-panel')" class="text-slate-400 hover:text-red-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 transition-colors border-none bg-transparent outline-none"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <div id="conversations-list" class="flex-1 overflow-y-auto p-4 space-y-1 bg-white"></div>
+    <div id="messages-list-modal" class="fixed inset-0 bg-white z-[2000] tw-modal-hidden flex-col transition-transform transform translate-x-full duration-300">
+        <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm">
+            <button id="close-messages-list-modal" class="text-slate-800 text-xl mr-4 border-none bg-transparent outline-none"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2 class="text-lg font-bold text-slate-800 flex-1">Mesajlar</h2>
         </div>
+        <div id="conversations-list" class="flex-1 overflow-y-auto p-4 space-y-1 bg-slate-50"></div>
     </div>
 
-    <!-- DM Modalı Kapanmama Hatası Giderildi: Arka planlı yapıya geçirildi ve X butonu eklendi -->
-    <div id="dm-modal" class="fixed inset-0 bg-slate-900/60 z-[210] tw-modal-hidden flex justify-end p-0 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) closeSideModal('dm-modal', 'dm-panel')">
-        <div id="dm-panel" class="bg-slate-50 w-full max-w-md h-full shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative z-10">
-            <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-20 shadow-sm">
-                <img id="chat-user-avatar" src="" class="w-9 h-9 rounded-full object-cover mr-3 cursor-pointer user-profile-trigger">
-                <div class="flex-1"><h2 id="chat-user-name" class="text-[15px] font-bold text-slate-800 cursor-pointer user-profile-trigger hover:underline">İsim</h2></div>
-                <!-- Kapatma X butonu -->
-                <button onclick="closeSideModal('dm-modal', 'dm-panel')" class="text-slate-400 hover:text-red-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 transition-colors border-none bg-transparent outline-none"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <div id="chat-history" class="flex-1 overflow-y-auto p-4 flex flex-col pb-[90px] bg-slate-50 relative"></div>
-            <div id="chat-typing-indicator" class="absolute bottom-[75px] left-4 hidden bg-white border border-slate-200 rounded-full shadow-sm px-4 py-2 flex items-center gap-1.5 z-10 transition-all">
-                <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span>
-                <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></span>
-                <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></span>
-            </div>
-            <form id="dm-form" class="p-2 bg-white border-t border-slate-200 flex gap-2 items-center absolute bottom-0 left-0 w-full z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-                <label class="cursor-pointer text-slate-400 hover:text-blue-600 transition-colors p-2">
-                    <i class="fa-solid fa-image text-[22px]"></i>
-                    <input type="file" id="chat-media-input" accept="image/*" class="hidden">
-                </label>
-                <input type="text" id="dm-input" autocomplete="off" class="flex-1 px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-full text-[14px] focus:outline-none focus:border-slate-300 focus:bg-white" placeholder="Mesaj yaz..." style="outline: none;">
-                <button type="submit" id="send-msg-btn" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center transition-colors shadow-sm border-none outline-none"><i class="fa-solid fa-paper-plane text-sm"></i></button>
-            </form>
+    <div id="dm-modal" class="fixed inset-0 bg-slate-50 z-[2100] tw-modal-hidden flex-col transition-transform transform translate-x-full duration-300">
+        <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-20 shadow-sm">
+            <button id="close-dm-btn" class="text-slate-800 text-xl mr-4 border-none bg-transparent outline-none"><i class="fa-solid fa-arrow-left"></i></button>
+            <img id="dm-user-avatar" src="" class="w-9 h-9 rounded-full object-cover mr-3 cursor-pointer user-profile-trigger">
+            <div class="flex-1"><h2 id="dm-user-name" class="text-[15px] font-bold text-slate-800 cursor-pointer user-profile-trigger hover:underline">İsim</h2></div>
         </div>
+        <div id="dm-history" class="flex-1 overflow-y-auto p-4 flex flex-col pb-[90px] bg-slate-50 relative"></div>
+        <div id="dm-typing-indicator" class="absolute bottom-[75px] left-4 hidden bg-white border border-slate-200 rounded-full shadow-sm px-4 py-2 flex items-center gap-1.5 z-10 transition-all">
+            <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span>
+            <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></span>
+            <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></span>
+        </div>
+        <form id="dm-form" class="p-2 bg-white border-t border-slate-200 flex gap-2 items-center fixed bottom-0 left-0 w-full z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <label class="cursor-pointer text-slate-400 hover:text-blue-600 transition-colors p-2">
+                <i class="fa-solid fa-image text-[22px]"></i>
+                <input type="file" id="dm-media-input" accept="image/*" class="hidden">
+            </label>
+            <input type="text" id="dm-input" autocomplete="off" class="flex-1 px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-full text-[14px] focus:outline-none focus:border-slate-300 focus:bg-white" placeholder="Mesaj yaz..." style="outline: none;">
+            <button type="submit" id="send-dm-btn" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center transition-colors shadow-sm border-none outline-none"><i class="fa-solid fa-paper-plane text-sm"></i></button>
+        </form>
     </div>
 
-    <div id="likes-modal" class="fixed inset-0 bg-slate-900/60 z-[200] tw-modal-hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) this.classList.add('tw-modal-hidden')">
-        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl relative z-10">
+    <div id="user-profile-modal" class="fixed inset-0 bg-white z-[2000] tw-modal-hidden flex-col transition-transform transform translate-x-full duration-300">
+        <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-10">
+            <button id="close-user-profile" class="text-slate-800 text-xl mr-4 border-none bg-transparent outline-none"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2 id="up-header-name" class="text-lg font-bold text-slate-800 flex-1">Kullanıcı</h2>
+        </div>
+        
+        <div class="p-4 border-b border-slate-100">
+            <div class="flex items-center justify-between mb-4">
+                <img id="up-avatar" src="https://via.placeholder.com/150" class="w-20 h-20 rounded-full object-cover border border-slate-200 p-0.5">
+                <div class="flex flex-1 justify-center gap-6 text-center">
+                    <div><div id="up-post-count" class="font-bold text-lg text-slate-800">0</div><div class="text-xs text-slate-500">Gönderi</div></div>
+                    <div><div id="up-follower-count" class="font-bold text-lg text-slate-800">0</div><div class="text-xs text-slate-500">Takipçi</div></div>
+                    <div><div id="up-following-count" class="font-bold text-lg text-slate-800">0</div><div class="text-xs text-slate-500">Takip</div></div>
+                </div>
+            </div>
+            <div>
+                <h3 id="up-name" class="font-bold text-sm text-slate-800">Yükleniyor...</h3>
+                <span id="up-role" class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-bold uppercase mt-1 inline-block">YÜKLENİYOR...</span>
+                <p id="up-bio" class="text-sm text-slate-700 mt-1 whitespace-pre-wrap"></p>
+            </div>
+            <div class="mt-4 flex gap-2" id="up-action-buttons">
+                <button id="follow-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 rounded-lg text-sm transition-colors tw-modal-hidden border-none outline-none shadow-none">Takip Et</button>
+                <button id="unfollow-btn" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-1.5 rounded-lg text-sm transition-colors tw-modal-hidden border-none outline-none shadow-none">Takipten Çık</button>
+                <button id="message-user-btn" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white font-bold py-1.5 rounded-lg text-sm transition-colors tw-modal-hidden border-none outline-none shadow-none">Mesaj</button>
+            </div>
+        </div>
+
+        <div class="flex border-b border-slate-200 bg-white sticky top-[53px] z-10">
+            <button id="tab-grid" class="flex-1 py-3 border-0 border-b-2 border-slate-800 bg-transparent text-slate-800 flex justify-center transition-all outline-none"><i class="fa-solid fa-table-cells text-xl"></i></button>
+            <button id="tab-questions" class="flex-1 py-3 border-0 border-b-2 border-transparent bg-transparent text-slate-400 flex justify-center transition-all outline-none"><i class="fa-solid fa-circle-question text-xl"></i></button>
+        </div>
+
+        <div id="up-grid" class="flex-1 overflow-y-auto grid grid-cols-3 gap-0.5 bg-slate-100"></div>
+        <div id="up-questions-list" class="flex-1 overflow-y-auto tw-modal-hidden p-4 space-y-6 bg-slate-50"></div>
+    </div>
+
+    <div id="single-post-modal" class="fixed inset-0 bg-slate-100 z-[2000] tw-modal-hidden flex-col transition-transform transform translate-x-full duration-300">
+        <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm">
+            <button id="close-single-post" class="text-slate-800 text-xl mr-4 border-none bg-transparent outline-none"><i class="fa-solid fa-arrow-left"></i></button>
+            <h2 class="text-lg font-bold text-slate-800 flex-1">Gönderi</h2>
+        </div>
+        <div id="single-post-container" class="flex-1 overflow-y-auto p-4 space-y-6"></div>
+    </div>
+
+    <div id="likes-modal" class="fixed inset-0 bg-slate-900/60 z-[2200] tw-modal-hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl">
             <div class="px-5 py-3 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <h3 class="font-bold text-slate-800 text-md"><i class="fa-solid fa-heart text-red-500 mr-2"></i>Beğenenler</h3>
-                <button onclick="document.getElementById('likes-modal').classList.add('tw-modal-hidden')" class="text-slate-400 hover:text-red-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 border-none bg-transparent outline-none"><i class="fa-solid fa-xmark"></i></button>
+                <button id="close-likes-modal" class="text-slate-400 hover:text-red-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 border-none bg-transparent outline-none"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="likes-list" class="p-4 max-h-64 overflow-y-auto space-y-3"></div>
         </div>
     </div>
 
-    <div id="user-profile-modal" class="fixed inset-0 bg-slate-900/60 z-[180] tw-modal-hidden flex justify-end p-0 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) closeSideModal('user-profile-modal', 'user-profile-panel')">
-        <div id="user-profile-panel" class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative z-10">
-            <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-10">
-                <button onclick="closeSideModal('user-profile-modal', 'user-profile-panel')" class="text-slate-800 text-xl mr-4 border-none bg-transparent outline-none hover:text-red-500 transition-colors"><i class="fa-solid fa-arrow-left"></i></button>
-                <h2 id="up-header-name" class="text-lg font-bold text-slate-800 flex-1">Kullanıcı</h2>
-            </div>
-            <div class="p-4 border-b border-slate-100">
-                <div class="flex items-center justify-between mb-4">
-                    <img id="up-avatar" src="https://via.placeholder.com/150" class="w-20 h-20 rounded-full object-cover border border-slate-200 p-0.5">
-                    <div class="flex flex-1 justify-center gap-6 text-center">
-                        <div><div id="up-post-count" class="font-bold text-lg text-slate-800">0</div><div class="text-xs text-slate-500">Gönderi</div></div>
-                        <div><div id="up-follower-count" class="font-bold text-lg text-slate-800">0</div><div class="text-xs text-slate-500">Takipçi</div></div>
-                        <div><div id="up-following-count" class="font-bold text-lg text-slate-800">0</div><div class="text-xs text-slate-500">Takip</div></div>
-                    </div>
-                </div>
-                <div>
-                    <h3 id="up-name" class="font-bold text-sm text-slate-800">İsim Soyisim</h3>
-                    <span id="up-role" class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-bold uppercase mt-1 inline-block">Rol</span>
-                    <p id="up-bio" class="text-sm text-slate-700 mt-1 whitespace-pre-wrap"></p>
-                </div>
-                <div class="mt-4 flex gap-2" id="up-action-buttons">
-                    <button id="follow-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 rounded-lg text-sm transition-colors hidden border-none outline-none shadow-none">Takip Et</button>
-                    <button id="unfollow-btn" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-1.5 rounded-lg text-sm transition-colors hidden border-none outline-none shadow-none">Takipten Çık</button>
-                    <button id="message-user-btn" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white font-bold py-1.5 rounded-lg text-sm transition-colors hidden border-none outline-none shadow-none">Mesaj</button>
-                </div>
-            </div>
-            <div class="flex border-b border-slate-200 bg-white sticky top-[53px] z-10">
-                <button id="tab-grid" class="flex-1 py-3 border-0 border-b-2 border-slate-800 bg-transparent text-slate-800 flex justify-center transition-all outline-none"><i class="fa-solid fa-table-cells text-xl"></i></button>
-                <button id="tab-questions" class="flex-1 py-3 border-0 border-b-2 border-transparent bg-transparent text-slate-400 flex justify-center transition-all outline-none"><i class="fa-solid fa-circle-question text-xl"></i></button>
-            </div>
-            <div id="up-grid" class="flex-1 overflow-y-auto grid grid-cols-3 gap-0.5 bg-slate-100"></div>
-            <div id="up-questions-list" class="flex-1 overflow-y-auto hidden p-4 space-y-6 bg-slate-50"></div>
-        </div>
-    </div>
-
-    <div id="single-post-modal" class="fixed inset-0 bg-slate-900/60 z-[190] tw-modal-hidden flex justify-end p-0 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) closeSideModal('single-post-modal', 'single-post-panel')">
-        <div id="single-post-panel" class="bg-slate-50 w-full max-w-md h-full shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative z-10">
-            <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm">
-                <button onclick="closeSideModal('single-post-modal', 'single-post-panel')" class="text-slate-800 text-xl mr-4 border-none bg-transparent outline-none hover:text-red-500"><i class="fa-solid fa-arrow-left"></i></button>
-                <h2 class="text-lg font-bold text-slate-800 flex-1">Gönderi</h2>
-            </div>
-            <div id="single-post-container" class="flex-1 overflow-y-auto p-4 space-y-6"></div>
-        </div>
-    </div>
-
-    <!-- SCRIPTS -->
     <script src="colors.js"></script>
     <script type="module" src="app.js"></script>
 </body>
 </html>
+
