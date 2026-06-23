@@ -8,6 +8,26 @@ const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // ============================================
+// GÜVENLİ YAN MENÜ AÇMA/KAPAMA FONKSİYONLARI
+// ============================================
+window.openSideModal = function(wrapperId, panelId) {
+    const wrapper = document.getElementById(wrapperId);
+    const panel = document.getElementById(panelId);
+    if(wrapper && panel) {
+        wrapper.classList.remove('tw-modal-hidden');
+        setTimeout(() => panel.classList.remove('translate-x-full'), 10);
+    }
+}
+window.closeSideModal = function(wrapperId, panelId) {
+    const wrapper = document.getElementById(wrapperId);
+    const panel = document.getElementById(panelId);
+    if(wrapper && panel) {
+        panel.classList.add('translate-x-full');
+        setTimeout(() => wrapper.classList.add('tw-modal-hidden'), 300);
+    }
+}
+
+// ============================================
 // ANA SİTE MANTIĞI (DİL, KARTELA, CHATBOT)
 // ============================================
 let currentLang = 'tr';
@@ -51,7 +71,6 @@ function applyLanguage(lang) {
 if(langTrBtn) langTrBtn.addEventListener('click', () => applyLanguage('tr'));
 if(langEnBtn) langEnBtn.addEventListener('click', () => applyLanguage('en'));
 
-// --- Asistan Chatbot ---
 const openChatBtn = document.getElementById('open-chatbot');
 const botChatModal = document.getElementById('chat-modal');
 const closeChatBtn = document.getElementById('close-chat');
@@ -127,7 +146,6 @@ const handleSend = async () => {
 if(chatSend) chatSend.onclick = handleSend;
 if(botChatInput) botChatInput.onkeypress = (e) => { if(e.key === 'Enter') handleSend(); };
 
-// --- Kartela & PDF ---
 const openModalBtn = document.getElementById('open-kartela-btn');
 const kartelaModal = document.getElementById('kartela-modal');
 const closeKartelaBtn = document.getElementById('close-modal');
@@ -139,12 +157,8 @@ const openPdfBtn = document.getElementById('open-pdf-btn');
 const pdfModal = document.getElementById('pdf-modal');
 const closePdfModalBtn = document.getElementById('close-pdf-modal');
 
-if(openPdfBtn) {
-    openPdfBtn.onclick = () => { kartelaModal.style.display = 'none'; pdfModal.style.display = 'flex'; };
-}
-if(closePdfModalBtn) {
-    closePdfModalBtn.onclick = () => { pdfModal.style.display = 'none'; kartelaModal.style.display = 'flex'; };
-}
+if(openPdfBtn) { openPdfBtn.onclick = () => { kartelaModal.style.display = 'none'; pdfModal.style.display = 'flex'; }; }
+if(closePdfModalBtn) { closePdfModalBtn.onclick = () => { pdfModal.style.display = 'none'; kartelaModal.style.display = 'flex'; }; }
 
 let activeFilter = 'all'; let searchTerm = '';
 
@@ -173,9 +187,7 @@ function renderColors() {
     });
 }
 
-if(colorSearch) {
-    colorSearch.addEventListener('input', (e) => { searchTerm = e.target.value; renderColors(); });
-}
+if(colorSearch) { colorSearch.addEventListener('input', (e) => { searchTerm = e.target.value; renderColors(); }); }
 
 filterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -189,7 +201,6 @@ filterBtns.forEach(btn => {
 if(openModalBtn) openModalBtn.onclick = () => { kartelaModal.style.display = 'flex'; renderColors(); };
 if(closeKartelaBtn) closeKartelaBtn.onclick = () => kartelaModal.style.display = 'none';
 
-// --- Yorum Sistemi ---
 const reviewModal = document.getElementById('review-modal');
 const openReviewBtn = document.getElementById('open-review-modal');
 const closeReviewBtn = document.getElementById('close-review-modal');
@@ -264,7 +275,6 @@ if(reviewForm) {
     });
 }
 
-// --- UI GENEL EFEKTLERİ ---
 window.onclick = (e) => { 
     if(e.target == kartelaModal) kartelaModal.style.display = 'none'; 
     if(e.target == botChatModal) botChatModal.style.display = 'none';
@@ -331,30 +341,32 @@ swatches.forEach(swatch => {
 // ÖZ SOCIAL (BETA) & AUTH SİSTEMİ BİRLEŞİMİ
 // ============================================
 
-// Elementler (Auth Modalı)
 const authModalWrapper = document.getElementById('auth-modal-wrapper');
 const closeAuthModalBtn = document.getElementById('close-auth-modal');
-const navLoginBtn = document.getElementById('nav-login-btn');
-const navRegisterBtn = document.getElementById('nav-register-btn');
+const navAuthMainBtn = document.getElementById('nav-main-auth-btn'); // Mobildeki yeni tek buton
 const navAuthBtnsContainer = document.getElementById('nav-auth-buttons');
 const profileFabContainer = document.getElementById('profile-fab-container');
 const profileFabBtn = document.getElementById('profile-fab-btn');
 const fabAvatar = document.getElementById('fab-avatar');
 
-// Form Elementleri
 const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
 const forgotPasswordForm = document.getElementById('forgot-password-form');
 const resetPasswordForm = document.getElementById('reset-password-form');
+const otpVerifyForm = document.getElementById('otp-verify-form'); // Yeni
+const resetOtpForm = document.getElementById('reset-otp-form'); // Yeni
+
 const showRegisterBtn = document.getElementById('show-register');
 const showLoginBtn = document.getElementById('show-login');
 const showForgotPasswordBtn = document.getElementById('show-forgot-password');
 const backToLoginBtn = document.getElementById('back-to-login');
+const backToRegBtn = document.getElementById('back-to-reg-from-otp');
+const backToForgotBtn = document.getElementById('back-to-forgot-from-reset');
 
-// Social Dashboard Elementleri
 const socialDashboardModal = document.getElementById('social-dashboard-modal');
 const closeSocialDashboardBtn = document.getElementById('close-social-dashboard');
 const logoutBtn = document.getElementById('logout-btn');
+const logoutTextBtn = document.getElementById('logout-text-btn'); // Yeni büyük buton
 const dashboardView = document.getElementById('dashboard-view');
 const editProfileForm = document.getElementById('edit-profile-form');
 const editProfileBtn = document.getElementById('edit-profile-btn');
@@ -366,7 +378,6 @@ const editBioInput = document.getElementById('edit-bio');
 const avatarInput = document.getElementById('reg-avatar');
 const avatarPreview = document.getElementById('avatar-preview');
 
-// Social Feed & Action Elementleri
 const feedList = document.getElementById('feed-list');
 const feedFilters = document.querySelectorAll('.feed-filter');
 const openCreatePostBtn = document.getElementById('open-create-post');
@@ -379,22 +390,17 @@ const postMediaInput = document.getElementById('post-media');
 const postTextInput = document.getElementById('post-text');
 const submitPostBtn = document.getElementById('submit-post-btn');
 
-// Notification & Messages Elementleri
 const notificationBtn = document.getElementById('notification-btn');
 const notificationBadge = document.getElementById('notification-badge');
 const notificationModal = document.getElementById('notification-modal');
-const closeNotificationModalBtn = document.getElementById('close-notification-modal');
 const notificationList = document.getElementById('notification-list');
 
 const messagesBtn = document.getElementById('messages-btn');
 const messagesBadge = document.getElementById('messages-badge');
 const messagesListModal = document.getElementById('messages-list-modal');
-const closeMessagesListModalBtn = document.getElementById('close-messages-list-modal');
 const conversationsList = document.getElementById('conversations-list');
 
-// DM Chat Elementleri
 const dmModal = document.getElementById('dm-modal');
-const closeDmBtn = document.getElementById('close-dm-btn');
 const dmHistory = document.getElementById('chat-history');
 const dmForm = document.getElementById('dm-form');
 const dmInput = document.getElementById('dm-input');
@@ -403,9 +409,7 @@ const dmTypingIndicator = document.getElementById('chat-typing-indicator');
 const dmUserAvatar = document.getElementById('chat-user-avatar');
 const dmUserName = document.getElementById('chat-user-name');
 
-// Profile Modals & Follow Actions
 const userProfileModal = document.getElementById('user-profile-modal');
-const closeUserProfileBtn = document.getElementById('close-user-profile');
 const upHeaderName = document.getElementById('up-header-name');
 const upAvatar = document.getElementById('up-avatar');
 const upPostCount = document.getElementById('up-post-count');
@@ -418,11 +422,7 @@ const followBtn = document.getElementById('follow-btn');
 const unfollowBtn = document.getElementById('unfollow-btn');
 const messageUserBtn = document.getElementById('message-user-btn');
 
-// Diğer Social Modallar
-const likesModal = document.getElementById('likes-modal');
-const closeLikesModalBtn = document.getElementById('close-likes-modal');
 const singlePostModal = document.getElementById('single-post-modal');
-const closeSinglePostBtn = document.getElementById('close-single-post');
 const singlePostContainer = document.getElementById('single-post-container');
 
 // State Değişkenleri
@@ -436,19 +436,20 @@ let currentChatUserId = null;
 let realtimeChannel = null;
 let chatBroadcastChannel = null;
 let typingTimeout;
+let temporaryRegistrationData = null; // OTP için
 
-// --- Auth Modal Açılışları ---
+// --- Auth Açılışları ---
 function openAuthModal(formType) {
     if(authModalWrapper) {
         authModalWrapper.classList.remove('tw-modal-hidden');
         authModalWrapper.classList.add('flex');
-        [loginForm, registerForm, forgotPasswordForm, resetPasswordForm].forEach(f => f?.classList.add('tw-modal-hidden'));
-        if(formType === 'login') loginForm.classList.remove('tw-modal-hidden');
-        if(formType === 'register') registerForm.classList.remove('tw-modal-hidden');
+        [loginForm, registerForm, forgotPasswordForm, resetPasswordForm, otpVerifyForm, resetOtpForm].forEach(f => f?.classList.add('tw-modal-hidden'));
+        if(formType === 'login' && loginForm) loginForm.classList.remove('tw-modal-hidden');
+        if(formType === 'register' && registerForm) registerForm.classList.remove('tw-modal-hidden');
     }
 }
-if(navLoginBtn) navLoginBtn.addEventListener('click', () => openAuthModal('login'));
-if(navRegisterBtn) navRegisterBtn.addEventListener('click', () => openAuthModal('register'));
+if(navAuthMainBtn) navAuthMainBtn.addEventListener('click', () => openAuthModal('login'));
+
 if(closeAuthModalBtn) {
     closeAuthModalBtn.addEventListener('click', () => {
         authModalWrapper.classList.add('tw-modal-hidden'); authModalWrapper.classList.remove('flex');
@@ -469,7 +470,7 @@ if(closeSocialDashboardBtn) {
 }
 
 function toggleAuthForms(activeForm) {
-    [loginForm, registerForm, forgotPasswordForm, resetPasswordForm].forEach(f => f?.classList.add('tw-modal-hidden'));
+    [loginForm, registerForm, forgotPasswordForm, resetPasswordForm, otpVerifyForm, resetOtpForm].forEach(f => f?.classList.add('tw-modal-hidden'));
     if(activeForm) activeForm.classList.remove('tw-modal-hidden');
 }
 
@@ -489,7 +490,10 @@ if(showRegisterBtn) showRegisterBtn.addEventListener('click', (e) => { e.prevent
 if(showLoginBtn) showLoginBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(loginForm); });
 if(showForgotPasswordBtn) showForgotPasswordBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(forgotPasswordForm); });
 if(backToLoginBtn) backToLoginBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(loginForm); });
+if(backToRegBtn) backToRegBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(registerForm); });
+if(backToForgotBtn) backToForgotBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(forgotPasswordForm); });
 
+// OTP'li Kayıt (Aşama 1: Sadece kod gönder)
 if(registerForm) {
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -498,26 +502,58 @@ if(registerForm) {
         const email = document.getElementById('reg-email').value;
         const password = document.getElementById('reg-password').value;
         const btn = document.getElementById('register-btn');
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> İşlem Yapılıyor...'; btn.disabled = true;
+        
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kod Gönderiliyor...'; btn.disabled = true;
         try {
-            const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
+            const { error: authError } = await supabase.auth.signUp({ email, password });
             if (authError) throw authError;
 
-            let finalAvatarUrl = null;
-            if (selectedAvatarFile && authData.user) {
-                const ext = selectedAvatarFile.name.split('.').pop();
-                const fileName = `${authData.user.id}-${Math.random()}.${ext}`;
-                const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, selectedAvatarFile);
-                if (!uploadError) finalAvatarUrl = supabase.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
-            }
-
-            if (authData.user) await supabase.from('uyeler').insert([{ id: authData.user.id, ad_soyad: name, rol: role, avatar_url: finalAvatarUrl, biyografi: "" }]);
-            Swal.fire({ icon: 'success', title: 'Başarılı', text: 'Kayıt olundu, giriş yapabilirsiniz.' });
-            registerForm.reset(); selectedAvatarFile = null;
-            avatarPreview.innerHTML = '<i class="fa-solid fa-camera text-2xl text-slate-400 group-hover:text-blue-500 transition-colors"></i>';
-            toggleAuthForms(loginForm);
+            // Verileri OTP doğrulaması sonrasına saklıyoruz
+            temporaryRegistrationData = { name, role, email, password, file: selectedAvatarFile };
+            
+            Swal.fire({ icon: 'success', title: 'Kod Gönderildi', text: 'E-postanıza gelen 6 haneli doğrulama kodunu giriniz.' });
+            toggleAuthForms(otpVerifyForm);
         } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
         finally { btn.innerHTML = 'Kayıt Ol'; btn.disabled = false; }
+    });
+}
+
+// OTP'li Kayıt (Aşama 2: Kodu onayla, avatar yükle ve hesabı aç)
+if(otpVerifyForm) {
+    otpVerifyForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const otpCode = document.getElementById('reg-otp').value.trim();
+        const btn = document.getElementById('verify-otp-btn');
+        if(!temporaryRegistrationData) return;
+
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Doğrulanıyor...'; btn.disabled = true;
+        try {
+            const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({ 
+                email: temporaryRegistrationData.email, token: otpCode, type: 'signup' 
+            });
+            if (verifyError) throw verifyError;
+
+            if (verifyData.user) {
+                let finalAvatarUrl = null;
+                if (temporaryRegistrationData.file) {
+                    const ext = temporaryRegistrationData.file.name.split('.').pop();
+                    const fileName = `${verifyData.user.id}-${Math.random()}.${ext}`;
+                    const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, temporaryRegistrationData.file);
+                    if (!uploadError) finalAvatarUrl = supabase.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
+                }
+                await supabase.from('uyeler').insert([{ 
+                    id: verifyData.user.id, ad_soyad: temporaryRegistrationData.name, 
+                    rol: temporaryRegistrationData.role, avatar_url: finalAvatarUrl, biyografi: "" 
+                }]);
+                
+                Swal.fire({ icon: 'success', title: 'Hesabınız Açıldı!', timer: 1500, showConfirmButton: false });
+                registerForm.reset(); otpVerifyForm.reset(); temporaryRegistrationData = null; selectedAvatarFile = null;
+                if(avatarPreview) avatarPreview.innerHTML = '<i class="fa-solid fa-camera text-2xl text-slate-400 group-hover:text-blue-500 transition-colors"></i>';
+                authModalWrapper.classList.add('tw-modal-hidden');
+                checkSession();
+            }
+        } catch (error) { Swal.fire({ icon: 'error', title: 'Geçersiz Kod', text: 'Girdiğiniz kod hatalı veya süresi dolmuş.' }); }
+        finally { btn.innerHTML = 'Doğrula & Hesabı Aç'; btn.disabled = false; }
     });
 }
 
@@ -539,6 +575,7 @@ if(loginForm) {
     });
 }
 
+// Şifre Sıfırlama OTP (Aşama 1: Kod iste)
 if(forgotPasswordForm) {
     forgotPasswordForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -546,28 +583,37 @@ if(forgotPasswordForm) {
         const btn = document.getElementById('forgot-btn');
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...'; btn.disabled = true;
         try {
-            const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
+            const { error } = await supabase.auth.resetPasswordForEmail(email);
             if (error) throw error;
-            Swal.fire({ icon: 'success', title: 'Gönderildi', text: 'Bağlantı iletildi.' });
-            forgotPasswordForm.reset(); toggleAuthForms(loginForm);
+            Swal.fire({ icon: 'success', title: 'Kod Gönderildi', text: 'Lütfen mailinize gelen 6 haneli kodu kontrol edin.' });
+            toggleAuthForms(resetOtpForm);
         } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
-        finally { btn.innerHTML = 'Gönder'; btn.disabled = false; }
+        finally { btn.innerHTML = 'Kod Gönder'; btn.disabled = false; }
     });
 }
 
-if(resetPasswordForm) {
-    resetPasswordForm.addEventListener('submit', async (e) => {
+// Şifre Sıfırlama OTP (Aşama 2: Kodu doğrula ve şifreyi güncelle)
+if(resetOtpForm) {
+    resetOtpForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const newPassword = document.getElementById('new-password').value;
-        const btn = document.getElementById('reset-btn');
+        const email = document.getElementById('forgot-email').value; // İlk formdaki maili kullan
+        const token = document.getElementById('reset-otp-code').value.trim();
+        const newPassword = document.getElementById('reset-new-password').value;
+        const btn = document.getElementById('reset-otp-btn');
+        
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Güncelleniyor...'; btn.disabled = true;
         try {
-            const { error } = await supabase.auth.updateUser({ password: newPassword });
-            if (error) throw error;
-            Swal.fire({ icon: 'success', title: 'Başarılı', text: 'Şifre güncellendi!', timer: 1500, showConfirmButton: false });
-            resetPasswordForm.reset(); checkSession();
-        } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
-        finally { btn.innerHTML = 'Güncelle'; btn.disabled = false; }
+            const { error: verifyError } = await supabase.auth.verifyOtp({ email, token, type: 'recovery' });
+            if (verifyError) throw verifyError;
+            
+            const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
+            if (updateError) throw updateError;
+
+            Swal.fire({ icon: 'success', title: 'Başarılı', text: 'Şifreniz başarıyla güncellendi.', timer: 1500, showConfirmButton: false });
+            resetOtpForm.reset(); forgotPasswordForm.reset();
+            toggleAuthForms(loginForm);
+        } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: 'Geçersiz kod veya güncelleme hatası.' }); }
+        finally { btn.innerHTML = 'Şifremi Güncelle'; btn.disabled = false; }
     });
 }
 
@@ -619,18 +665,17 @@ if(editProfileForm) {
     });
 }
 
-if(logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-        if (realtimeChannel) supabase.removeChannel(realtimeChannel);
-        if (chatBroadcastChannel) supabase.removeChannel(chatBroadcastChannel);
-        await supabase.auth.signOut();
-        socialDashboardModal.classList.add('tw-modal-hidden');
-        document.body.style.overflow = ''; 
-        checkSession();
-    });
-}
+const handleLogout = async () => {
+    if (realtimeChannel) supabase.removeChannel(realtimeChannel);
+    if (chatBroadcastChannel) supabase.removeChannel(chatBroadcastChannel);
+    await supabase.auth.signOut();
+    socialDashboardModal.classList.add('tw-modal-hidden');
+    document.body.style.overflow = ''; 
+    checkSession();
+};
+if(logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+if(logoutTextBtn) logoutTextBtn.addEventListener('click', handleLogout);
 
-// --- Session & Realtime Yönetimi ---
 async function checkSession() {
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
@@ -734,7 +779,6 @@ function setupRealtime() {
     }
 }
 
-// --- Bildirimler ---
 async function checkNotificationsBadge() {
     if (!currentUserSession || !notificationBadge) return;
     try {
@@ -745,8 +789,7 @@ async function checkNotificationsBadge() {
 
 if(notificationBtn) {
     notificationBtn.addEventListener('click', async () => {
-        notificationModal.classList.remove('tw-modal-hidden'); 
-        setTimeout(() => notificationModal.firstElementChild.classList.remove('translate-x-full'), 10);
+        openSideModal('notification-modal', 'notification-panel');
         notificationList.innerHTML = '<div class="text-center text-slate-400 mt-10"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i></div>';
         try {
             const { data: notifications } = await supabase.from('bildirimler').select('*, gonderen:uyeler!gonderen_id(ad_soyad, avatar_url)').eq('alici_id', currentUserSession.user.id).order('created_at', { ascending: false }).limit(20);
@@ -771,24 +814,14 @@ if(notificationBtn) {
     });
 }
 
-if(closeNotificationModalBtn) {
-    closeNotificationModalBtn.addEventListener('click', () => { 
-        notificationModal.firstElementChild.classList.add('translate-x-full'); 
-        setTimeout(() => notificationModal.classList.add('tw-modal-hidden'), 300); 
-        checkNotificationsBadge(); 
-    });
-}
-
 window.handleNotificationClick = async (notificationId, postId, senderId) => {
     await supabase.from('bildirimler').update({ okundu: true }).eq('id', notificationId);
-    notificationModal.firstElementChild.classList.add('translate-x-full'); 
-    setTimeout(() => notificationModal.classList.add('tw-modal-hidden'), 300); 
+    closeSideModal('notification-modal', 'notification-panel');
     checkNotificationsBadge();
     if (postId && postId !== 'null' && postId !== 'undefined') openSinglePost(postId);
     else if (senderId && senderId !== 'null') openUserProfile(senderId);
 };
 
-// --- Mesajlaşma Sistemi ---
 async function checkMessagesBadge() {
     if (!currentUserSession || !messagesBadge) return;
     try {
@@ -799,16 +832,8 @@ async function checkMessagesBadge() {
 
 if(messagesBtn) {
     messagesBtn.addEventListener('click', () => {
-        messagesListModal.classList.remove('tw-modal-hidden'); 
-        setTimeout(() => messagesListModal.firstElementChild.classList.remove('translate-x-full'), 10);
+        openSideModal('messages-list-modal', 'messages-list-panel');
         loadConversations();
-    });
-}
-
-if(closeMessagesListModalBtn) {
-    closeMessagesListModalBtn.addEventListener('click', () => { 
-        messagesListModal.firstElementChild.classList.add('translate-x-full'); 
-        setTimeout(() => messagesListModal.classList.add('tw-modal-hidden'), 300); 
     });
 }
 
@@ -856,7 +881,7 @@ window.openChat = async (targetId, targetName, targetAvatar) => {
     if(dmUserAvatar) dmUserAvatar.setAttribute('data-user-id', targetId); 
     if(dmUserName) dmUserName.setAttribute('data-user-id', targetId);
     
-    if(dmModal) { dmModal.classList.remove('tw-modal-hidden'); setTimeout(() => dmModal.classList.remove('translate-x-full'), 10); }
+    openSideModal('dm-modal', 'dm-panel');
     if(dmHistory) dmHistory.innerHTML = '<div class="flex-1 flex items-center justify-center"><i class="fa-solid fa-spinner fa-spin text-2xl text-slate-400"></i></div>';
 
     try {
@@ -917,13 +942,6 @@ function appendMessageToUI(msg, isMine) {
 }
 
 function scrollToChatBottom() { if(dmHistory) dmHistory.scrollTop = dmHistory.scrollHeight; }
-
-if(closeDmBtn) {
-    closeDmBtn.addEventListener('click', () => {
-        currentChatUserId = null;
-        dmModal.classList.add('translate-x-full'); setTimeout(() => dmModal.classList.add('tw-modal-hidden'), 300);
-    });
-}
 
 if(dmInput) {
     dmInput.addEventListener('input', () => {
@@ -1012,7 +1030,6 @@ if(dmHistory) {
     });
 }
 
-// --- Sosyal Medya Dashboard Post ve Akış ---
 if(postTypeRadios) {
     postTypeRadios.forEach(radio => {
         radio.addEventListener('change', (e) => {
@@ -1065,7 +1082,6 @@ if(feedFilters) {
     });
 }
 
-// Buton Çizgi Fix: Tüm butonlara 'border-none outline-none bg-transparent' eklendi
 function generatePostHTML(post, isSingleView = false) {
     const author = post.yazar || {};
     const avatar = author.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(author.ad_soyad || 'U')}&background=1e3a8a&color=fff`;
@@ -1264,7 +1280,7 @@ document.addEventListener('click', async (e) => {
         Swal.fire({
             title: 'Emin misin?', text: "Bu gönderiyi kalıcı olarak sileceksin!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Evet, Sil!', cancelButtonText: 'İptal'
         }).then(async (result) => {
-            if (result.isConfirmed) { await supabase.from('gonderiler').delete().eq('id', postId); loadFeed(currentFeedFilter); if(closeSinglePostBtn) closeSinglePostBtn.click(); }
+            if (result.isConfirmed) { await supabase.from('gonderiler').delete().eq('id', postId); loadFeed(currentFeedFilter); if(closeSinglePostBtn) closeSideModal('single-post-modal', 'single-post-panel'); }
         });
     }
 
@@ -1281,7 +1297,7 @@ document.addEventListener('click', async (e) => {
         const postId = target.getAttribute('data-post-id');
         const oldText = decodeURIComponent(target.getAttribute('data-text'));
         const { value: newText } = await Swal.fire({ input: 'textarea', inputValue: oldText, showCancelButton: true, confirmButtonText: 'Kaydet', cancelButtonText: 'İptal' });
-        if (newText && newText !== oldText) { await supabase.from('gonderiler').update({ metin: newText }).eq('id', postId); loadFeed(currentFeedFilter); if(closeSinglePostBtn) closeSinglePostBtn.click(); }
+        if (newText && newText !== oldText) { await supabase.from('gonderiler').update({ metin: newText }).eq('id', postId); loadFeed(currentFeedFilter); if(closeSinglePostBtn) closeSideModal('single-post-modal', 'single-post-panel'); }
     }
 
     if (target.classList.contains('edit-comment-btn')) {
@@ -1321,7 +1337,7 @@ document.addEventListener('dblclick', async (e) => {
 
 window.openUserProfile = async (uId) => {
     currentlyViewingProfileId = uId;
-    if(userProfileModal) { userProfileModal.classList.remove('tw-modal-hidden'); setTimeout(() => userProfileModal.classList.remove('translate-x-full'), 10); }
+    openSideModal('user-profile-modal', 'user-profile-panel');
     const tabGridBtn = document.getElementById('tab-grid');
     if(tabGridBtn) tabGridBtn.click();
 
@@ -1344,7 +1360,7 @@ window.openUserProfile = async (uId) => {
             if(messageUserBtn) {
                 messageUserBtn.classList.remove('hidden');
                 messageUserBtn.onclick = () => {
-                    userProfileModal.classList.add('translate-x-full'); setTimeout(() => userProfileModal.classList.add('tw-modal-hidden'), 300);
+                    closeSideModal('user-profile-modal', 'user-profile-panel');
                     openChat(uId, user.ad_soyad, userAvatar);
                 };
             }
@@ -1383,8 +1399,6 @@ document.addEventListener('click', async (e) => {
     if (uId) openUserProfile(uId);
 });
 
-if(closeUserProfileBtn) closeUserProfileBtn.addEventListener('click', () => { userProfileModal.classList.add('translate-x-full'); setTimeout(() => userProfileModal.classList.add('tw-modal-hidden'), 300); });
-
 if(followBtn) {
     followBtn.addEventListener('click', async () => {
         await supabase.from('takipler').insert([{ takip_eden_id: currentUserSession.user.id, takip_edilen_id: currentlyViewingProfileId }]);
@@ -1400,16 +1414,14 @@ if(unfollowBtn) {
 }
 
 window.openSinglePost = async (postId) => {
-    if(singlePostModal) { singlePostModal.classList.remove('tw-modal-hidden'); setTimeout(() => singlePostModal.classList.remove('translate-x-full'), 10); }
+    openSideModal('single-post-modal', 'single-post-panel');
     if(singlePostContainer) singlePostContainer.innerHTML = '<p class="text-center mt-20 text-slate-400"><i class="fa-solid fa-spinner fa-spin text-3xl mb-2"></i><br>Yükleniyor...</p>';
     try {
         const { data: post } = await supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).eq('id', postId).single();
         if(singlePostContainer) singlePostContainer.innerHTML = generatePostHTML(post, true);
     } catch (e) {}
 };
-if(closeSinglePostBtn) closeSinglePostBtn.addEventListener('click', () => { singlePostModal.classList.add('translate-x-full'); setTimeout(() => singlePostModal.classList.add('tw-modal-hidden'), 300); });
 
-// Zamanlama (ES Module) hatalarını çözmek için doğrudan çağırıyoruz.
+// Başlangıç Yüklemeleri
 fetchApprovedReviews();
 checkSession();
-
