@@ -23,7 +23,10 @@ a { text-decoration: none; color: inherit; }
 ul { list-style: none; }
 
 /* Butonlar için ekstra sıfırlama (Öz Social Çizgi Hataları İçin Güvenlik Katmanı) */
-button { outline: none; cursor: pointer; font-family: inherit; }
+button { outline: none; cursor: pointer; font-family: inherit; border: none; background: transparent; }
+
+/* Tailwind preflight kapalıyken modal gizleme garantisi */
+.tw-modal-hidden { display: none !important; }
 
 /* Typography */
 h1, h2, h3 { font-weight: 700; line-height: 1.2; }
@@ -35,7 +38,7 @@ h1, h2, h3 { font-weight: 700; line-height: 1.2; }
 section { padding: 80px 0; }
 .bg-gray { background-color: var(--bg-light); }
 
-/* Buttons */
+/* Buttons (Ana Site Butonları İçin Geri Yükleme) */
 .btn { display: inline-block; padding: 12px 28px; border-radius: 5px; font-weight: 600; cursor: pointer; transition: var(--transition); border: none; text-align: center; }
 .btn-primary { background-color: var(--secondary-color); color: var(--bg-white); }
 .btn-primary:hover { background-color: var(--primary-color); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
