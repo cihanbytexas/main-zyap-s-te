@@ -8,26 +8,6 @@ const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // ============================================
-// GÜVENLİ YAN MENÜ AÇMA/KAPAMA FONKSİYONLARI
-// ============================================
-window.openSideModal = function(wrapperId, panelId) {
-    const wrapper = document.getElementById(wrapperId);
-    const panel = document.getElementById(panelId);
-    if(wrapper && panel) {
-        wrapper.classList.remove('tw-modal-hidden');
-        setTimeout(() => panel.classList.remove('translate-x-full'), 10);
-    }
-}
-window.closeSideModal = function(wrapperId, panelId) {
-    const wrapper = document.getElementById(wrapperId);
-    const panel = document.getElementById(panelId);
-    if(wrapper && panel) {
-        panel.classList.add('translate-x-full');
-        setTimeout(() => wrapper.classList.add('tw-modal-hidden'), 300);
-    }
-}
-
-// ============================================
 // ANA SİTE MANTIĞI (DİL, KARTELA, CHATBOT)
 // ============================================
 let currentLang = 'tr';
@@ -343,7 +323,7 @@ swatches.forEach(swatch => {
 
 const authModalWrapper = document.getElementById('auth-modal-wrapper');
 const closeAuthModalBtn = document.getElementById('close-auth-modal');
-const navAuthMainBtn = document.getElementById('nav-main-auth-btn'); // Mobildeki yeni tek buton
+const navAuthMainBtn = document.getElementById('nav-main-auth-btn');
 const navAuthBtnsContainer = document.getElementById('nav-auth-buttons');
 const profileFabContainer = document.getElementById('profile-fab-container');
 const profileFabBtn = document.getElementById('profile-fab-btn');
@@ -353,8 +333,8 @@ const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
 const forgotPasswordForm = document.getElementById('forgot-password-form');
 const resetPasswordForm = document.getElementById('reset-password-form');
-const otpVerifyForm = document.getElementById('otp-verify-form'); // Yeni
-const resetOtpForm = document.getElementById('reset-otp-form'); // Yeni
+const otpVerifyForm = document.getElementById('otp-verify-form');
+const resetOtpForm = document.getElementById('reset-otp-form');
 
 const showRegisterBtn = document.getElementById('show-register');
 const showLoginBtn = document.getElementById('show-login');
@@ -366,7 +346,7 @@ const backToForgotBtn = document.getElementById('back-to-forgot-from-reset');
 const socialDashboardModal = document.getElementById('social-dashboard-modal');
 const closeSocialDashboardBtn = document.getElementById('close-social-dashboard');
 const logoutBtn = document.getElementById('logout-btn');
-const logoutTextBtn = document.getElementById('logout-text-btn'); // Yeni büyük buton
+const logoutTextBtn = document.getElementById('logout-text-btn');
 const dashboardView = document.getElementById('dashboard-view');
 const editProfileForm = document.getElementById('edit-profile-form');
 const editProfileBtn = document.getElementById('edit-profile-btn');
@@ -393,23 +373,27 @@ const submitPostBtn = document.getElementById('submit-post-btn');
 const notificationBtn = document.getElementById('notification-btn');
 const notificationBadge = document.getElementById('notification-badge');
 const notificationModal = document.getElementById('notification-modal');
+const closeNotificationModalBtn = document.getElementById('close-notification-modal');
 const notificationList = document.getElementById('notification-list');
 
 const messagesBtn = document.getElementById('messages-btn');
 const messagesBadge = document.getElementById('messages-badge');
 const messagesListModal = document.getElementById('messages-list-modal');
+const closeMessagesListModalBtn = document.getElementById('close-messages-list-modal');
 const conversationsList = document.getElementById('conversations-list');
 
 const dmModal = document.getElementById('dm-modal');
-const dmHistory = document.getElementById('chat-history');
+const closeDmBtn = document.getElementById('close-dm-btn');
+const dmHistory = document.getElementById('dm-history');
 const dmForm = document.getElementById('dm-form');
 const dmInput = document.getElementById('dm-input');
-const dmMediaInput = document.getElementById('chat-media-input');
-const dmTypingIndicator = document.getElementById('chat-typing-indicator');
-const dmUserAvatar = document.getElementById('chat-user-avatar');
-const dmUserName = document.getElementById('chat-user-name');
+const dmMediaInput = document.getElementById('dm-media-input');
+const dmTypingIndicator = document.getElementById('dm-typing-indicator');
+const dmUserAvatar = document.getElementById('dm-user-avatar');
+const dmUserName = document.getElementById('dm-user-name');
 
 const userProfileModal = document.getElementById('user-profile-modal');
+const closeUserProfileBtn = document.getElementById('close-user-profile');
 const upHeaderName = document.getElementById('up-header-name');
 const upAvatar = document.getElementById('up-avatar');
 const upPostCount = document.getElementById('up-post-count');
@@ -418,12 +402,19 @@ const upFollowingCount = document.getElementById('up-following-count');
 const upName = document.getElementById('up-name');
 const upRole = document.getElementById('up-role');
 const upBio = document.getElementById('up-bio');
+const upGrid = document.getElementById('up-grid');
 const followBtn = document.getElementById('follow-btn');
 const unfollowBtn = document.getElementById('unfollow-btn');
 const messageUserBtn = document.getElementById('message-user-btn');
+const tabGrid = document.getElementById('tab-grid');
+const tabQuestions = document.getElementById('tab-questions');
+const upQuestionsList = document.getElementById('up-questions-list');
 
 const singlePostModal = document.getElementById('single-post-modal');
+const closeSinglePostBtn = document.getElementById('close-single-post');
 const singlePostContainer = document.getElementById('single-post-container');
+const likesModal = document.getElementById('likes-modal');
+const closeLikesModalBtn = document.getElementById('close-likes-modal');
 
 // State Değişkenleri
 let currentUserSession = null;
@@ -437,6 +428,20 @@ let realtimeChannel = null;
 let chatBroadcastChannel = null;
 let typingTimeout;
 let temporaryRegistrationData = null; // OTP için
+
+// --- YARDIMCI (UTILITY) MODAL FONKSİYONLARI ---
+function showSimpleModal(modalEl) {
+    if(modalEl) {
+        modalEl.classList.remove('tw-modal-hidden');
+        setTimeout(() => modalEl.classList.remove('translate-x-full'), 10);
+    }
+}
+function hideSimpleModal(modalEl) {
+    if(modalEl) {
+        modalEl.classList.add('translate-x-full');
+        setTimeout(() => modalEl.classList.add('tw-modal-hidden'), 300);
+    }
+}
 
 // --- Auth Açılışları ---
 function openAuthModal(formType) {
@@ -493,7 +498,7 @@ if(backToLoginBtn) backToLoginBtn.addEventListener('click', (e) => { e.preventDe
 if(backToRegBtn) backToRegBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(registerForm); });
 if(backToForgotBtn) backToForgotBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(forgotPasswordForm); });
 
-// OTP'li Kayıt (Aşama 1: Sadece kod gönder)
+// OTP'li Kayıt (Aşama 1)
 if(registerForm) {
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -508,9 +513,7 @@ if(registerForm) {
             const { error: authError } = await supabase.auth.signUp({ email, password });
             if (authError) throw authError;
 
-            // Verileri OTP doğrulaması sonrasına saklıyoruz
             temporaryRegistrationData = { name, role, email, password, file: selectedAvatarFile };
-            
             Swal.fire({ icon: 'success', title: 'Kod Gönderildi', text: 'E-postanıza gelen 6 haneli doğrulama kodunu giriniz.' });
             toggleAuthForms(otpVerifyForm);
         } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
@@ -518,7 +521,7 @@ if(registerForm) {
     });
 }
 
-// OTP'li Kayıt (Aşama 2: Kodu onayla, avatar yükle ve hesabı aç)
+// OTP'li Kayıt (Aşama 2)
 if(otpVerifyForm) {
     otpVerifyForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -575,7 +578,7 @@ if(loginForm) {
     });
 }
 
-// Şifre Sıfırlama OTP (Aşama 1: Kod iste)
+// Şifre Sıfırlama OTP (Aşama 1)
 if(forgotPasswordForm) {
     forgotPasswordForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -592,11 +595,11 @@ if(forgotPasswordForm) {
     });
 }
 
-// Şifre Sıfırlama OTP (Aşama 2: Kodu doğrula ve şifreyi güncelle)
+// Şifre Sıfırlama OTP (Aşama 2)
 if(resetOtpForm) {
     resetOtpForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = document.getElementById('forgot-email').value; // İlk formdaki maili kullan
+        const email = document.getElementById('forgot-email').value;
         const token = document.getElementById('reset-otp-code').value.trim();
         const newPassword = document.getElementById('reset-new-password').value;
         const btn = document.getElementById('reset-otp-btn');
@@ -789,7 +792,7 @@ async function checkNotificationsBadge() {
 
 if(notificationBtn) {
     notificationBtn.addEventListener('click', async () => {
-        openSideModal('notification-modal', 'notification-panel');
+        showSimpleModal(notificationModal);
         notificationList.innerHTML = '<div class="text-center text-slate-400 mt-10"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i></div>';
         try {
             const { data: notifications } = await supabase.from('bildirimler').select('*, gonderen:uyeler!gonderen_id(ad_soyad, avatar_url)').eq('alici_id', currentUserSession.user.id).order('created_at', { ascending: false }).limit(20);
@@ -814,10 +817,11 @@ if(notificationBtn) {
     });
 }
 
+if(closeNotificationModalBtn) closeNotificationModalBtn.addEventListener('click', () => { hideSimpleModal(notificationModal); checkNotificationsBadge(); });
+
 window.handleNotificationClick = async (notificationId, postId, senderId) => {
     await supabase.from('bildirimler').update({ okundu: true }).eq('id', notificationId);
-    closeSideModal('notification-modal', 'notification-panel');
-    checkNotificationsBadge();
+    hideSimpleModal(notificationModal); checkNotificationsBadge();
     if (postId && postId !== 'null' && postId !== 'undefined') openSinglePost(postId);
     else if (senderId && senderId !== 'null') openUserProfile(senderId);
 };
@@ -832,10 +836,12 @@ async function checkMessagesBadge() {
 
 if(messagesBtn) {
     messagesBtn.addEventListener('click', () => {
-        openSideModal('messages-list-modal', 'messages-list-panel');
+        showSimpleModal(messagesListModal);
         loadConversations();
     });
 }
+
+if(closeMessagesListModalBtn) closeMessagesListModalBtn.addEventListener('click', () => hideSimpleModal(messagesListModal));
 
 async function loadConversations() {
     if(!conversationsList) return;
@@ -881,7 +887,7 @@ window.openChat = async (targetId, targetName, targetAvatar) => {
     if(dmUserAvatar) dmUserAvatar.setAttribute('data-user-id', targetId); 
     if(dmUserName) dmUserName.setAttribute('data-user-id', targetId);
     
-    openSideModal('dm-modal', 'dm-panel');
+    showSimpleModal(dmModal);
     if(dmHistory) dmHistory.innerHTML = '<div class="flex-1 flex items-center justify-center"><i class="fa-solid fa-spinner fa-spin text-2xl text-slate-400"></i></div>';
 
     try {
@@ -942,6 +948,13 @@ function appendMessageToUI(msg, isMine) {
 }
 
 function scrollToChatBottom() { if(dmHistory) dmHistory.scrollTop = dmHistory.scrollHeight; }
+
+if(closeDmBtn) {
+    closeDmBtn.addEventListener('click', () => {
+        currentChatUserId = null;
+        hideSimpleModal(dmModal);
+    });
+}
 
 if(dmInput) {
     dmInput.addEventListener('input', () => {
@@ -1039,8 +1052,8 @@ if(postTypeRadios) {
     });
 }
 
-if(openCreatePostBtn) openCreatePostBtn.addEventListener('click', () => { if(createPostModal) createPostModal.classList.remove('tw-modal-hidden'); });
-if(closePostModalBtn) closePostModalBtn.addEventListener('click', () => { if(createPostModal) createPostModal.classList.add('tw-modal-hidden'); if(createPostForm) createPostForm.reset(); if(mediaUploadContainer) mediaUploadContainer.classList.add('hidden'); });
+if(openCreatePostBtn) openCreatePostBtn.addEventListener('click', () => { showSimpleModal(createPostModal); });
+if(closePostModalBtn) closePostModalBtn.addEventListener('click', () => { hideSimpleModal(createPostModal); if(createPostForm) createPostForm.reset(); if(mediaUploadContainer) mediaUploadContainer.classList.add('hidden'); });
 
 if(createPostForm) {
     createPostForm.addEventListener('submit', async (e) => {
@@ -1065,7 +1078,7 @@ if(createPostForm) {
                 await supabase.from('bildirimler').insert(notifications);
             }
 
-            createPostModal.classList.add('tw-modal-hidden'); createPostForm.reset(); mediaUploadContainer.classList.add('hidden');
+            hideSimpleModal(createPostModal); createPostForm.reset(); mediaUploadContainer.classList.add('hidden');
             loadFeed(currentFeedFilter);
         } catch (error) {} finally { submitPostBtn.innerHTML = 'Paylaş'; submitPostBtn.disabled = false; }
     });
@@ -1280,7 +1293,7 @@ document.addEventListener('click', async (e) => {
         Swal.fire({
             title: 'Emin misin?', text: "Bu gönderiyi kalıcı olarak sileceksin!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Evet, Sil!', cancelButtonText: 'İptal'
         }).then(async (result) => {
-            if (result.isConfirmed) { await supabase.from('gonderiler').delete().eq('id', postId); loadFeed(currentFeedFilter); if(closeSinglePostBtn) closeSideModal('single-post-modal', 'single-post-panel'); }
+            if (result.isConfirmed) { await supabase.from('gonderiler').delete().eq('id', postId); loadFeed(currentFeedFilter); if(closeSinglePostBtn) hideSimpleModal(singlePostModal); }
         });
     }
 
@@ -1297,7 +1310,7 @@ document.addEventListener('click', async (e) => {
         const postId = target.getAttribute('data-post-id');
         const oldText = decodeURIComponent(target.getAttribute('data-text'));
         const { value: newText } = await Swal.fire({ input: 'textarea', inputValue: oldText, showCancelButton: true, confirmButtonText: 'Kaydet', cancelButtonText: 'İptal' });
-        if (newText && newText !== oldText) { await supabase.from('gonderiler').update({ metin: newText }).eq('id', postId); loadFeed(currentFeedFilter); if(closeSinglePostBtn) closeSideModal('single-post-modal', 'single-post-panel'); }
+        if (newText && newText !== oldText) { await supabase.from('gonderiler').update({ metin: newText }).eq('id', postId); loadFeed(currentFeedFilter); if(closeSinglePostBtn) hideSimpleModal(singlePostModal); }
     }
 
     if (target.classList.contains('edit-comment-btn')) {
@@ -1335,38 +1348,66 @@ document.addEventListener('dblclick', async (e) => {
     }
 });
 
+// Profil Tabs Mantığı
+if(tabGrid && tabQuestions && upGrid && upQuestionsList) {
+    tabGrid.addEventListener('click', () => {
+        tabGrid.classList.add('border-slate-800', 'text-slate-800');
+        tabGrid.classList.remove('border-transparent', 'text-slate-400');
+        tabQuestions.classList.add('border-transparent', 'text-slate-400');
+        tabQuestions.classList.remove('border-slate-800', 'text-slate-800');
+        upGrid.classList.remove('tw-modal-hidden');
+        upQuestionsList.classList.add('tw-modal-hidden');
+    });
+    tabQuestions.addEventListener('click', () => {
+        tabQuestions.classList.add('border-slate-800', 'text-slate-800');
+        tabQuestions.classList.remove('border-transparent', 'text-slate-400');
+        tabGrid.classList.add('border-transparent', 'text-slate-400');
+        tabGrid.classList.remove('border-slate-800', 'text-slate-800');
+        upQuestionsList.classList.remove('tw-modal-hidden');
+        upGrid.classList.add('tw-modal-hidden');
+    });
+}
+
 window.openUserProfile = async (uId) => {
+    if(!uId || uId === 'null' || uId === 'undefined') { console.error('Geçersiz User ID'); return; }
     currentlyViewingProfileId = uId;
-    openSideModal('user-profile-modal', 'user-profile-panel');
-    const tabGridBtn = document.getElementById('tab-grid');
-    if(tabGridBtn) tabGridBtn.click();
+    showSimpleModal(userProfileModal);
+    if(tabGrid) tabGrid.click();
 
     if(upGrid) upGrid.innerHTML = '<div class="col-span-3 text-center p-10"><i class="fa-solid fa-spinner fa-spin text-2xl text-slate-400"></i></div>';
-    const upQuestionsList = document.getElementById('up-questions-list');
     if(upQuestionsList) upQuestionsList.innerHTML = '<div class="text-center p-10"><i class="fa-solid fa-spinner fa-spin text-2xl text-slate-400"></i></div>';
 
     try {
-        const { data: user } = await supabase.from('uyeler').select('*').eq('id', uId).single();
+        const { data: user, error } = await supabase.from('uyeler').select('*').eq('id', uId).single();
+        if (error) throw error;
+        
         if(upHeaderName) upHeaderName.innerText = user.ad_soyad; 
         if(upName) upName.innerText = user.ad_soyad; 
         if(upRole) upRole.innerText = user.rol; 
         if(upBio) upBio.innerText = user.biyografi || '';
-        const userAvatar = user.avatar_url || 'https://via.placeholder.com/150';
+        const userAvatar = user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.ad_soyad || 'U')}&background=1e3a8a&color=fff`;
         if(upAvatar) upAvatar.src = userAvatar;
 
-        if (uId === currentUserSession.user.id) { 
-            if(followBtn) followBtn.classList.add('hidden'); if(unfollowBtn) unfollowBtn.classList.add('hidden'); if(messageUserBtn) messageUserBtn.classList.add('hidden');
-        } else {
+        if (currentUserSession && uId === currentUserSession.user.id) { 
+            if(followBtn) followBtn.classList.add('tw-modal-hidden'); 
+            if(unfollowBtn) unfollowBtn.classList.add('tw-modal-hidden'); 
+            if(messageUserBtn) messageUserBtn.classList.add('tw-modal-hidden');
+        } else if (currentUserSession) {
             if(messageUserBtn) {
-                messageUserBtn.classList.remove('hidden');
+                messageUserBtn.classList.remove('tw-modal-hidden');
                 messageUserBtn.onclick = () => {
-                    closeSideModal('user-profile-modal', 'user-profile-panel');
+                    hideSimpleModal(userProfileModal);
                     openChat(uId, user.ad_soyad, userAvatar);
                 };
             }
             const { data: follow } = await supabase.from('takipler').select('id').eq('takip_eden_id', currentUserSession.user.id).eq('takip_edilen_id', uId).single();
-            if (follow) { if(followBtn) followBtn.classList.add('hidden'); if(unfollowBtn) unfollowBtn.classList.remove('hidden'); } 
-            else { if(unfollowBtn) unfollowBtn.classList.add('hidden'); if(followBtn) followBtn.classList.remove('hidden'); }
+            if (follow) { 
+                if(followBtn) followBtn.classList.add('tw-modal-hidden'); 
+                if(unfollowBtn) unfollowBtn.classList.remove('tw-modal-hidden'); 
+            } else { 
+                if(unfollowBtn) unfollowBtn.classList.add('tw-modal-hidden'); 
+                if(followBtn) followBtn.classList.remove('tw-modal-hidden'); 
+            }
         }
 
         const { count: fer } = await supabase.from('takipler').select('*', { count: 'exact', head: true }).eq('takip_edilen_id', uId);
@@ -1389,7 +1430,7 @@ window.openUserProfile = async (uId) => {
             if(upGrid && upGrid.innerHTML === '') upGrid.innerHTML = '<div class="col-span-3 text-center p-10 text-sm text-slate-400">Medya gönderisi yok.</div>';
             if(upQuestionsList && upQuestionsList.innerHTML === '') upQuestionsList.innerHTML = '<p class="text-center text-sm text-slate-400 p-10">Soru gönderisi yok.</p>';
         }
-    } catch(e) {}
+    } catch(e) { console.error('Profil yüklenirken hata:', e); }
 };
 
 document.addEventListener('click', async (e) => {
@@ -1399,28 +1440,31 @@ document.addEventListener('click', async (e) => {
     if (uId) openUserProfile(uId);
 });
 
+if(closeUserProfileBtn) closeUserProfileBtn.addEventListener('click', () => hideSimpleModal(userProfileModal));
+
 if(followBtn) {
     followBtn.addEventListener('click', async () => {
         await supabase.from('takipler').insert([{ takip_eden_id: currentUserSession.user.id, takip_edilen_id: currentlyViewingProfileId }]);
         await supabase.from('bildirimler').insert([{ alici_id: currentlyViewingProfileId, gonderen_id: currentUserSession.user.id, mesaj: 'Seni takip etmeye başladı.' }]);
-        followBtn.classList.add('hidden'); unfollowBtn.classList.remove('hidden'); upFollowerCount.innerText = parseInt(upFollowerCount.innerText)+1;
+        followBtn.classList.add('tw-modal-hidden'); unfollowBtn.classList.remove('tw-modal-hidden'); upFollowerCount.innerText = parseInt(upFollowerCount.innerText)+1;
     });
 }
 if(unfollowBtn) {
     unfollowBtn.addEventListener('click', async () => {
         await supabase.from('takipler').delete().eq('takip_eden_id', currentUserSession.user.id).eq('takip_edilen_id', currentlyViewingProfileId);
-        unfollowBtn.classList.add('hidden'); followBtn.classList.remove('hidden'); upFollowerCount.innerText = parseInt(upFollowerCount.innerText)-1;
+        unfollowBtn.classList.add('tw-modal-hidden'); followBtn.classList.remove('tw-modal-hidden'); upFollowerCount.innerText = parseInt(upFollowerCount.innerText)-1;
     });
 }
 
 window.openSinglePost = async (postId) => {
-    openSideModal('single-post-modal', 'single-post-panel');
+    showSimpleModal(singlePostModal);
     if(singlePostContainer) singlePostContainer.innerHTML = '<p class="text-center mt-20 text-slate-400"><i class="fa-solid fa-spinner fa-spin text-3xl mb-2"></i><br>Yükleniyor...</p>';
     try {
         const { data: post } = await supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).eq('id', postId).single();
         if(singlePostContainer) singlePostContainer.innerHTML = generatePostHTML(post, true);
     } catch (e) {}
 };
+if(closeSinglePostBtn) closeSinglePostBtn.addEventListener('click', () => hideSimpleModal(singlePostModal));
 
 // Başlangıç Yüklemeleri
 fetchApprovedReviews();
