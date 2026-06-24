@@ -1,103 +1,15 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
+// ============================================
+// SUPABASE BAĞLANTISI
+// ============================================
 const supabaseUrl = "https://ppdwtpjglkphayfxexhv.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwZHd0cGpnbGtwaGF5ZnhleGh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNTc5ODEsImV4cCI6MjA5NjgzMzk4MX0.fJIyyxfU15EgrNARWkISFHJvU7-o-QpZbIKbRc3q_-s";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// --- DOM ELEMENTLERİ ---
-const authContainer = document.getElementById('auth-container');
-const mainAppContainer = document.getElementById('main-app-container');
-
-const loginForm = document.getElementById('login-form');
-const registerForm = document.getElementById('register-form');
-const forgotPasswordForm = document.getElementById('forgot-password-form');
-const resetPasswordForm = document.getElementById('reset-password-form');
-const otpVerifyForm = document.getElementById('otp-verify-form');
-const resetOtpForm = document.getElementById('reset-otp-form');
-
-const showRegisterBtn = document.getElementById('show-register');
-const showLoginBtn = document.getElementById('show-login');
-const showForgotPasswordBtn = document.getElementById('show-forgot-password');
-const backToLoginBtn = document.getElementById('back-to-login');
-const backToRegFromOtpBtn = document.getElementById('back-to-reg-from-otp');
-const backToForgotFromResetBtn = document.getElementById('back-to-forgot-from-reset');
-const logoutBtn = document.getElementById('logout-btn');
-
-const dashboardView = document.getElementById('dashboard-view');
-const editProfileForm = document.getElementById('edit-profile-form');
-const editProfileBtn = document.getElementById('edit-profile-btn');
-const cancelEditBtn = document.getElementById('cancel-edit-btn');
-const editAvatarInput = document.getElementById('edit-avatar');
-const editAvatarImg = document.getElementById('edit-avatar-img');
-const editNameInput = document.getElementById('edit-name');
-const editBioInput = document.getElementById('edit-bio');
-
-const avatarInput = document.getElementById('reg-avatar');
-const avatarPreview = document.getElementById('avatar-preview');
-
-const feedList = document.getElementById('feed-list');
-const feedFilters = document.querySelectorAll('.feed-filter');
-const openCreatePostBtn = document.getElementById('open-create-post');
-const createPostModal = document.getElementById('create-post-modal');
-const closePostModalBtn = document.getElementById('close-post-modal');
-const createPostForm = document.getElementById('create-post-form');
-const postTypeRadios = document.getElementsByName('post_type');
-const mediaUploadContainer = document.getElementById('media-upload-container');
-const postMediaInput = document.getElementById('post-media');
-const postTextInput = document.getElementById('post-text');
-const submitPostBtn = document.getElementById('submit-post-btn');
-
-const notificationBtn = document.getElementById('notification-btn');
-const notificationBadge = document.getElementById('notification-badge');
-const notificationModal = document.getElementById('notification-modal');
-const closeNotificationModalBtn = document.getElementById('close-notification-modal');
-const notificationList = document.getElementById('notification-list');
-
-const messagesBtn = document.getElementById('messages-btn');
-const messagesBadge = document.getElementById('messages-badge');
-const messagesListModal = document.getElementById('messages-list-modal');
-const closeMessagesListModalBtn = document.getElementById('close-messages-list-modal');
-const conversationsList = document.getElementById('conversations-list');
-
-// DM Modal İzolasyonu
-const dmModal = document.getElementById('dm-modal');
-const closeDmBtn = document.getElementById('close-dm-btn');
-const closeDmBtnAlt = document.getElementById('close-dm-btn-alt');
-const dmHistory = document.getElementById('dm-history');
-const dmForm = document.getElementById('dm-form');
-const dmInput = document.getElementById('dm-input');
-const dmMediaInput = document.getElementById('dm-media-input');
-const dmTypingIndicator = document.getElementById('dm-typing-indicator');
-const dmUserAvatar = document.getElementById('dm-user-avatar');
-const dmUserName = document.getElementById('dm-user-name');
-
-const likesModal = document.getElementById('likes-modal');
-const closeLikesModalBtn = document.getElementById('close-likes-modal');
-const likesList = document.getElementById('likes-list');
-
-const userProfileModal = document.getElementById('user-profile-modal');
-const closeUserProfileBtn = document.getElementById('close-user-profile');
-const upHeaderName = document.getElementById('up-header-name');
-const upAvatar = document.getElementById('up-avatar');
-const upPostCount = document.getElementById('up-post-count');
-const upFollowerCount = document.getElementById('up-follower-count');
-const upFollowingCount = document.getElementById('up-following-count');
-const upName = document.getElementById('up-name');
-const upRole = document.getElementById('up-role');
-const upBio = document.getElementById('up-bio');
-const upGrid = document.getElementById('up-grid');
-const followBtn = document.getElementById('follow-btn');
-const unfollowBtn = document.getElementById('unfollow-btn');
-const messageUserBtn = document.getElementById('message-user-btn');
-
-const tabGrid = document.getElementById('tab-grid');
-const tabQuestions = document.getElementById('tab-questions');
-const upQuestionsList = document.getElementById('up-questions-list');
-
-const singlePostModal = document.getElementById('single-post-modal');
-const closeSinglePostBtn = document.getElementById('close-single-post');
-const singlePostContainer = document.getElementById('single-post-container');
-
+// ============================================
+// STATE (DURUM) DEĞİŞKENLERİ
+// ============================================
 let currentUserSession = null;
 let currentFeedFilter = 'all';
 let activeReplyData = {}; 
@@ -108,56 +20,451 @@ let currentChatUserId = null;
 let realtimeChannel = null;
 let chatBroadcastChannel = null;
 let typingTimeout;
-let temporaryRegistrationData = null; // OTP geçici veri
+let temporaryRegistrationData = null; // OTP geçici verisi için
+let currentLang = 'tr';
 
-// --- UTILS ---
-function toggleAuthForms(activeForm) {
-    [loginForm, registerForm, forgotPasswordForm, resetPasswordForm, otpVerifyForm, resetOtpForm].forEach(f => {
-        if(f) f.classList.add('hidden');
-    });
-    if(activeForm) activeForm.classList.remove('hidden');
+// ============================================
+// MODAL & YARDIMCI FONKSİYONLAR
+// ============================================
+window.openSideModal = function(wrapperId, panelId) {
+    const wrapper = document.getElementById(wrapperId);
+    const panel = document.getElementById(panelId);
+    if(wrapper && panel) {
+        wrapper.classList.remove('tw-modal-hidden');
+        setTimeout(() => panel.classList.remove('translate-x-full'), 10);
+    }
 }
 
-avatarInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        selectedAvatarFile = file;
-        const reader = new FileReader();
-        reader.onload = (e) => avatarPreview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-        reader.readAsDataURL(file);
+window.closeSideModal = function(wrapperId, panelId) {
+    const wrapper = document.getElementById(wrapperId);
+    const panel = document.getElementById(panelId);
+    if(wrapper && panel) {
+        panel.classList.add('translate-x-full');
+        setTimeout(() => wrapper.classList.add('tw-modal-hidden'), 300);
     }
-});
+}
 
-// --- AUTH (OTP ENTEGRASYONU) ---
-showRegisterBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(registerForm); });
-showLoginBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(loginForm); });
-showForgotPasswordBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(forgotPasswordForm); });
-backToLoginBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(loginForm); });
-if(backToRegFromOtpBtn) backToRegFromOtpBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(registerForm); });
-if(backToForgotFromResetBtn) backToForgotFromResetBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(forgotPasswordForm); });
+function showSimpleModal(modalEl) {
+    if(modalEl) {
+        modalEl.classList.remove('tw-modal-hidden');
+        setTimeout(() => modalEl.classList.remove('translate-x-full'), 10);
+    }
+}
 
-// OTP: Kayıt Ol - Aşama 1
-registerForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = document.getElementById('reg-name').value;
-    const role = document.getElementById('reg-role').value;
-    const email = document.getElementById('reg-email').value;
-    const password = document.getElementById('reg-password').value;
-    const btn = document.getElementById('register-btn');
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kod Gönderiliyor...';
-    btn.disabled = true;
+function hideSimpleModal(modalEl) {
+    if(modalEl) {
+        modalEl.classList.add('translate-x-full');
+        setTimeout(() => modalEl.classList.add('tw-modal-hidden'), 300);
+    }
+}
+
+function toggleAuthForms(activeForm) {
+    const forms = [
+        document.getElementById('login-form'), 
+        document.getElementById('register-form'), 
+        document.getElementById('forgot-password-form'), 
+        document.getElementById('reset-password-form'), 
+        document.getElementById('otp-verify-form'), 
+        document.getElementById('reset-otp-form')
+    ];
+    forms.forEach(f => { if(f) f.classList.add('tw-modal-hidden'); });
+    if(activeForm) activeForm.classList.remove('tw-modal-hidden');
+}
+
+// ============================================
+// ANA SİTE MANTIĞI (index.html)
+// ============================================
+
+// --- Dil Seçeneği ---
+const langTrBtn = document.getElementById('lang-tr');
+const langEnBtn = document.getElementById('lang-en');
+
+function applyLanguage(lang) {
+    currentLang = lang;
+    if(langTrBtn && langEnBtn) {
+        langTrBtn.classList.toggle('active', lang === 'tr');
+        langEnBtn.classList.toggle('active', lang === 'en');
+    }
+
+    document.querySelectorAll('[data-tr]').forEach(el => {
+        const text = lang === 'tr' ? el.getAttribute('data-tr') : el.getAttribute('data-en');
+        if (text) {
+            if (text.includes('<') && text.includes('>')) { el.innerHTML = text; } 
+            else { el.textContent = text; }
+        }
+    });
+
+    document.querySelectorAll('[data-tr-placeholder]').forEach(el => {
+        const ph = lang === 'tr' ? el.getAttribute('data-tr-placeholder') : el.getAttribute('data-en-placeholder');
+        if (ph) el.placeholder = ph;
+    });
+
+    const botChatInput = document.getElementById('chat-input');
+    if (botChatInput) {
+        botChatInput.placeholder = lang === 'tr' ? 'Mesajınızı yazın...' : 'Type your message...';
+    }
+
+    if(typeof renderColors === "function") renderColors();
+    if(typeof fetchApprovedReviews === "function") fetchApprovedReviews();
+    document.documentElement.lang = lang === 'tr' ? 'tr' : 'en';
+}
+
+if(langTrBtn) langTrBtn.addEventListener('click', () => applyLanguage('tr'));
+if(langEnBtn) langEnBtn.addEventListener('click', () => applyLanguage('en'));
+
+// --- Asistan Chatbot ---
+const openChatBtn = document.getElementById('open-chatbot');
+const botChatModal = document.getElementById('chat-modal');
+const closeChatBtn = document.getElementById('close-chat');
+const botChatInput = document.getElementById('chat-input');
+const chatSend = document.getElementById('chat-send');
+const chatMessages = document.getElementById('chat-messages');
+let botChatInitialized = false;
+
+const addMessage = (text, type) => {
+    const div = document.createElement('div');
+    div.className = `msg msg-${type}`;
+    div.textContent = text;
+    if(chatMessages) {
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+};
+
+const showTypingIndicator = () => {
+    const div = document.createElement('div');
+    div.className = 'typing-indicator';
+    div.innerHTML = `<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>`;
+    if(chatMessages) {
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    return div;
+};
+
+if(openChatBtn) {
+    openChatBtn.onclick = () => {
+        if(botChatModal) botChatModal.style.display = 'flex';
+        if (!botChatInitialized) {
+            botChatInitialized = true;
+            const typingEl = showTypingIndicator();
+            setTimeout(() => {
+                if(typingEl) typingEl.remove();
+                addMessage(
+                    currentLang === 'tr' ? 'Merhaba! Ben Öz Yapı Market asistanı. Boya, tesisat veya bataryalarımız hakkında size nasıl yardımcı olabilirim?' : 'Hello! I am the Öz Yapı Market assistant. How can I help you about our paints, plumbing or batteries?', 
+                    'bot'
+                );
+            }, 1500);
+        }
+    };
+}
+if(closeChatBtn) closeChatBtn.onclick = () => botChatModal.style.display = 'none';
+
+const handleSend = async () => {
+    if(!botChatInput) return;
+    const val = botChatInput.value.trim();
+    if (!val) return;
+    
+    addMessage(val, 'user');
+    botChatInput.value = '';
+    const typingEl = showTypingIndicator();
+
     try {
-        const { error: authError } = await supabase.auth.signUp({ email, password });
-        if (authError) throw authError;
+        const res = await fetch("/api/chat", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: "Ziyaretçi", message: val })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        
+        if(typingEl) typingEl.remove();
+        addMessage(data.reply || (currentLang === 'tr' ? "Cevap alınamadı" : "No response received"), 'bot');
+    } catch (e) {
+        if(typingEl) typingEl.remove();
+        addMessage(currentLang === 'tr' ? "Bağlantı hatası oluştu, lütfen tekrar deneyin." : "Connection error, please try again.", 'bot');
+    }
+};
 
-        temporaryRegistrationData = { name, role, email, password, file: selectedAvatarFile };
-        Swal.fire({ icon: 'success', title: 'Kod Gönderildi', text: 'E-postanıza gelen 6 haneli kodu giriniz.' });
-        toggleAuthForms(otpVerifyForm);
-    } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
-    finally { btn.innerHTML = 'Kayıt Ol'; btn.disabled = false; }
+if(chatSend) chatSend.onclick = handleSend;
+if(botChatInput) botChatInput.onkeypress = (e) => { if(e.key === 'Enter') handleSend(); };
+
+// --- Kartela & PDF ---
+const openModalBtn = document.getElementById('open-kartela-btn');
+const kartelaModal = document.getElementById('kartela-modal');
+const closeKartelaBtn = document.getElementById('close-modal');
+const colorGrid = document.getElementById('modal-color-grid');
+const colorSearch = document.getElementById('color-search');
+const filterBtns = document.querySelectorAll('.filter-btn');
+const openPdfBtn = document.getElementById('open-pdf-btn');
+const pdfModal = document.getElementById('pdf-modal');
+const closePdfModalBtn = document.getElementById('close-pdf-modal');
+
+if(openPdfBtn) { openPdfBtn.onclick = () => { if(kartelaModal) kartelaModal.style.display = 'none'; if(pdfModal) pdfModal.style.display = 'flex'; }; }
+if(closePdfModalBtn) { closePdfModalBtn.onclick = () => { if(pdfModal) pdfModal.style.display = 'none'; if(kartelaModal) kartelaModal.style.display = 'flex'; }; }
+
+let activeFilter = 'all'; let searchTerm = '';
+
+window.renderColors = function() {
+    if(!colorGrid) return;
+    colorGrid.innerHTML = '';
+    if (typeof colorList === 'undefined') return;
+
+    const filtered = colorList.filter(color => {
+        const matchesSearch = color.name.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesType = activeFilter === 'all' || color.type === activeFilter;
+        return matchesSearch && matchesType;
+    });
+
+    const typeLabel = currentLang === 'tr' ? { ic: 'İç Cephe', dis: 'Dış Cephe' } : { ic: 'Interior', dis: 'Exterior' };
+
+    filtered.forEach(color => {
+        const item = document.createElement('div');
+        item.className = 'color-item';
+        item.innerHTML = `
+            <div class="swatch-preview" style="background-color: ${color.hex}"></div>
+            <span>${color.name}</span>
+            <div style="font-size:0.6rem; color:#9ca3af; margin-top:4px;">${typeLabel[color.type]}</div>
+        `;
+        colorGrid.appendChild(item);
+    });
+}
+
+if(colorSearch) { colorSearch.addEventListener('input', (e) => { searchTerm = e.target.value; if(typeof renderColors === "function") renderColors(); }); }
+
+if(filterBtns.length > 0) {
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => { b.classList.remove('active'); b.style.background = 'rgba(255,255,255,0.05)'; });
+            btn.classList.add('active');
+            activeFilter = btn.getAttribute('data-type');
+            if(typeof renderColors === "function") renderColors();
+        });
+    });
+}
+
+if(openModalBtn) openModalBtn.onclick = () => { if(kartelaModal) kartelaModal.style.display = 'flex'; if(typeof renderColors === "function") renderColors(); };
+if(closeKartelaBtn) closeKartelaBtn.onclick = () => { if(kartelaModal) kartelaModal.style.display = 'none'; };
+
+// --- Yorum Sistemi ---
+const reviewModal = document.getElementById('review-modal');
+const openReviewBtn = document.getElementById('open-review-modal');
+const closeReviewBtn = document.getElementById('close-review-modal');
+
+if (openReviewBtn) openReviewBtn.onclick = () => { if(reviewModal) reviewModal.style.display = 'flex'; };
+if (closeReviewBtn) closeReviewBtn.onclick = () => { if(reviewModal) reviewModal.style.display = 'none'; };
+
+let selectedRating = 0;
+document.querySelectorAll('#star-rating-container .review-star').forEach(star => {
+    star.addEventListener('click', function() {
+        selectedRating = parseInt(this.getAttribute('data-value')); updateStarDisplay(selectedRating);
+    });
+    star.addEventListener('mouseover', function() {
+        const hoverValue = parseInt(this.getAttribute('data-value')); updateStarDisplay(hoverValue);
+    });
+});
+document.getElementById('star-rating-container')?.addEventListener('mouseleave', () => updateStarDisplay(selectedRating));
+
+function updateStarDisplay(value) {
+    document.querySelectorAll('#star-rating-container .review-star').forEach(star => {
+        const starValue = parseInt(star.getAttribute('data-value'));
+        star.style.color = starValue <= value ? '#f59e0b' : '#cbd5e1';
+    });
+}
+
+window.fetchApprovedReviews = async function() {
+    const grid = document.getElementById('dynamic-testimonials-list');
+    if (!grid) return;
+    try {
+        const res = await fetch('/api/reviews');
+        const reviews = await res.json();
+        if(!reviews || reviews.length === 0) {
+            grid.innerHTML = currentLang === 'tr' ? `<p style="text-align:center; grid-column: 1/-1; color: var(--text-light);">Henüz yorum yapılmamış. İlk yorumu siz yapın!</p>` : `<p style="text-align:center; grid-column: 1/-1; color: var(--text-light);">No reviews yet. Be the first to write a review!</p>`;
+            return;
+        }
+        grid.innerHTML = '';
+        reviews.forEach(r => {
+            const firstLetter = r.ad_soyad ? r.ad_soyad.charAt(0).toUpperCase() : 'M';
+            grid.innerHTML += `
+                <div class="testimonial-card">
+                    <i class="fa-solid fa-quote-right quote-icon"></i>
+                    <div class="stars">${'<i class="fa-solid fa-star"></i>'.repeat(r.puan)}${`<i class="fa-regular fa-star" style="color:#cbd5e1"></i>`.repeat(5 - r.puan)}</div>
+                    <p>"${r.yorum_metni}"</p>
+                    <div class="client-info">
+                        <div class="client-avatar" style="background: var(--primary-color); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${firstLetter}</div>
+                        <div><h4>${r.ad_soyad}</h4><span style="font-size: 0.8rem; color: var(--text-light);">${r.kategori}</span></div>
+                    </div>
+                </div>`;
+        });
+    } catch (e) {}
+}
+
+const reviewForm = document.getElementById('user-review-form');
+if(reviewForm) {
+    reviewForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if(selectedRating === 0) { alert(currentLang === 'tr' ? "Lütfen bir yıldız puanı seçiniz." : "Please select a star rating."); return; }
+        const payload = {
+            ad_soyad: document.getElementById('rev-name').value, 
+            kategori: document.getElementById('rev-category').value,
+            puan: selectedRating, 
+            yorum_metni: document.getElementById('rev-text').value
+        };
+        try {
+            const res = await fetch('/api/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            const data = await res.json();
+            if(data.success) {
+                alert(currentLang === 'tr' ? "Teşekkürler! Yorumunuz yönetici onayından sonra yayınlanacaktır." : "Thank you! Your review will be published after admin approval.");
+                reviewForm.reset(); selectedRating = 0; updateStarDisplay(0); 
+                if(reviewModal) reviewModal.style.display = 'none';
+            } else { alert("Hata / Error: " + data.error); }
+        } catch(err) {
+            alert(currentLang === 'tr' ? "Sistemde bir arıza oluştu, lütfen daha sonra tekrar deneyin." : "A system error occurred, please try again later.");
+        }
+    });
+}
+
+// --- Menü ve Kaydırma ---
+const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+const navLinks = document.getElementById('nav-links');
+const navLinksItems = document.querySelectorAll('.nav-links a');
+
+if(mobileMenuBtn) {
+    mobileMenuBtn.addEventListener('click', () => {
+        if(navLinks) navLinks.classList.toggle('active');
+        const icon = mobileMenuBtn.querySelector('i');
+        if(icon) { icon.classList.toggle('fa-bars'); icon.classList.toggle('fa-xmark'); }
+    });
+}
+
+navLinksItems.forEach(item => {
+    item.addEventListener('click', () => {
+        if(navLinks) navLinks.classList.remove('active');
+        if(mobileMenuBtn) mobileMenuBtn.querySelector('i').className = 'fa-solid fa-bars';
+    });
 });
 
-// OTP: Kayıt Ol - Aşama 2
+const navbar = document.getElementById('navbar');
+const sections = document.querySelectorAll('section');
+
+window.addEventListener('scroll', () => {
+    if(navbar) navbar.classList.toggle('scrolled', window.scrollY > 50);
+    let current = '';
+    sections.forEach(section => { if (pageYOffset >= (section.offsetTop - 200)) current = section.getAttribute('id'); });
+    navLinksItems.forEach(a => {
+        a.classList.remove('active');
+        if (a.getAttribute('href')?.includes(current)) a.classList.add('active');
+    });
+});
+
+const reveals = document.querySelectorAll('.reveal');
+const revealOnScroll = () => {
+    reveals.forEach(reveal => { if (reveal.getBoundingClientRect().top < window.innerHeight - 150) reveal.classList.add('active'); });
+}
+window.addEventListener('scroll', revealOnScroll);
+revealOnScroll();
+
+const swatches = document.querySelectorAll('.color-swatch');
+const displayBox = document.getElementById('selected-color-box');
+const displayName = document.getElementById('selected-color-name');
+const displayHex = document.getElementById('selected-color-hex');
+
+swatches.forEach(swatch => {
+    swatch.addEventListener('click', () => {
+        swatches.forEach(s => s.classList.remove('selected'));
+        swatch.classList.add('selected');
+        const hexColor = swatch.getAttribute('data-hex');
+        if(displayBox) displayBox.style.backgroundColor = hexColor;
+        if(displayName) displayName.textContent = swatch.getAttribute('data-name');
+        if(displayHex) displayHex.textContent = hexColor;
+    });
+});
+
+// ============================================
+// AUTH VE OTP MANTIĞI (Her İki Sayfa İçin)
+// ============================================
+
+const authModalWrapper = document.getElementById('auth-modal-wrapper');
+const navAuthMainBtn = document.getElementById('nav-main-auth-btn');
+const closeAuthModalBtn = document.getElementById('close-auth-modal');
+const profileFabBtn = document.getElementById('profile-fab-btn');
+
+function openAuthModal(formType) {
+    if(authModalWrapper) {
+        authModalWrapper.classList.remove('tw-modal-hidden');
+        authModalWrapper.classList.add('flex');
+        toggleAuthForms(document.getElementById(`${formType}-form`));
+    }
+}
+
+if(navAuthMainBtn) navAuthMainBtn.addEventListener('click', () => openAuthModal('login'));
+if(closeAuthModalBtn) {
+    closeAuthModalBtn.addEventListener('click', () => {
+        if(authModalWrapper) {
+            authModalWrapper.classList.add('tw-modal-hidden'); 
+            authModalWrapper.classList.remove('flex');
+        }
+    });
+}
+
+// AKILLI YÖNLENDİRİCİ: FAB'a basılınca artık Öz Social sayfasına gider.
+if(profileFabBtn) {
+    profileFabBtn.addEventListener('click', () => {
+        window.location.href = 'ozsocial.html';
+    });
+}
+
+const showRegisterBtn = document.getElementById('show-register');
+const showLoginBtn = document.getElementById('show-login');
+const showForgotPasswordBtn = document.getElementById('show-forgot-password');
+const backToLoginBtn = document.getElementById('back-to-login');
+const backToRegFromOtpBtn = document.getElementById('back-to-reg-from-otp');
+const backToForgotFromResetBtn = document.getElementById('back-to-forgot-from-reset');
+const avatarInput = document.getElementById('reg-avatar');
+const avatarPreview = document.getElementById('avatar-preview');
+
+if(avatarInput) {
+    avatarInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            selectedAvatarFile = file;
+            const reader = new FileReader();
+            reader.onload = (ev) => { if(avatarPreview) avatarPreview.innerHTML = `<img src="${ev.target.result}" class="w-full h-full object-cover">`; };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+if(showRegisterBtn) showRegisterBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(document.getElementById('register-form')); });
+if(showLoginBtn) showLoginBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(document.getElementById('login-form')); });
+if(showForgotPasswordBtn) showForgotPasswordBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(document.getElementById('forgot-password-form')); });
+if(backToLoginBtn) backToLoginBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(document.getElementById('login-form')); });
+if(backToRegFromOtpBtn) backToRegFromOtpBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(document.getElementById('register-form')); });
+if(backToForgotFromResetBtn) backToForgotFromResetBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(document.getElementById('forgot-password-form')); });
+
+const regFormEl = document.getElementById('register-form');
+if(regFormEl) {
+    regFormEl.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('reg-name').value;
+        const role = document.getElementById('reg-role').value;
+        const email = document.getElementById('reg-email').value;
+        const password = document.getElementById('reg-password').value;
+        const btn = document.getElementById('register-btn');
+        
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kod Gönderiliyor...'; btn.disabled = true;
+        try {
+            const { error: authError } = await supabase.auth.signUp({ email, password });
+            if (authError) throw authError;
+
+            temporaryRegistrationData = { name, role, email, password, file: selectedAvatarFile };
+            Swal.fire({ icon: 'success', title: 'Kod Gönderildi', text: 'E-postanıza gelen 6 haneli doğrulama kodunu giriniz.' });
+            toggleAuthForms(document.getElementById('otp-verify-form'));
+        } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
+        finally { btn.innerHTML = 'Kayıt Ol'; btn.disabled = false; }
+    });
+}
+
+const otpVerifyForm = document.getElementById('otp-verify-form');
 if(otpVerifyForm) {
     otpVerifyForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -186,8 +493,9 @@ if(otpVerifyForm) {
                 }]);
                 
                 Swal.fire({ icon: 'success', title: 'Hesabınız Açıldı!', timer: 1500, showConfirmButton: false });
-                registerForm.reset(); otpVerifyForm.reset(); temporaryRegistrationData = null; selectedAvatarFile = null;
-                avatarPreview.innerHTML = '<i class="fa-solid fa-camera text-2xl text-slate-400 group-hover:text-blue-500 transition-colors"></i>';
+                regFormEl.reset(); otpVerifyForm.reset(); temporaryRegistrationData = null; selectedAvatarFile = null;
+                if(avatarPreview) avatarPreview.innerHTML = '<i class="fa-solid fa-camera text-2xl text-slate-400 group-hover:text-blue-500 transition-colors"></i>';
+                if(authModalWrapper) authModalWrapper.classList.add('tw-modal-hidden');
                 checkSession();
             }
         } catch (error) { Swal.fire({ icon: 'error', title: 'Geçersiz Kod', text: 'Girdiğiniz kod hatalı veya süresi dolmuş.' }); }
@@ -195,39 +503,49 @@ if(otpVerifyForm) {
     });
 }
 
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-    const btn = document.getElementById('login-btn');
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Bekleyin...';
-    btn.disabled = true;
-    try {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        loginForm.reset();
-        checkSession();
-    } catch (error) { Swal.fire({ icon: 'error', title: 'Başarısız', text: "E-posta veya şifre hatalı!" }); }
-    finally { btn.innerHTML = 'Giriş Yap'; btn.disabled = false; }
-});
+const loginFormEl = document.getElementById('login-form');
+if(loginFormEl) {
+    loginFormEl.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        const btn = document.getElementById('login-btn');
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Bekleyin...'; btn.disabled = true;
+        try {
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            loginFormEl.reset();
+            if(authModalWrapper) authModalWrapper.classList.add('tw-modal-hidden');
+            
+            // Eğer Login işleminden sonra kişi index.html'deyse doğrudan Öz Social'a yönlendirilebilir.
+            if(window.location.pathname.includes('index') || window.location.pathname === '/') {
+                window.location.href = 'ozsocial.html';
+            } else {
+                checkSession();
+            }
+        } catch (error) { Swal.fire({ icon: 'error', title: 'Başarısız', text: "E-posta veya şifre hatalı!" }); }
+        finally { btn.innerHTML = 'Giriş Yap'; btn.disabled = false; }
+    });
+}
 
-// OTP: Şifre Sıfırlama - Aşama 1
-forgotPasswordForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('forgot-email').value;
-    const btn = document.getElementById('forgot-btn');
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...';
-    btn.disabled = true;
-    try {
-        const { error } = await supabase.auth.resetPasswordForEmail(email);
-        if (error) throw error;
-        Swal.fire({ icon: 'success', title: 'Kod Gönderildi', text: 'E-postanıza 6 haneli kod gönderildi.' });
-        toggleAuthForms(resetOtpForm);
-    } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
-    finally { btn.innerHTML = 'Kod Gönder'; btn.disabled = false; }
-});
+const forgotPasswordForm = document.getElementById('forgot-password-form');
+if(forgotPasswordForm) {
+    forgotPasswordForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('forgot-email').value;
+        const btn = document.getElementById('forgot-btn');
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...'; btn.disabled = true;
+        try {
+            const { error } = await supabase.auth.resetPasswordForEmail(email);
+            if (error) throw error;
+            Swal.fire({ icon: 'success', title: 'Kod Gönderildi', text: 'Lütfen mailinize gelen 6 haneli kodu kontrol edin.' });
+            toggleAuthForms(document.getElementById('reset-otp-form'));
+        } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
+        finally { btn.innerHTML = 'Kod Gönder'; btn.disabled = false; }
+    });
+}
 
-// OTP: Şifre Sıfırlama - Aşama 2
+const resetOtpForm = document.getElementById('reset-otp-form');
 if(resetOtpForm) {
     resetOtpForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -245,63 +563,150 @@ if(resetOtpForm) {
             if (updateError) throw updateError;
 
             Swal.fire({ icon: 'success', title: 'Başarılı', text: 'Şifreniz başarıyla güncellendi.', timer: 1500, showConfirmButton: false });
-            resetOtpForm.reset(); forgotPasswordForm.reset();
-            toggleAuthForms(loginForm);
+            resetOtpForm.reset(); if(forgotPasswordForm) forgotPasswordForm.reset();
+            toggleAuthForms(loginFormEl);
         } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: 'Geçersiz kod veya güncelleme hatası.' }); }
         finally { btn.innerHTML = 'Şifremi Güncelle'; btn.disabled = false; }
     });
 }
 
-editProfileBtn.addEventListener('click', () => {
-    dashboardView.classList.add('hidden'); editProfileForm.classList.remove('hidden');
-    editNameInput.value = document.getElementById('dash-name').innerText;
-    editBioInput.value = document.getElementById('dash-bio').innerText;
-    editAvatarImg.src = document.getElementById('dash-avatar').src;
-    selectedUpdateAvatarFile = null;
-});
-
-cancelEditBtn.addEventListener('click', () => { editProfileForm.classList.add('hidden'); dashboardView.classList.remove('hidden'); });
-
-editAvatarInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        selectedUpdateAvatarFile = file;
-        const reader = new FileReader();
-        reader.onload = (e) => editAvatarImg.src = e.target.result;
-        reader.readAsDataURL(file);
-    }
-});
-
-editProfileForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = document.getElementById('save-edit-btn');
-    btn.innerHTML = 'Kaydediliyor...'; btn.disabled = true;
-    try {
-        let updatedAvatarUrl = null;
-        if (selectedUpdateAvatarFile) {
-            const ext = selectedUpdateAvatarFile.name.split('.').pop();
-            const fileName = `${currentUserSession.user.id}-${Math.random()}.${ext}`;
-            await supabase.storage.from('avatars').upload(fileName, selectedUpdateAvatarFile);
-            updatedAvatarUrl = supabase.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
-        }
-        const updateData = { ad_soyad: editNameInput.value, biyografi: editBioInput.value };
-        if (updatedAvatarUrl) updateData.avatar_url = updatedAvatarUrl;
-        await supabase.from('uyeler').update(updateData).eq('id', currentUserSession.user.id);
-        
-        editProfileForm.classList.add('hidden'); dashboardView.classList.remove('hidden');
-        checkSession();
-    } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
-    finally { btn.innerHTML = 'Kaydet'; btn.disabled = false; }
-});
-
-logoutBtn.addEventListener('click', async () => {
+const handleLogout = async () => {
     if (realtimeChannel) supabase.removeChannel(realtimeChannel);
     if (chatBroadcastChannel) supabase.removeChannel(chatBroadcastChannel);
     await supabase.auth.signOut();
-    mainAppContainer.classList.add('hidden'); authContainer.classList.remove('hidden');
+    window.location.href = 'index.html'; // Çıkış yapınca anasayfaya at
+};
+const logoutTextBtn = document.getElementById('logout-text-btn');
+if(logoutTextBtn) logoutTextBtn.addEventListener('click', handleLogout);
+
+// ============================================
+// ÖZ SOCIAL MANTIĞI (ozsocial.html İÇİN)
+// ============================================
+
+async function checkSession() {
+    const { data: { session } } = await supabase.auth.getSession();
+    const isSocialPage = window.location.pathname.includes('ozsocial.html');
+
+    if (session) {
+        currentUserSession = session;
+        const navAuthBtnsContainer = document.getElementById('nav-auth-buttons');
+        const profileFabContainer = document.getElementById('profile-fab-container');
+        
+        if(navAuthBtnsContainer) navAuthBtnsContainer.classList.add('tw-modal-hidden');
+        if(profileFabContainer) { profileFabContainer.classList.remove('tw-modal-hidden'); profileFabContainer.classList.add('flex'); }
+        
+        const dashEmailEl = document.getElementById('dash-email');
+        if(dashEmailEl) dashEmailEl.innerText = session.user.email;
+
+        try {
+            const { data: userData } = await supabase.from('uyeler').select('*').eq('id', session.user.id).single();
+            if (userData) {
+                const nameText = userData.ad_soyad || 'İsimsiz';
+                const avatarUrl = userData.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(nameText)}&background=1e3a8a&color=fff`;
+                
+                const dashName = document.getElementById('dash-name');
+                if(dashName) dashName.innerText = nameText;
+                
+                const dashRole = document.getElementById('dash-role');
+                if(dashRole) dashRole.innerText = userData.rol || 'KULLANICI';
+                
+                const dashBio = document.getElementById('dash-bio');
+                if(dashBio) dashBio.innerText = userData.biyografi || '';
+                
+                const dashAvatar = document.getElementById('dash-avatar');
+                if(dashAvatar) dashAvatar.src = avatarUrl;
+                
+                const dashProfileTrigger = document.getElementById('dash-my-profile-trigger');
+                if(dashProfileTrigger) dashProfileTrigger.setAttribute('data-user-id', session.user.id);
+                if(dashName) dashName.setAttribute('data-user-id', session.user.id);
+                
+                const fabAvatar = document.getElementById('fab-avatar');
+                if(fabAvatar) fabAvatar.src = avatarUrl;
+            }
+        } catch (e) {}
+        
+        if(isSocialPage) {
+            checkNotificationsBadge(); checkMessagesBadge(); setupRealtime(); loadFeed(currentFeedFilter);
+        }
+    } else {
+        currentUserSession = null;
+        if (realtimeChannel) { supabase.removeChannel(realtimeChannel); realtimeChannel = null; }
+        if (chatBroadcastChannel) { supabase.removeChannel(chatBroadcastChannel); chatBroadcastChannel = null; }
+        
+        // EĞER SOCIAL SAYFASINDAYSA VE OTURUM YOKSA ANA SAYFAYA ŞUTLA
+        if(isSocialPage) {
+            window.location.href = 'index.html';
+        } else {
+            const navAuthBtnsContainer = document.getElementById('nav-auth-buttons');
+            const profileFabContainer = document.getElementById('profile-fab-container');
+            if(navAuthBtnsContainer) navAuthBtnsContainer.classList.remove('tw-modal-hidden');
+            if(profileFabContainer) { profileFabContainer.classList.add('tw-modal-hidden'); profileFabContainer.classList.remove('flex'); }
+        }
+    }
+}
+
+// Öz Social Sayfası Fonksiyonları
+const editProfileBtn = document.getElementById('edit-profile-btn');
+const cancelEditBtn = document.getElementById('cancel-edit-btn');
+const editAvatarInput = document.getElementById('edit-avatar');
+const editAvatarImg = document.getElementById('edit-avatar-img');
+const editNameInput = document.getElementById('edit-name');
+const editBioInput = document.getElementById('edit-bio');
+const editProfileForm = document.getElementById('edit-profile-form');
+const dashboardView = document.getElementById('dashboard-view');
+
+if(editProfileBtn) {
+    editProfileBtn.addEventListener('click', () => {
+        if(dashboardView) dashboardView.classList.add('tw-modal-hidden'); 
+        if(editProfileForm) editProfileForm.classList.remove('tw-modal-hidden');
+        if(editNameInput) editNameInput.value = document.getElementById('dash-name').innerText;
+        if(editBioInput) editBioInput.value = document.getElementById('dash-bio').innerText;
+        if(editAvatarImg) editAvatarImg.src = document.getElementById('dash-avatar').src;
+        selectedUpdateAvatarFile = null;
+    });
+}
+if(cancelEditBtn) cancelEditBtn.addEventListener('click', () => { 
+    if(editProfileForm) editProfileForm.classList.add('tw-modal-hidden'); 
+    if(dashboardView) dashboardView.classList.remove('tw-modal-hidden'); 
 });
 
-// --- CANLI YAYIN (REALTIME) VE YAZIYOR... SİSTEMİ ---
+if(editAvatarInput) {
+    editAvatarInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            selectedUpdateAvatarFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => { if(editAvatarImg) editAvatarImg.src = e.target.result; };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+if(editProfileForm) {
+    editProfileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('save-edit-btn');
+        btn.innerHTML = 'Kaydediliyor...'; btn.disabled = true;
+        try {
+            let updatedAvatarUrl = null;
+            if (selectedUpdateAvatarFile) {
+                const ext = selectedUpdateAvatarFile.name.split('.').pop();
+                const fileName = `${currentUserSession.user.id}-${Math.random()}.${ext}`;
+                await supabase.storage.from('avatars').upload(fileName, selectedUpdateAvatarFile);
+                updatedAvatarUrl = supabase.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
+            }
+            const updateData = { ad_soyad: editNameInput.value, biyografi: editBioInput.value };
+            if (updatedAvatarUrl) updateData.avatar_url = updatedAvatarUrl;
+            await supabase.from('uyeler').update(updateData).eq('id', currentUserSession.user.id);
+            
+            if(editProfileForm) editProfileForm.classList.add('tw-modal-hidden'); 
+            if(dashboardView) dashboardView.classList.remove('tw-modal-hidden');
+            checkSession();
+        } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
+        finally { btn.innerHTML = 'Kaydet'; btn.disabled = false; }
+    });
+}
+
 function setupRealtime() {
     if (realtimeChannel) return;
     realtimeChannel = supabase.channel('oz-yapi-realtime')
@@ -309,18 +714,19 @@ function setupRealtime() {
             if (payload.new.user_id !== currentUserSession?.user?.id) {
                 const { data: newPost } = await supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).eq('id', payload.new.id).single();
                 if (newPost && (currentFeedFilter === 'all' || currentFeedFilter === newPost.gonderi_tipi)) {
-                    const emptyIcon = feedList.querySelector('.fa-folder-open');
-                    if (emptyIcon) feedList.innerHTML = '';
-                    feedList.insertAdjacentHTML('afterbegin', generatePostHTML(newPost, false));
+                    const feedList = document.getElementById('feed-list');
+                    if (feedList) feedList.insertAdjacentHTML('afterbegin', generatePostHTML(newPost, false));
                 }
             }
         })
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bildirimler' }, (payload) => {
-            if (payload.new.alici_id === currentUserSession?.user?.id) notificationBadge.classList.remove('hidden');
+            if (payload.new.alici_id === currentUserSession?.user?.id) {
+                const notificationBadge = document.getElementById('notification-badge');
+                if(notificationBadge) notificationBadge.classList.remove('hidden');
+            }
         })
         .on('postgres_changes', { event: '*', schema: 'public', table: 'mesajlar' }, (payload) => {
             const isRelatedToMe = payload.new?.alici_id === currentUserSession?.user?.id || payload.new?.gonderen_id === currentUserSession?.user?.id || payload.old?.gonderen_id === currentUserSession?.user?.id;
-            
             if (isRelatedToMe) {
                 if (payload.eventType === 'INSERT') {
                     if (currentChatUserId === payload.new.gonderen_id || currentChatUserId === payload.new.alici_id) {
@@ -329,7 +735,8 @@ function setupRealtime() {
                         if (!isMine) supabase.from('mesajlar').update({okundu: true}).eq('id', payload.new.id).then(()=>{}); 
                     } else if (payload.new.alici_id === currentUserSession.user.id) {
                         checkMessagesBadge();
-                        if (!messagesListModal.classList.contains('hidden')) loadConversations();
+                        const messagesListModal = document.getElementById('messages-list-modal');
+                        if (messagesListModal && !messagesListModal.classList.contains('tw-modal-hidden')) loadConversations();
                     }
                 } 
                 else if (payload.eventType === 'UPDATE') {
@@ -337,152 +744,112 @@ function setupRealtime() {
                     if (bubbleWrapper) {
                         const bubble = bubbleWrapper.querySelector('.msg-bubble');
                         const heart = bubbleWrapper.querySelector('.msg-heart');
-                        
-                        bubble.setAttribute('data-is-liked', payload.new.begendi.toString());
+                        if(bubble) bubble.setAttribute('data-is-liked', payload.new.begendi.toString());
                         if (payload.new.begendi) {
-                            heart.classList.remove('scale-0', 'opacity-0');
-                            heart.classList.add('scale-100', 'opacity-100');
+                            if(heart) { heart.classList.remove('scale-0', 'opacity-0'); heart.classList.add('scale-100', 'opacity-100'); }
                         } else {
-                            heart.classList.remove('scale-100', 'opacity-100');
-                            heart.classList.add('scale-0', 'opacity-0');
+                            if(heart) { heart.classList.remove('scale-100', 'opacity-100'); heart.classList.add('scale-0', 'opacity-0'); }
                         }
-
                         const readIcon = bubbleWrapper.querySelector('.msg-read-status');
                         if (readIcon && payload.new.okundu) readIcon.className = 'msg-read-status fa-solid fa-check-double text-blue-500 ml-1';
                     }
-                    if (!messagesListModal.classList.contains('hidden')) loadConversations();
+                    const messagesListModal = document.getElementById('messages-list-modal');
+                    if (messagesListModal && !messagesListModal.classList.contains('tw-modal-hidden')) loadConversations();
                 } 
                 else if (payload.eventType === 'DELETE') {
                     const wrapper = document.getElementById(`msg-wrapper-${payload.old.id}`);
                     if(wrapper) wrapper.remove();
-                    if (!messagesListModal.classList.contains('hidden')) loadConversations();
+                    const messagesListModal = document.getElementById('messages-list-modal');
+                    if (messagesListModal && !messagesListModal.classList.contains('tw-modal-hidden')) loadConversations();
                 }
             }
-        })
-        .subscribe();
+        }).subscribe();
 
     if(!chatBroadcastChannel) {
         chatBroadcastChannel = supabase.channel('chat-typing');
         chatBroadcastChannel.on('broadcast', { event: 'typing' }, payload => {
-            if (payload.payload.to === currentUserSession.user.id && payload.payload.from === currentChatUserId && !dmModal.classList.contains('hidden')) {
-                dmTypingIndicator.classList.remove('hidden');
-                dmTypingIndicator.classList.add('flex');
-                scrollToChatBottom();
-                clearTimeout(typingTimeout);
-                typingTimeout = setTimeout(() => {
-                    dmTypingIndicator.classList.remove('flex');
-                    dmTypingIndicator.classList.add('hidden');
-                }, 2000);
+            const dmModal = document.getElementById('dm-modal');
+            if (payload.payload.to === currentUserSession.user.id && payload.payload.from === currentChatUserId && dmModal && !dmModal.classList.contains('tw-modal-hidden')) {
+                const dmTypingIndicator = document.getElementById('dm-typing-indicator');
+                if(dmTypingIndicator) {
+                    dmTypingIndicator.classList.remove('hidden'); dmTypingIndicator.classList.add('flex');
+                    scrollToChatBottom(); clearTimeout(typingTimeout);
+                    typingTimeout = setTimeout(() => { dmTypingIndicator.classList.remove('flex'); dmTypingIndicator.classList.add('hidden'); }, 2000);
+                }
             }
         }).subscribe();
     }
 }
 
-async function checkSession() {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-        currentUserSession = session;
-        authContainer.classList.add('hidden'); mainAppContainer.classList.remove('hidden');
-        document.getElementById('dash-email').innerText = session.user.email;
-
-        try {
-            const { data: userData } = await supabase.from('uyeler').select('*').eq('id', session.user.id).single();
-            if (userData) {
-                document.getElementById('dash-name').innerText = userData.ad_soyad || 'İsimsiz';
-                document.getElementById('dash-role').innerText = userData.rol || 'KULLANICI';
-                document.getElementById('dash-bio').innerText = userData.biyografi || '';
-                document.getElementById('dash-avatar').src = userData.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.ad_soyad || 'U')}&background=1e3a8a&color=fff`;
-                document.getElementById('dash-my-profile-trigger').setAttribute('data-user-id', session.user.id);
-                document.getElementById('dash-name').setAttribute('data-user-id', session.user.id);
-            }
-        } catch (e) {}
-        
-        loadFeed(currentFeedFilter);
-        checkNotificationsBadge();
-        checkMessagesBadge();
-        setupRealtime();
-    } else {
-        currentUserSession = null;
-        if (realtimeChannel) { supabase.removeChannel(realtimeChannel); realtimeChannel = null; }
-        if (chatBroadcastChannel) { supabase.removeChannel(chatBroadcastChannel); chatBroadcastChannel = null; }
-        mainAppContainer.classList.add('hidden'); authContainer.classList.remove('hidden');
-        toggleAuthForms(loginForm);
-    }
-}
-
-document.addEventListener('DOMContentLoaded', checkSession);
-
-// --- BİLDİRİMLER ---
 async function checkNotificationsBadge() {
     if (!currentUserSession) return;
+    const notificationBadge = document.getElementById('notification-badge');
+    if(!notificationBadge) return;
     try {
         const { count } = await supabase.from('bildirimler').select('*', { count: 'exact', head: true }).eq('alici_id', currentUserSession.user.id).eq('okundu', false);
         if (count > 0) notificationBadge.classList.remove('hidden'); else notificationBadge.classList.add('hidden');
     } catch (error) {}
 }
 
-notificationBtn.addEventListener('click', async () => {
-    notificationModal.classList.remove('hidden');
-    setTimeout(() => notificationModal.classList.remove('translate-x-full'), 10);
-    notificationList.innerHTML = '<div class="text-center text-slate-400 mt-10"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i></div>';
-    try {
-        const { data: notifications } = await supabase.from('bildirimler').select('*, gonderen:uyeler!gonderen_id(ad_soyad, avatar_url)').eq('alici_id', currentUserSession.user.id).order('created_at', { ascending: false }).limit(20);
-        if (!notifications || notifications.length === 0) { notificationList.innerHTML = '<p class="text-center mt-10 text-slate-500">Bildirim yok.</p>'; return; }
-        notificationList.innerHTML = '';
-        notifications.forEach(notif => {
-            const sender = notif.gonderen || {};
-            const avatar = sender.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(sender.ad_soyad || 'U')}`;
-            const dotClass = notif.okundu ? 'hidden' : 'block';
-            const postIdParam = notif.gonderi_id ? `'${notif.gonderi_id}'` : 'null';
-            const senderIdParam = notif.gonderen_id ? `'${notif.gonderen_id}'` : 'null';
+const notificationBtn = document.getElementById('notification-btn');
+if(notificationBtn) {
+    notificationBtn.addEventListener('click', async () => {
+        openSideModal('notification-modal', 'notification-panel');
+        const notificationList = document.getElementById('notification-list');
+        if(!notificationList) return;
+        notificationList.innerHTML = '<div class="text-center text-slate-400 mt-10"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i></div>';
+        try {
+            const { data: notifications } = await supabase.from('bildirimler').select('*, gonderen:uyeler!gonderen_id(ad_soyad, avatar_url)').eq('alici_id', currentUserSession.user.id).order('created_at', { ascending: false }).limit(20);
+            if (!notifications || notifications.length === 0) { notificationList.innerHTML = '<p class="text-center mt-10 text-slate-500">Bildirim yok.</p>'; return; }
+            notificationList.innerHTML = '';
+            notifications.forEach(notif => {
+                const sender = notif.gonderen || {};
+                const avatar = sender.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(sender.ad_soyad || 'U')}`;
+                const dotClass = notif.okundu ? 'hidden' : 'block';
+                const postIdParam = notif.gonderi_id ? `'${notif.gonderi_id}'` : 'null';
+                const senderIdParam = notif.gonderen_id ? `'${notif.gonderen_id}'` : 'null';
 
-            notificationList.insertAdjacentHTML('beforeend', `
-                <div class="p-3 rounded-xl flex items-start gap-3 relative cursor-pointer hover:bg-slate-100 bg-white border border-slate-100 ${notif.okundu ? '' : 'bg-blue-50/60'}" onclick="handleNotificationClick(${notif.id}, ${postIdParam}, ${senderIdParam})">
-                    <span class="absolute top-3 right-3 w-2 h-2 bg-blue-500 rounded-full ${dotClass}"></span>
-                    <img src="${avatar}" class="w-10 h-10 rounded-full object-cover flex-shrink-0">
-                    <div class="flex-1 text-sm text-slate-800"><span class="font-bold">${sender.ad_soyad}</span> ${notif.mesaj}</div>
-                </div>
-            `);
-        });
-    } catch (error) {}
-});
-
-closeNotificationModalBtn.addEventListener('click', () => { 
-    notificationModal.classList.add('translate-x-full'); 
-    setTimeout(() => notificationModal.classList.add('hidden'), 300); 
-    checkNotificationsBadge(); 
-});
+                notificationList.insertAdjacentHTML('beforeend', `
+                    <div class="p-3 rounded-xl flex items-start gap-3 relative cursor-pointer hover:bg-slate-100 bg-white border border-slate-100 ${notif.okundu ? '' : 'bg-blue-50/60'}" onclick="handleNotificationClick(${notif.id}, ${postIdParam}, ${senderIdParam})">
+                        <span class="absolute top-3 right-3 w-2 h-2 bg-blue-500 rounded-full ${dotClass}"></span>
+                        <img src="${avatar}" class="w-10 h-10 rounded-full object-cover flex-shrink-0">
+                        <div class="flex-1 text-sm text-slate-800"><span class="font-bold">${sender.ad_soyad}</span> ${notif.mesaj}</div>
+                    </div>
+                `);
+            });
+        } catch (error) {}
+    });
+}
 
 window.handleNotificationClick = async (notificationId, postId, senderId) => {
     await supabase.from('bildirimler').update({ okundu: true }).eq('id', notificationId);
-    notificationModal.classList.add('translate-x-full'); 
-    setTimeout(() => notificationModal.classList.add('hidden'), 300); 
+    closeSideModal('notification-modal', 'notification-panel'); 
     checkNotificationsBadge();
     if (postId && postId !== 'null' && postId !== 'undefined') openSinglePost(postId);
     else if (senderId && senderId !== 'null') openUserProfile(senderId);
 };
 
-// --- MESAJLAŞMA (DM) SİSTEMİ ---
 async function checkMessagesBadge() {
     if (!currentUserSession) return;
+    const messagesBadge = document.getElementById('messages-badge');
+    if(!messagesBadge) return;
     try {
         const { count } = await supabase.from('mesajlar').select('*', { count: 'exact', head: true }).eq('alici_id', currentUserSession.user.id).eq('okundu', false);
         if (count > 0) messagesBadge.classList.remove('hidden'); else messagesBadge.classList.add('hidden');
     } catch (error) {}
 }
 
-messagesBtn.addEventListener('click', () => {
-    messagesListModal.classList.remove('hidden');
-    setTimeout(() => messagesListModal.classList.remove('translate-x-full'), 10);
-    loadConversations();
-});
-
-closeMessagesListModalBtn.addEventListener('click', () => {
-    messagesListModal.classList.add('translate-x-full');
-    setTimeout(() => messagesListModal.classList.add('hidden'), 300);
-});
+const messagesBtn = document.getElementById('messages-btn');
+if(messagesBtn) {
+    messagesBtn.addEventListener('click', () => {
+        openSideModal('messages-list-modal', 'messages-list-panel');
+        loadConversations();
+    });
+}
 
 async function loadConversations() {
+    const conversationsList = document.getElementById('conversations-list');
+    if(!conversationsList) return;
     conversationsList.innerHTML = '<div class="text-center text-slate-400 mt-10"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i></div>';
     try {
         const { data: msgs, error } = await supabase.from('mesajlar').select('*, gonderen:uyeler!gonderen_id(id, ad_soyad, avatar_url), alici:uyeler!alici_id(id, ad_soyad, avatar_url)').or(`gonderen_id.eq.${currentUserSession.user.id},alici_id.eq.${currentUserSession.user.id}`).order('created_at', { ascending: false });
@@ -515,51 +882,50 @@ async function loadConversations() {
                 </div>
             `);
         });
-    } catch (error) { conversationsList.innerHTML = '<p class="text-center text-red-500 mt-10">Yüklenemedi.</p>'; }
+    } catch (error) {}
 }
 
 window.openChat = async (targetId, targetName, targetAvatar) => {
     currentChatUserId = targetId;
-    dmUserName.innerText = targetName; dmUserAvatar.src = targetAvatar;
-    dmUserAvatar.setAttribute('data-user-id', targetId); dmUserName.setAttribute('data-user-id', targetId);
+    const dmUserName = document.getElementById('dm-user-name');
+    const dmUserAvatar = document.getElementById('dm-user-avatar');
+    if(dmUserName) dmUserName.innerText = targetName; 
+    if(dmUserAvatar) dmUserAvatar.src = targetAvatar;
+    if(dmUserAvatar) dmUserAvatar.setAttribute('data-user-id', targetId); 
+    if(dmUserName) dmUserName.setAttribute('data-user-id', targetId);
     
-    dmModal.classList.remove('hidden'); setTimeout(() => dmModal.classList.remove('translate-x-full'), 10);
-    dmHistory.innerHTML = '<div class="flex-1 flex items-center justify-center"><i class="fa-solid fa-spinner fa-spin text-2xl text-slate-400"></i></div>';
+    openSideModal('dm-modal', 'dm-panel');
+    const dmHistory = document.getElementById('dm-history');
+    if(dmHistory) dmHistory.innerHTML = '<div class="flex-1 flex items-center justify-center"><i class="fa-solid fa-spinner fa-spin text-2xl text-slate-400"></i></div>';
 
     try {
         await supabase.from('mesajlar').update({ okundu: true }).eq('alici_id', currentUserSession.user.id).eq('gonderen_id', targetId).eq('okundu', false);
         checkMessagesBadge();
-        if(!messagesListModal.classList.contains('hidden')) loadConversations();
+        const messagesListModal = document.getElementById('messages-list-modal');
+        if(messagesListModal && !messagesListModal.classList.contains('tw-modal-hidden')) loadConversations();
 
-        const { data: history, error } = await supabase
-            .from('mesajlar')
-            .select('*')
-            .in('gonderen_id', [currentUserSession.user.id, targetId])
-            .in('alici_id', [currentUserSession.user.id, targetId])
-            .order('created_at', { ascending: true });
-
+        const { data: history, error } = await supabase.from('mesajlar').select('*').in('gonderen_id', [currentUserSession.user.id, targetId]).in('alici_id', [currentUserSession.user.id, targetId]).order('created_at', { ascending: true });
         if (error) throw error;
 
-        dmHistory.innerHTML = '';
+        if(dmHistory) dmHistory.innerHTML = '';
         if (history && history.length > 0) {
             history.forEach(msg => appendMessageToUI(msg, msg.gonderen_id === currentUserSession.user.id));
         } else {
-            dmHistory.innerHTML = '<p id="empty-chat-msg" class="text-center text-slate-400 mt-10 text-sm">İlk mesajı sen gönder!</p>';
+            if(dmHistory) dmHistory.innerHTML = '<p id="empty-chat-msg" class="text-center text-slate-400 mt-10 text-sm">İlk mesajı sen gönder!</p>';
         }
         scrollToChatBottom();
-    } catch (error) { 
-        dmHistory.innerHTML = '<p class="text-center text-red-500 mt-10">Sohbet yüklenemedi.</p>'; 
-    }
+    } catch (error) { if(dmHistory) dmHistory.innerHTML = '<p class="text-center text-red-500 mt-10">Sohbet yüklenemedi.</p>'; }
 };
 
 function appendMessageToUI(msg, isMine) {
     const emptyMsg = document.getElementById('empty-chat-msg');
     if (emptyMsg) emptyMsg.remove();
+    const dmHistory = document.getElementById('dm-history');
+    if (!dmHistory) return;
 
     const timeStr = new Date(msg.created_at).toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
     const mediaHtml = msg.medya_url ? `<img src="${msg.medya_url}" class="w-full max-w-[200px] h-auto rounded-lg mb-1 pointer-events-none">` : '';
     const textHtml = (msg.metin && msg.metin !== '📷 Görsel') ? `<div class="whitespace-pre-wrap leading-relaxed">${msg.metin}</div>` : '';
-    
     const readHtml = isMine ? `<i class="msg-read-status fa-solid ${msg.okundu ? 'fa-check-double text-blue-500' : 'fa-check text-slate-400'} ml-1"></i>` : '';
     const heartClass = msg.begendi ? 'scale-100 opacity-100' : 'scale-0 opacity-0';
 
@@ -567,21 +933,21 @@ function appendMessageToUI(msg, isMine) {
         dmHistory.insertAdjacentHTML('beforeend', `
             <div class="flex flex-col items-end w-full animate-fade-in relative mb-3" id="msg-wrapper-${msg.id}">
                 <div class="msg-bubble relative bg-blue-600 text-white px-4 py-2.5 rounded-2xl rounded-br-sm max-w-[75%] text-[14px] shadow-sm cursor-pointer select-none" data-msg-id="${msg.id}" data-is-mine="true" data-is-liked="${!!msg.begendi}">
-                    ${mediaHtml}
-                    ${textHtml}
+                    ${mediaHtml}${textHtml}
                     <div class="msg-heart absolute -bottom-2 -left-2 bg-slate-800 rounded-full w-6 h-6 flex items-center justify-center shadow-md border-2 border-white transition-all duration-300 ${heartClass}"><i class="fa-solid fa-heart text-red-500 text-[11px]"></i></div>
                 </div>
                 <div class="flex items-center text-[10px] text-slate-400 mt-1 mr-1"><span>${timeStr}</span>${readHtml}</div>
             </div>
         `);
     } else {
+        const dmUserAvatar = document.getElementById('dm-user-avatar');
+        const avatarSrc = dmUserAvatar ? dmUserAvatar.src : '';
         dmHistory.insertAdjacentHTML('beforeend', `
             <div class="flex items-end gap-2 w-full animate-fade-in relative mb-3" id="msg-wrapper-${msg.id}">
-                <img src="${dmUserAvatar.src}" class="w-7 h-7 rounded-full object-cover mb-4 border border-slate-200">
+                <img src="${avatarSrc}" class="w-7 h-7 rounded-full object-cover mb-4 border border-slate-200">
                 <div class="flex flex-col items-start w-full">
                     <div class="msg-bubble relative bg-white border border-slate-200 text-slate-800 px-4 py-2.5 rounded-2xl rounded-bl-sm max-w-[75%] text-[14px] shadow-sm cursor-pointer select-none" data-msg-id="${msg.id}" data-is-mine="false" data-is-liked="${!!msg.begendi}">
-                        ${mediaHtml}
-                        ${textHtml}
+                        ${mediaHtml}${textHtml}
                         <div class="msg-heart absolute -bottom-2 -right-2 bg-slate-800 rounded-full w-6 h-6 flex items-center justify-center shadow-md border-2 border-white transition-all duration-300 ${heartClass}"><i class="fa-solid fa-heart text-red-500 text-[11px]"></i></div>
                     </div>
                     <span class="text-[10px] text-slate-400 mt-1 ml-1">${timeStr}</span>
@@ -592,55 +958,59 @@ function appendMessageToUI(msg, isMine) {
     scrollToChatBottom();
 }
 
-function scrollToChatBottom() { dmHistory.scrollTop = dmHistory.scrollHeight; }
+function scrollToChatBottom() { 
+    const dmHistory = document.getElementById('dm-history');
+    if(dmHistory) dmHistory.scrollTop = dmHistory.scrollHeight; 
+}
 
-if (closeDmBtn) closeDmBtn.addEventListener('click', () => { currentChatUserId = null; dmModal.classList.add('translate-x-full'); setTimeout(() => dmModal.classList.add('hidden'), 300); });
-if (document.getElementById('close-dm-btn-alt')) document.getElementById('close-dm-btn-alt').addEventListener('click', () => { currentChatUserId = null; dmModal.classList.add('translate-x-full'); setTimeout(() => dmModal.classList.add('hidden'), 300); });
+const dmInput = document.getElementById('dm-input');
+if(dmInput) {
+    dmInput.addEventListener('input', () => {
+        if(currentChatUserId && chatBroadcastChannel) {
+            chatBroadcastChannel.send({ type: 'broadcast', event: 'typing', payload: { from: currentUserSession.user.id, to: currentChatUserId } });
+        }
+    });
+}
 
-dmInput.addEventListener('input', () => {
-    if(currentChatUserId && chatBroadcastChannel) {
-        chatBroadcastChannel.send({ type: 'broadcast', event: 'typing', payload: { from: currentUserSession.user.id, to: currentChatUserId } });
-    }
-});
+const dmForm = document.getElementById('dm-form');
+if(dmForm) {
+    dmForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const text = dmInput.value.trim();
+        if (!currentChatUserId || !text) return;
+        dmInput.value = ''; 
+        try {
+            const { error } = await supabase.from('mesajlar').insert([{ gonderen_id: currentUserSession.user.id, alici_id: currentChatUserId, metin: text }]);
+            if (error) throw error;
+            const messagesListModal = document.getElementById('messages-list-modal');
+            if(messagesListModal && !messagesListModal.classList.contains('tw-modal-hidden')) loadConversations();
+        } catch (err) { Swal.fire({ icon: 'error', title: 'Hata', text: 'Mesaj iletilemedi.' }); }
+    });
+}
 
-dmForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const text = dmInput.value.trim();
-    if (!currentChatUserId || !text) return;
-    dmInput.value = ''; 
-    
-    try {
-        const { error } = await supabase.from('mesajlar').insert([{ gonderen_id: currentUserSession.user.id, alici_id: currentChatUserId, metin: text }]);
-        if (error) throw error;
-        if(!messagesListModal.classList.contains('hidden')) loadConversations();
-    } catch (err) { Swal.fire({ icon: 'error', title: 'Hata', text: 'Mesaj iletilemedi.' }); }
-});
+const dmMediaInput = document.getElementById('dm-media-input');
+if(dmMediaInput) {
+    dmMediaInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        const dmHistory = document.getElementById('dm-history');
+        if(!file || !currentChatUserId || !dmHistory) return;
+        e.target.value = ''; 
+        dmHistory.insertAdjacentHTML('beforeend', `<div class="text-center text-xs text-slate-400 my-2" id="img-upload-loading">Fotoğraf gönderiliyor...</div>`);
+        scrollToChatBottom();
+        try {
+            const ext = file.name.split('.').pop();
+            const fileName = `dm-${Date.now()}.${ext}`;
+            const { error: uploadError } = await supabase.storage.from('medya').upload(fileName, file);
+            if(uploadError) throw uploadError;
+            const finalMediaUrl = supabase.storage.from('medya').getPublicUrl(fileName).data.publicUrl;
+            await supabase.from('mesajlar').insert([{ gonderen_id: currentUserSession.user.id, alici_id: currentChatUserId, metin: '📷 Görsel', medya_url: finalMediaUrl }]);
+        } catch(err) { Swal.fire({icon:'error', text:'Görsel gönderilemedi'}); } 
+        finally { const loader = document.getElementById('img-upload-loading'); if(loader) loader.remove(); }
+    });
+}
 
-dmMediaInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if(!file || !currentChatUserId) return;
-    e.target.value = ''; 
-    
-    dmHistory.insertAdjacentHTML('beforeend', `<div class="text-center text-xs text-slate-400 my-2" id="img-upload-loading">Fotoğraf gönderiliyor...</div>`);
-    scrollToChatBottom();
-
-    try {
-        const ext = file.name.split('.').pop();
-        const fileName = `dm-${Date.now()}.${ext}`;
-        const { error: uploadError } = await supabase.storage.from('medya').upload(fileName, file);
-        if(uploadError) throw uploadError;
-        
-        const finalMediaUrl = supabase.storage.from('medya').getPublicUrl(fileName).data.publicUrl;
-        await supabase.from('mesajlar').insert([{ gonderen_id: currentUserSession.user.id, alici_id: currentChatUserId, metin: '📷 Görsel', medya_url: finalMediaUrl }]);
-    } catch(err) {
-        Swal.fire({icon:'error', text:'Görsel gönderilemedi'});
-    } finally {
-        const loader = document.getElementById('img-upload-loading');
-        if(loader) loader.remove();
-    }
-});
-
-if(dmHistory) {
+const dmHistoryEl = document.getElementById('dm-history');
+if(dmHistoryEl) {
     let msgPressTimer;
     const handleMsgPressStart = (e) => {
         const bubble = e.target.closest('.msg-bubble');
@@ -661,14 +1031,14 @@ if(dmHistory) {
         }
     };
     const handleMsgPressEnd = () => clearTimeout(msgPressTimer);
-    dmHistory.addEventListener('mousedown', handleMsgPressStart);
-    dmHistory.addEventListener('touchstart', handleMsgPressStart);
-    dmHistory.addEventListener('mouseup', handleMsgPressEnd);
-    dmHistory.addEventListener('mouseleave', handleMsgPressEnd);
-    dmHistory.addEventListener('touchend', handleMsgPressEnd);
-    dmHistory.addEventListener('touchmove', handleMsgPressEnd);
+    dmHistoryEl.addEventListener('mousedown', handleMsgPressStart);
+    dmHistoryEl.addEventListener('touchstart', handleMsgPressStart);
+    dmHistoryEl.addEventListener('mouseup', handleMsgPressEnd);
+    dmHistoryEl.addEventListener('mouseleave', handleMsgPressEnd);
+    dmHistoryEl.addEventListener('touchend', handleMsgPressEnd);
+    dmHistoryEl.addEventListener('touchmove', handleMsgPressEnd);
 
-    dmHistory.addEventListener('dblclick', async (e) => {
+    dmHistoryEl.addEventListener('dblclick', async (e) => {
         const bubble = e.target.closest('.msg-bubble');
         if(bubble) {
             if(window.getSelection) window.getSelection().removeAllRanges();
@@ -677,65 +1047,88 @@ if(dmHistory) {
             bubble.setAttribute('data-is-liked', (!isLiked).toString());
             const heart = bubble.querySelector('.msg-heart');
             if(!isLiked) { 
-                heart.classList.remove('scale-0', 'opacity-0'); heart.classList.add('scale-100', 'opacity-100', 'chat-heart-anim');
+                if(heart) { heart.classList.remove('scale-0', 'opacity-0'); heart.classList.add('scale-100', 'opacity-100', 'chat-heart-anim'); }
             } else { 
-                heart.classList.remove('scale-100', 'opacity-100', 'chat-heart-anim'); heart.classList.add('scale-0', 'opacity-0');
+                if(heart) { heart.classList.remove('scale-100', 'opacity-100', 'chat-heart-anim'); heart.classList.add('scale-0', 'opacity-0'); }
             }
             await supabase.from('mesajlar').update({begendi: !isLiked}).eq('id', msgId);
         }
     });
 }
 
-postTypeRadios.forEach(radio => {
-    radio.addEventListener('change', (e) => {
-        if(e.target.value === 'medya') mediaUploadContainer.classList.remove('hidden');
-        else { mediaUploadContainer.classList.add('hidden'); postMediaInput.value = ''; }
+// POST OLUŞTURMA & FİLTRELEME
+const postTypeRadios = document.getElementsByName('post_type');
+if(postTypeRadios) {
+    postTypeRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const mediaUploadContainer = document.getElementById('media-upload-container');
+            const postMediaInput = document.getElementById('post-media');
+            if(e.target.value === 'medya') { if(mediaUploadContainer) mediaUploadContainer.classList.remove('tw-modal-hidden'); }
+            else { if(mediaUploadContainer) mediaUploadContainer.classList.add('tw-modal-hidden'); if(postMediaInput) postMediaInput.value = ''; }
+        });
     });
+}
+
+const openCreatePostBtn = document.getElementById('open-create-post');
+if(openCreatePostBtn) openCreatePostBtn.addEventListener('click', () => { showSimpleModal(document.getElementById('create-post-modal')); });
+
+const closePostModalBtn = document.getElementById('close-post-modal');
+if(closePostModalBtn) closePostModalBtn.addEventListener('click', () => { 
+    hideSimpleModal(document.getElementById('create-post-modal')); 
+    const createPostForm = document.getElementById('create-post-form');
+    if(createPostForm) createPostForm.reset(); 
+    const mediaUploadContainer = document.getElementById('media-upload-container');
+    if(mediaUploadContainer) mediaUploadContainer.classList.add('tw-modal-hidden'); 
 });
 
-openCreatePostBtn.addEventListener('click', () => createPostModal.classList.remove('hidden'));
-closePostModalBtn.addEventListener('click', () => { createPostModal.classList.add('hidden'); createPostForm.reset(); mediaUploadContainer.classList.add('hidden'); });
+const createPostForm = document.getElementById('create-post-form');
+if(createPostForm) {
+    createPostForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitPostBtn = document.getElementById('submit-post-btn');
+        const postMediaInput = document.getElementById('post-media');
+        const postTextInput = document.getElementById('post-text');
+        submitPostBtn.innerHTML = 'Paylaşılıyor...'; submitPostBtn.disabled = true;
+        try {
+            let finalMediaUrl = null;
+            if (document.querySelector('input[name="post_type"]:checked').value === 'medya' && postMediaInput && postMediaInput.files[0]) {
+                const file = postMediaInput.files[0];
+                const ext = file.name.split('.').pop();
+                const fileName = `post-${Date.now()}.${ext}`;
+                await supabase.storage.from('medya').upload(fileName, file);
+                finalMediaUrl = supabase.storage.from('medya').getPublicUrl(fileName).data.publicUrl;
+            }
 
-createPostForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    submitPostBtn.innerHTML = 'Paylaşılıyor...'; submitPostBtn.disabled = true;
-    try {
-        let finalMediaUrl = null;
-        if (document.querySelector('input[name="post_type"]:checked').value === 'medya' && postMediaInput.files[0]) {
-            const file = postMediaInput.files[0];
-            const ext = file.name.split('.').pop();
-            const fileName = `post-${Date.now()}.${ext}`;
-            await supabase.storage.from('medya').upload(fileName, file);
-            finalMediaUrl = supabase.storage.from('medya').getPublicUrl(fileName).data.publicUrl;
-        }
+            const { data: newPost, error: insertErr } = await supabase.from('gonderiler').insert([{ user_id: currentUserSession.user.id, gonderi_tipi: document.querySelector('input[name="post_type"]:checked').value, metin: postTextInput.value, medya_url: finalMediaUrl }]).select().single();
+            if (insertErr) throw insertErr;
 
-        const { data: newPost, error: insertErr } = await supabase.from('gonderiler').insert([{ user_id: currentUserSession.user.id, gonderi_tipi: document.querySelector('input[name="post_type"]:checked').value, metin: postTextInput.value, medya_url: finalMediaUrl }]).select().single();
-        if (insertErr) throw insertErr;
+            const { data: followers } = await supabase.from('takipler').select('takip_eden_id').eq('takip_edilen_id', currentUserSession.user.id);
+            if (followers && followers.length > 0) {
+                const notifications = followers.map(f => ({ alici_id: f.takip_eden_id, gonderen_id: currentUserSession.user.id, mesaj: 'yeni bir gönderi paylaştı.', gonderi_id: newPost.id }));
+                await supabase.from('bildirimler').insert(notifications);
+            }
 
-        const { data: followers } = await supabase.from('takipler').select('takip_eden_id').eq('takip_edilen_id', currentUserSession.user.id);
-        if (followers && followers.length > 0) {
-            const notifications = followers.map(f => ({
-                alici_id: f.takip_eden_id, gonderen_id: currentUserSession.user.id,
-                mesaj: 'yeni bir gönderi paylaştı.', gonderi_id: newPost.id
-            }));
-            await supabase.from('bildirimler').insert(notifications);
-        }
-
-        createPostModal.classList.add('hidden'); createPostForm.reset(); mediaUploadContainer.classList.add('hidden');
-        loadFeed(currentFeedFilter);
-    } catch (error) {} finally { submitPostBtn.innerHTML = 'Paylaş'; submitPostBtn.disabled = false; }
-});
-
-feedFilters.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        feedFilters.forEach(f => f.className = "feed-filter px-4 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 text-sm font-semibold shadow-sm outline-none border-none");
-        e.target.className = "feed-filter active px-4 py-1.5 rounded-full bg-slate-800 text-white text-sm font-semibold transition-colors outline-none border-none";
-        currentFeedFilter = e.target.getAttribute('data-filter');
-        loadFeed(currentFeedFilter);
+            hideSimpleModal(document.getElementById('create-post-modal')); createPostForm.reset(); 
+            const mediaUploadContainer = document.getElementById('media-upload-container');
+            if(mediaUploadContainer) mediaUploadContainer.classList.add('tw-modal-hidden');
+            loadFeed(currentFeedFilter);
+        } catch (error) {} finally { submitPostBtn.innerHTML = 'Paylaş'; submitPostBtn.disabled = false; }
     });
-});
+}
 
-// TEMPLATE: ID'LER CLASS'A ÇEVRİLDİ (DOM ÇAKIŞMASI DÜZELTİLDİ)
+const feedFilters = document.querySelectorAll('.feed-filter');
+if(feedFilters) {
+    feedFilters.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            feedFilters.forEach(f => f.className = "feed-filter px-4 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 text-sm font-semibold shadow-sm outline-none border-none");
+            e.target.className = "feed-filter active px-4 py-1.5 rounded-full bg-slate-800 text-white text-sm font-semibold transition-colors outline-none border-none";
+            currentFeedFilter = e.target.getAttribute('data-filter');
+            loadFeed(currentFeedFilter);
+        });
+    });
+}
+
+// TEMPLATE ÜRETİMİ (CLASS TABANLI, DOM ÇAKIŞMASIZ)
 function generatePostHTML(post, isSingleView = false) {
     const author = post.yazar || {};
     const avatar = author.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(author.ad_soyad || 'U')}&background=1e3a8a&color=fff`;
@@ -856,7 +1249,22 @@ function generatePostHTML(post, isSingleView = false) {
     `;
 }
 
-// EVENT DELEGATION: Tıklamalar artık DOM çakışması yapmadan ".post-card" üzerinden bulunur.
+async function loadFeed(filterType) {
+    if (!currentUserSession) return;
+    const feedList = document.getElementById('feed-list');
+    if (!feedList) return;
+    feedList.innerHTML = '<div class="p-8 text-center text-slate-400 bg-white rounded-xl border border-slate-200"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><p>Yükleniyor...</p></div>';
+    try {
+        let query = supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).order('created_at', { ascending: false });
+        if (filterType !== 'all') query = query.eq('gonderi_tipi', filterType);
+        const { data: posts } = await query;
+        if (!posts || posts.length === 0) { feedList.innerHTML = '<div class="bg-white p-8 border border-slate-200 rounded-xl text-center text-slate-500"><i class="fa-regular fa-folder-open text-3xl mb-2"></i><p>Henüz paylaşım yok.</p></div>'; return; }
+        feedList.innerHTML = '';
+        posts.forEach(p => feedList.insertAdjacentHTML('beforeend', generatePostHTML(p, false)));
+    } catch (e) {}
+}
+
+// EVENT DELEGATION (DOM ÇAKIŞMASI KORUMALI)
 document.addEventListener('click', async (e) => {
     if (!currentUserSession) return;
     const target = e.target;
@@ -927,7 +1335,7 @@ document.addEventListener('click', async (e) => {
         postCard.querySelector('.reply-indicator').classList.replace('flex', 'hidden');
     }
 
-    // Silme Sonrası Canlı Profil Güncelleme
+    // SİLME İŞLEMİ VE ANINDA ARAYÜZ YENİLEME (UX DÜZELTMESİ)
     if (target.classList.contains('delete-post-btn')) {
         const postId = target.getAttribute('data-post-id');
         Swal.fire({
@@ -936,10 +1344,13 @@ document.addEventListener('click', async (e) => {
             if (result.isConfirmed) { 
                 await supabase.from('gonderiler').delete().eq('id', postId); 
                 loadFeed(currentFeedFilter); 
-                if(currentlyViewingProfileId && !userProfileModal.classList.contains('hidden')) openUserProfile(currentlyViewingProfileId);
-                if(singlePostModal && !singlePostModal.classList.contains('hidden')) {
-                    singlePostModal.classList.add('translate-x-full'); 
-                    setTimeout(() => singlePostModal.classList.add('hidden'), 300);
+                const upModal = document.getElementById('user-profile-modal');
+                if(currentlyViewingProfileId && upModal && !upModal.classList.contains('tw-modal-hidden')) {
+                    openUserProfile(currentlyViewingProfileId); // Profili anında yeniler
+                }
+                const singleModal = document.getElementById('single-post-modal');
+                if(singleModal && !singleModal.classList.contains('tw-modal-hidden')) {
+                    hideSimpleModal(singleModal); // Tekil gönderideyken sildiysen ekranı kapatır
                 }
             }
         });
@@ -953,8 +1364,14 @@ document.addEventListener('click', async (e) => {
             if (result.isConfirmed) { 
                 await supabase.from('gonderi_yorumlari').delete().eq('id', commentId); 
                 loadFeed(currentFeedFilter); 
-                if(currentlyViewingProfileId && !userProfileModal.classList.contains('hidden')) openUserProfile(currentlyViewingProfileId);
-                if(singlePostModal && !singlePostModal.classList.contains('hidden')) openSinglePost(postCard.getAttribute('data-post-id'));
+                const upModal = document.getElementById('user-profile-modal');
+                if(currentlyViewingProfileId && upModal && !upModal.classList.contains('tw-modal-hidden')) {
+                    openUserProfile(currentlyViewingProfileId);
+                }
+                const singleModal = document.getElementById('single-post-modal');
+                if(singleModal && !singleModal.classList.contains('tw-modal-hidden')) {
+                    openSinglePost(postCard.getAttribute('data-post-id')); // Silinen yorumun olduğu gönderiyi yeniler
+                }
             }
         });
     }
@@ -966,8 +1383,10 @@ document.addEventListener('click', async (e) => {
         if (newText && newText !== oldText) { 
             await supabase.from('gonderiler').update({ metin: newText }).eq('id', postId); 
             loadFeed(currentFeedFilter); 
-            if(currentlyViewingProfileId && !userProfileModal.classList.contains('hidden')) openUserProfile(currentlyViewingProfileId);
-            if(singlePostModal && !singlePostModal.classList.contains('hidden')) openSinglePost(postId);
+            const upModal = document.getElementById('user-profile-modal');
+            if(currentlyViewingProfileId && upModal && !upModal.classList.contains('tw-modal-hidden')) openUserProfile(currentlyViewingProfileId);
+            const singleModal = document.getElementById('single-post-modal');
+            if(singleModal && !singleModal.classList.contains('tw-modal-hidden')) openSinglePost(postId);
         }
     }
 
@@ -979,23 +1398,19 @@ document.addEventListener('click', async (e) => {
     }
 });
 
-// Çift Tıkla Beğenme (Class Traversing ile düzeltildi)
+// ÇİFT TIKLA BEĞENME (CLASS SEÇİMİYLE ÇAKIŞMA ÖNLENDİ)
 document.addEventListener('dblclick', async (e) => {
     if (!currentUserSession) return;
     const target = e.target;
     if (target.classList.contains('post-media-item')) {
-        if (window.getSelection) { window.getSelection().removeAllRanges(); }
+        if (window.getSelection) window.getSelection().removeAllRanges();
         
         const postCard = target.closest('.post-card');
         const postId = target.getAttribute('data-post-id');
         const authorId = target.getAttribute('data-author-id');
         
         const bigHeart = postCard.querySelector('.big-heart');
-        if (bigHeart) {
-            bigHeart.classList.remove('heart-pop');
-            void bigHeart.offsetWidth;
-            bigHeart.classList.add('heart-pop');
-        }
+        if (bigHeart) { bigHeart.classList.remove('heart-pop'); void bigHeart.offsetWidth; bigHeart.classList.add('heart-pop'); }
 
         const icon = postCard.querySelector('.like-icon');
         const countSpan = postCard.querySelector('.like-count');
@@ -1006,44 +1421,49 @@ document.addEventListener('dblclick', async (e) => {
             icon.className = "fa-solid fa-heart like-icon text-red-500";
             postCard.querySelector('.like-btn').classList.replace('text-slate-500', 'text-red-500');
             countSpan.innerText = isNaN(currentCount) || currentCount === 0 ? 1 : currentCount + 1;
-
             try {
                 await supabase.from('etkilesimler').insert([{ gonderi_id: postId, user_id: currentUserSession.user.id, etkilesim_tipi: 'like' }]);
-                if (authorId !== currentUserSession.user.id) {
-                    await supabase.from('bildirimler').insert([{ alici_id: authorId, gonderen_id: currentUserSession.user.id, mesaj: 'Gönderini beğendi.', gonderi_id: postId }]);
-                }
+                if (authorId !== currentUserSession.user.id) await supabase.from('bildirimler').insert([{ alici_id: authorId, gonderen_id: currentUserSession.user.id, mesaj: 'Gönderini beğendi.', gonderi_id: postId }]);
             } catch (err) {}
         }
     }
 });
 
-// Profil Tabs Mantığı
-if(tabGrid && tabQuestions && upGrid && upQuestionsList) {
-    tabGrid.addEventListener('click', () => {
-        tabGrid.classList.add('border-slate-800', 'text-slate-800');
-        tabGrid.classList.remove('border-transparent', 'text-slate-400');
-        tabQuestions.classList.add('border-transparent', 'text-slate-400');
-        tabQuestions.classList.remove('border-slate-800', 'text-slate-800');
-        upGrid.classList.remove('hidden');
-        upQuestionsList.classList.add('hidden');
+const tabGridBtn = document.getElementById('tab-grid');
+const tabQuestionsBtn = document.getElementById('tab-questions');
+if(tabGridBtn && tabQuestionsBtn) {
+    tabGridBtn.addEventListener('click', () => {
+        tabGridBtn.classList.add('border-slate-800', 'text-slate-800');
+        tabGridBtn.classList.remove('border-transparent', 'text-slate-400');
+        tabQuestionsBtn.classList.add('border-transparent', 'text-slate-400');
+        tabQuestionsBtn.classList.remove('border-slate-800', 'text-slate-800');
+        const upGrid = document.getElementById('up-grid');
+        const upQuestionsList = document.getElementById('up-questions-list');
+        if(upGrid) upGrid.classList.remove('tw-modal-hidden');
+        if(upQuestionsList) upQuestionsList.classList.add('tw-modal-hidden');
     });
-    tabQuestions.addEventListener('click', () => {
-        tabQuestions.classList.add('border-slate-800', 'text-slate-800');
-        tabQuestions.classList.remove('border-transparent', 'text-slate-400');
-        tabGrid.classList.add('border-transparent', 'text-slate-400');
-        tabGrid.classList.remove('border-slate-800', 'text-slate-800');
-        upQuestionsList.classList.remove('hidden');
-        upGrid.classList.add('hidden');
+    tabQuestionsBtn.addEventListener('click', () => {
+        tabQuestionsBtn.classList.add('border-slate-800', 'text-slate-800');
+        tabQuestionsBtn.classList.remove('border-transparent', 'text-slate-400');
+        tabGridBtn.classList.add('border-transparent', 'text-slate-400');
+        tabGridBtn.classList.remove('border-slate-800', 'text-slate-800');
+        const upGrid = document.getElementById('up-grid');
+        const upQuestionsList = document.getElementById('up-questions-list');
+        if(upQuestionsList) upQuestionsList.classList.remove('tw-modal-hidden');
+        if(upGrid) upGrid.classList.add('tw-modal-hidden');
     });
 }
 
 window.openUserProfile = async (uId) => {
-    if(!uId || uId === 'null' || uId === 'undefined') { console.error('Geçersiz User ID'); return; }
+    if(!uId || uId === 'null' || uId === 'undefined') return;
     currentlyViewingProfileId = uId;
-    userProfileModal.classList.remove('hidden');
-    setTimeout(() => userProfileModal.classList.remove('translate-x-full'), 10);
-    if(tabGrid) tabGrid.click();
+    const userProfileModal = document.getElementById('user-profile-modal');
+    showSimpleModal(userProfileModal);
+    
+    if(tabGridBtn) tabGridBtn.click();
 
+    const upGrid = document.getElementById('up-grid');
+    const upQuestionsList = document.getElementById('up-questions-list');
     if(upGrid) upGrid.innerHTML = '<div class="col-span-3 text-center p-10"><i class="fa-solid fa-spinner fa-spin text-2xl text-slate-400"></i></div>';
     if(upQuestionsList) upQuestionsList.innerHTML = '<div class="text-center p-10"><i class="fa-solid fa-spinner fa-spin text-2xl text-slate-400"></i></div>';
 
@@ -1051,6 +1471,12 @@ window.openUserProfile = async (uId) => {
         const { data: user, error } = await supabase.from('uyeler').select('*').eq('id', uId).single();
         if (error) throw error;
         
+        const upHeaderName = document.getElementById('up-header-name');
+        const upName = document.getElementById('up-name');
+        const upRole = document.getElementById('up-role');
+        const upBio = document.getElementById('up-bio');
+        const upAvatar = document.getElementById('up-avatar');
+
         if(upHeaderName) upHeaderName.innerText = user.ad_soyad; 
         if(upName) upName.innerText = user.ad_soyad; 
         if(upRole) upRole.innerText = user.rol; 
@@ -1058,35 +1484,44 @@ window.openUserProfile = async (uId) => {
         const userAvatar = user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.ad_soyad || 'U')}&background=1e3a8a&color=fff`;
         if(upAvatar) upAvatar.src = userAvatar;
 
+        const followBtn = document.getElementById('follow-btn');
+        const unfollowBtn = document.getElementById('unfollow-btn');
+        const messageUserBtn = document.getElementById('message-user-btn');
+
         if (currentUserSession && uId === currentUserSession.user.id) { 
-            if(followBtn) followBtn.classList.add('hidden'); 
-            if(unfollowBtn) unfollowBtn.classList.add('hidden'); 
-            if(messageUserBtn) messageUserBtn.classList.add('hidden');
+            if(followBtn) followBtn.classList.add('tw-modal-hidden'); 
+            if(unfollowBtn) unfollowBtn.classList.add('tw-modal-hidden'); 
+            if(messageUserBtn) messageUserBtn.classList.add('tw-modal-hidden');
         } else if (currentUserSession) {
             if(messageUserBtn) {
-                messageUserBtn.classList.remove('hidden');
+                messageUserBtn.classList.remove('tw-modal-hidden');
                 messageUserBtn.onclick = () => {
-                    userProfileModal.classList.add('translate-x-full'); setTimeout(() => userProfileModal.classList.add('hidden'), 300);
+                    hideSimpleModal(userProfileModal);
                     openChat(uId, user.ad_soyad, userAvatar);
                 };
             }
             const { data: follow } = await supabase.from('takipler').select('id').eq('takip_eden_id', currentUserSession.user.id).eq('takip_edilen_id', uId).single();
             if (follow) { 
-                if(followBtn) followBtn.classList.add('hidden'); 
-                if(unfollowBtn) unfollowBtn.classList.remove('hidden'); 
+                if(followBtn) followBtn.classList.add('tw-modal-hidden'); 
+                if(unfollowBtn) unfollowBtn.classList.remove('tw-modal-hidden'); 
             } else { 
-                if(unfollowBtn) unfollowBtn.classList.add('hidden'); 
-                if(followBtn) followBtn.classList.remove('hidden'); 
+                if(unfollowBtn) unfollowBtn.classList.add('tw-modal-hidden'); 
+                if(followBtn) followBtn.classList.remove('tw-modal-hidden'); 
             }
         }
 
+        const upFollowerCount = document.getElementById('up-follower-count');
+        const upFollowingCount = document.getElementById('up-following-count');
         const { count: fer } = await supabase.from('takipler').select('*', { count: 'exact', head: true }).eq('takip_edilen_id', uId);
         const { count: fing } = await supabase.from('takipler').select('*', { count: 'exact', head: true }).eq('takip_eden_id', uId);
         if(upFollowerCount) upFollowerCount.innerText = fer || 0; if(upFollowingCount) upFollowingCount.innerText = fing || 0;
 
+        const upPostCount = document.getElementById('up-post-count');
         const { data: posts } = await supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).eq('user_id', uId).order('created_at', { ascending: false });
         if(upPostCount) upPostCount.innerText = posts ? posts.length : 0;
-        if(upGrid) upGrid.innerHTML = ''; if(upQuestionsList) upQuestionsList.innerHTML = '';
+        
+        if(upGrid) upGrid.innerHTML = ''; 
+        if(upQuestionsList) upQuestionsList.innerHTML = '';
 
         if(posts) {
             posts.forEach(p => {
@@ -1110,32 +1545,47 @@ document.addEventListener('click', async (e) => {
     if (uId) openUserProfile(uId);
 });
 
-if(closeUserProfileBtn) closeUserProfileBtn.addEventListener('click', () => { userProfileModal.classList.add('translate-x-full'); setTimeout(() => userProfileModal.classList.add('hidden'), 300); });
+const closeUserProfileBtn = document.getElementById('close-user-profile');
+if(closeUserProfileBtn) closeUserProfileBtn.addEventListener('click', () => hideSimpleModal(document.getElementById('user-profile-modal')));
 
-if(followBtn) {
-    followBtn.addEventListener('click', async () => {
+const followBtnEl = document.getElementById('follow-btn');
+if(followBtnEl) {
+    followBtnEl.addEventListener('click', async () => {
         await supabase.from('takipler').insert([{ takip_eden_id: currentUserSession.user.id, takip_edilen_id: currentlyViewingProfileId }]);
         await supabase.from('bildirimler').insert([{ alici_id: currentlyViewingProfileId, gonderen_id: currentUserSession.user.id, mesaj: 'Seni takip etmeye başladı.' }]);
-        followBtn.classList.add('hidden'); unfollowBtn.classList.remove('hidden'); upFollowerCount.innerText = parseInt(upFollowerCount.innerText)+1;
+        const upFollowerCount = document.getElementById('up-follower-count');
+        followBtnEl.classList.add('tw-modal-hidden'); 
+        const unfollowBtnEl = document.getElementById('unfollow-btn');
+        if(unfollowBtnEl) unfollowBtnEl.classList.remove('tw-modal-hidden'); 
+        if(upFollowerCount) upFollowerCount.innerText = parseInt(upFollowerCount.innerText)+1;
     });
 }
-if(unfollowBtn) {
-    unfollowBtn.addEventListener('click', async () => {
+
+const unfollowBtnEl = document.getElementById('unfollow-btn');
+if(unfollowBtnEl) {
+    unfollowBtnEl.addEventListener('click', async () => {
         await supabase.from('takipler').delete().eq('takip_eden_id', currentUserSession.user.id).eq('takip_edilen_id', currentlyViewingProfileId);
-        unfollowBtn.classList.add('hidden'); followBtn.classList.remove('hidden'); upFollowerCount.innerText = parseInt(upFollowerCount.innerText)-1;
+        unfollowBtnEl.classList.add('tw-modal-hidden'); 
+        if(followBtnEl) followBtnEl.classList.remove('tw-modal-hidden'); 
+        const upFollowerCount = document.getElementById('up-follower-count');
+        if(upFollowerCount) upFollowerCount.innerText = parseInt(upFollowerCount.innerText)-1;
     });
 }
 
 window.openSinglePost = async (postId) => {
-    singlePostModal.classList.remove('hidden'); setTimeout(() => singlePostModal.classList.remove('translate-x-full'), 10);
+    const singlePostModal = document.getElementById('single-post-modal');
+    showSimpleModal(singlePostModal);
+    const singlePostContainer = document.getElementById('single-post-container');
     if(singlePostContainer) singlePostContainer.innerHTML = '<p class="text-center mt-20 text-slate-400"><i class="fa-solid fa-spinner fa-spin text-3xl mb-2"></i><br>Yükleniyor...</p>';
     try {
         const { data: post } = await supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).eq('id', postId).single();
         if(singlePostContainer) singlePostContainer.innerHTML = generatePostHTML(post, true);
     } catch (e) {}
 };
-if(closeSinglePostBtn) closeSinglePostBtn.addEventListener('click', () => { singlePostModal.classList.add('translate-x-full'); setTimeout(() => singlePostModal.classList.add('hidden'), 300); });
+const closeSinglePostBtn = document.getElementById('close-single-post');
+if(closeSinglePostBtn) closeSinglePostBtn.addEventListener('click', () => hideSimpleModal(document.getElementById('single-post-modal')));
 
-// Başlangıç
+// Başlangıç Yüklemeleri (Yalnızca varsa çalıştırır)
+if(typeof fetchApprovedReviews === "function") fetchApprovedReviews();
 checkSession();
 
