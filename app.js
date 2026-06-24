@@ -347,7 +347,7 @@ swatches.forEach(swatch => {
 });
 
 // ============================================
-// AUTH & OTP SİSTEMİ MANTIĞI
+// AUTH & OTP & GOOGLE SİSTEMİ MANTIĞI
 // ============================================
 const authModalWrapper = document.getElementById('auth-modal-wrapper');
 const navAuthMainBtn = document.getElementById('nav-main-auth-btn');
@@ -374,6 +374,29 @@ if(closeAuthModalBtn) {
         }
     });
 }
+
+// GOOGLE İLE GİRİŞ / KAYIT İŞLEMLERİ
+const handleGoogleAuth = async (e) => {
+    e.preventDefault();
+    try {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: window.location.origin + window.location.pathname
+            }
+        });
+        if (error) throw error;
+    } catch (error) {
+        Swal.fire({ icon: 'error', title: 'Hata', text: 'Google ile bağlantı kurulamadı.' });
+    }
+};
+
+const googleLoginBtn = document.getElementById('google-login-btn');
+if(googleLoginBtn) googleLoginBtn.addEventListener('click', handleGoogleAuth);
+
+const googleRegisterBtn = document.getElementById('google-register-btn');
+if(googleRegisterBtn) googleRegisterBtn.addEventListener('click', handleGoogleAuth);
+
 
 // Girişli kullanıcı doğrudan Öz Social'a fırlatılır
 if(profileFabBtn) profileFabBtn.addEventListener('click', () => { window.location.href = 'ozsocial.html'; });
@@ -553,6 +576,22 @@ async function checkSession() {
                 const avatarUrl = userData.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.ad_soyad || 'U')}&background=1e3a8a&color=fff`;
                 const fabAvatar = document.getElementById('fab-avatar');
                 if(fabAvatar) fabAvatar.src = avatarUrl;
+            } else {
+                // Google vb. ile ilk giriş yapanlar için tabloyu otomatik doldur
+                const fullName = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
+                const gAvatarUrl = session.user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=1e3a8a&color=fff`;
+                
+                await supabase.from('uyeler').insert([{ 
+                    id: session.user.id, 
+                    ad_soyad: fullName, 
+                    rol: 'Müşteri', 
+                    avatar_url: session.user.user_metadata?.avatar_url || null, 
+                    biyografi: "" 
+                }]);
+                
+                userDataGlobal = { ad_soyad: fullName, avatar_url: session.user.user_metadata?.avatar_url || null };
+                const fabAvatar = document.getElementById('fab-avatar');
+                if(fabAvatar) fabAvatar.src = gAvatarUrl;
             }
         } catch (e) {}
         
@@ -572,3 +611,4 @@ async function checkSession() {
 // Başlangıç Yüklemeleri
 if(typeof fetchApprovedReviews === "function") fetchApprovedReviews();
 checkSession();
+
