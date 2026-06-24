@@ -20,16 +20,18 @@ let currentChatUserId = null;
 let realtimeChannel = null;
 let chatBroadcastChannel = null;
 let typingTimeout;
-let temporaryRegistrationData = null; // OTP geçici verisi için
+let temporaryRegistrationData = null; 
 let currentLang = 'tr';
+let userDataGlobal = null;
 
 // ============================================
-// MODAL & YARDIMCI FONKSİYONLAR
+// YARDIMCI FONKSİYONLAR (MODAL & SCROLL KİLİDİ)
 // ============================================
 window.openSideModal = function(wrapperId, panelId) {
     const wrapper = document.getElementById(wrapperId);
     const panel = document.getElementById(panelId);
     if(wrapper && panel) {
+        document.body.style.overflow = 'hidden';
         wrapper.classList.remove('tw-modal-hidden');
         setTimeout(() => panel.classList.remove('translate-x-full'), 10);
     }
@@ -40,12 +42,16 @@ window.closeSideModal = function(wrapperId, panelId) {
     const panel = document.getElementById(panelId);
     if(wrapper && panel) {
         panel.classList.add('translate-x-full');
-        setTimeout(() => wrapper.classList.add('tw-modal-hidden'), 300);
+        setTimeout(() => {
+            wrapper.classList.add('tw-modal-hidden');
+            document.body.style.overflow = '';
+        }, 300);
     }
 }
 
 function showSimpleModal(modalEl) {
     if(modalEl) {
+        document.body.style.overflow = 'hidden';
         modalEl.classList.remove('tw-modal-hidden');
         setTimeout(() => modalEl.classList.remove('translate-x-full'), 10);
     }
@@ -54,7 +60,10 @@ function showSimpleModal(modalEl) {
 function hideSimpleModal(modalEl) {
     if(modalEl) {
         modalEl.classList.add('translate-x-full');
-        setTimeout(() => modalEl.classList.add('tw-modal-hidden'), 300);
+        setTimeout(() => {
+            modalEl.classList.add('tw-modal-hidden');
+            document.body.style.overflow = '';
+        }, 300);
     }
 }
 
@@ -71,11 +80,24 @@ function toggleAuthForms(activeForm) {
     if(activeForm) activeForm.classList.remove('tw-modal-hidden');
 }
 
-// ============================================
-// ANA SİTE MANTIĞI (index.html)
-// ============================================
+function lockReviewNameIfLoggedIn() {
+    const revNameInput = document.getElementById('rev-name');
+    if(revNameInput) {
+        if(currentUserSession && userDataGlobal) {
+            revNameInput.value = userDataGlobal.ad_soyad;
+            revNameInput.setAttribute('readonly', 'true');
+            revNameInput.classList.add('bg-slate-200', 'cursor-not-allowed', 'opacity-70');
+        } else {
+            revNameInput.value = '';
+            revNameInput.removeAttribute('readonly');
+            revNameInput.classList.remove('bg-slate-200', 'cursor-not-allowed', 'opacity-70');
+        }
+    }
+}
 
-// --- Dil Seçeneği ---
+// ============================================
+// ANA SİTE MANTIĞI (DİL, KARTELA, CHATBOT)
+// ============================================
 const langTrBtn = document.getElementById('lang-tr');
 const langEnBtn = document.getElementById('lang-en');
 
@@ -85,25 +107,21 @@ function applyLanguage(lang) {
         langTrBtn.classList.toggle('active', lang === 'tr');
         langEnBtn.classList.toggle('active', lang === 'en');
     }
-
     document.querySelectorAll('[data-tr]').forEach(el => {
         const text = lang === 'tr' ? el.getAttribute('data-tr') : el.getAttribute('data-en');
         if (text) {
-            if (text.includes('<') && text.includes('>')) { el.innerHTML = text; } 
-            else { el.textContent = text; }
+            if (text.includes('<') && text.includes('>')) el.innerHTML = text;
+            else el.textContent = text;
         }
     });
-
     document.querySelectorAll('[data-tr-placeholder]').forEach(el => {
         const ph = lang === 'tr' ? el.getAttribute('data-tr-placeholder') : el.getAttribute('data-en-placeholder');
         if (ph) el.placeholder = ph;
     });
-
     const botChatInput = document.getElementById('chat-input');
     if (botChatInput) {
         botChatInput.placeholder = lang === 'tr' ? 'Mesajınızı yazın...' : 'Type your message...';
     }
-
     if(typeof renderColors === "function") renderColors();
     if(typeof fetchApprovedReviews === "function") fetchApprovedReviews();
     document.documentElement.lang = lang === 'tr' ? 'tr' : 'en';
@@ -112,7 +130,6 @@ function applyLanguage(lang) {
 if(langTrBtn) langTrBtn.addEventListener('click', () => applyLanguage('tr'));
 if(langEnBtn) langEnBtn.addEventListener('click', () => applyLanguage('en'));
 
-// --- Asistan Chatbot ---
 const openChatBtn = document.getElementById('open-chatbot');
 const botChatModal = document.getElementById('chat-modal');
 const closeChatBtn = document.getElementById('close-chat');
@@ -125,40 +142,36 @@ const addMessage = (text, type) => {
     const div = document.createElement('div');
     div.className = `msg msg-${type}`;
     div.textContent = text;
-    if(chatMessages) {
-        chatMessages.appendChild(div);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
+    if(chatMessages) { chatMessages.appendChild(div); chatMessages.scrollTop = chatMessages.scrollHeight; }
 };
 
 const showTypingIndicator = () => {
     const div = document.createElement('div');
     div.className = 'typing-indicator';
     div.innerHTML = `<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>`;
-    if(chatMessages) {
-        chatMessages.appendChild(div);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
+    if(chatMessages) { chatMessages.appendChild(div); chatMessages.scrollTop = chatMessages.scrollHeight; }
     return div;
 };
 
 if(openChatBtn) {
     openChatBtn.onclick = () => {
-        if(botChatModal) botChatModal.style.display = 'flex';
+        if(botChatModal) {
+            botChatModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
         if (!botChatInitialized) {
             botChatInitialized = true;
             const typingEl = showTypingIndicator();
             setTimeout(() => {
                 if(typingEl) typingEl.remove();
-                addMessage(
-                    currentLang === 'tr' ? 'Merhaba! Ben Öz Yapı Market asistanı. Boya, tesisat veya bataryalarımız hakkında size nasıl yardımcı olabilirim?' : 'Hello! I am the Öz Yapı Market assistant. How can I help you about our paints, plumbing or batteries?', 
-                    'bot'
-                );
+                addMessage(currentLang === 'tr' ? 'Merhaba! Ben Öz Yapı Market asistanı. Boya, tesisat veya bataryalarımız hakkında size nasıl yardımcı olabilirim?' : 'Hello! I am the Öz Yapı Market assistant. How can I help you about our paints, plumbing or batteries?', 'bot');
             }, 1500);
         }
     };
 }
-if(closeChatBtn) closeChatBtn.onclick = () => botChatModal.style.display = 'none';
+if(closeChatBtn) closeChatBtn.onclick = () => { 
+    if(botChatModal) { botChatModal.style.display = 'none'; document.body.style.overflow = ''; }
+};
 
 const handleSend = async () => {
     if(!botChatInput) return;
@@ -188,7 +201,6 @@ const handleSend = async () => {
 if(chatSend) chatSend.onclick = handleSend;
 if(botChatInput) botChatInput.onkeypress = (e) => { if(e.key === 'Enter') handleSend(); };
 
-// --- Kartela & PDF ---
 const openModalBtn = document.getElementById('open-kartela-btn');
 const kartelaModal = document.getElementById('kartela-modal');
 const closeKartelaBtn = document.getElementById('close-modal');
@@ -203,7 +215,6 @@ if(openPdfBtn) { openPdfBtn.onclick = () => { if(kartelaModal) kartelaModal.styl
 if(closePdfModalBtn) { closePdfModalBtn.onclick = () => { if(pdfModal) pdfModal.style.display = 'none'; if(kartelaModal) kartelaModal.style.display = 'flex'; }; }
 
 let activeFilter = 'all'; let searchTerm = '';
-
 window.renderColors = function() {
     if(!colorGrid) return;
     colorGrid.innerHTML = '';
@@ -214,53 +225,42 @@ window.renderColors = function() {
         const matchesType = activeFilter === 'all' || color.type === activeFilter;
         return matchesSearch && matchesType;
     });
-
     const typeLabel = currentLang === 'tr' ? { ic: 'İç Cephe', dis: 'Dış Cephe' } : { ic: 'Interior', dis: 'Exterior' };
 
     filtered.forEach(color => {
         const item = document.createElement('div');
         item.className = 'color-item';
-        item.innerHTML = `
-            <div class="swatch-preview" style="background-color: ${color.hex}"></div>
-            <span>${color.name}</span>
-            <div style="font-size:0.6rem; color:#9ca3af; margin-top:4px;">${typeLabel[color.type]}</div>
-        `;
+        item.innerHTML = `<div class="swatch-preview" style="background-color: ${color.hex}"></div><span>${color.name}</span><div style="font-size:0.6rem; color:#9ca3af; margin-top:4px;">${typeLabel[color.type]}</div>`;
         colorGrid.appendChild(item);
     });
 }
 
-if(colorSearch) { colorSearch.addEventListener('input', (e) => { searchTerm = e.target.value; if(typeof renderColors === "function") renderColors(); }); }
+if(colorSearch) colorSearch.addEventListener('input', (e) => { searchTerm = e.target.value; if(typeof renderColors === "function") renderColors(); });
 
 if(filterBtns.length > 0) {
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             filterBtns.forEach(b => { b.classList.remove('active'); b.style.background = 'rgba(255,255,255,0.05)'; });
-            btn.classList.add('active');
-            activeFilter = btn.getAttribute('data-type');
+            btn.classList.add('active'); activeFilter = btn.getAttribute('data-type');
             if(typeof renderColors === "function") renderColors();
         });
     });
 }
 
-if(openModalBtn) openModalBtn.onclick = () => { if(kartelaModal) kartelaModal.style.display = 'flex'; if(typeof renderColors === "function") renderColors(); };
-if(closeKartelaBtn) closeKartelaBtn.onclick = () => { if(kartelaModal) kartelaModal.style.display = 'none'; };
+if(openModalBtn) openModalBtn.onclick = () => { if(kartelaModal) { kartelaModal.style.display = 'flex'; document.body.style.overflow = 'hidden'; } if(typeof renderColors === "function") renderColors(); };
+if(closeKartelaBtn) closeKartelaBtn.onclick = () => { if(kartelaModal) { kartelaModal.style.display = 'none'; document.body.style.overflow = ''; } };
 
-// --- Yorum Sistemi ---
 const reviewModal = document.getElementById('review-modal');
 const openReviewBtn = document.getElementById('open-review-modal');
 const closeReviewBtn = document.getElementById('close-review-modal');
 
-if (openReviewBtn) openReviewBtn.onclick = () => { if(reviewModal) reviewModal.style.display = 'flex'; };
-if (closeReviewBtn) closeReviewBtn.onclick = () => { if(reviewModal) reviewModal.style.display = 'none'; };
+if (openReviewBtn) openReviewBtn.onclick = () => { if(reviewModal) { reviewModal.style.display = 'flex'; document.body.style.overflow = 'hidden'; } };
+if (closeReviewBtn) closeReviewBtn.onclick = () => { if(reviewModal) { reviewModal.style.display = 'none'; document.body.style.overflow = ''; } };
 
 let selectedRating = 0;
 document.querySelectorAll('#star-rating-container .review-star').forEach(star => {
-    star.addEventListener('click', function() {
-        selectedRating = parseInt(this.getAttribute('data-value')); updateStarDisplay(selectedRating);
-    });
-    star.addEventListener('mouseover', function() {
-        const hoverValue = parseInt(this.getAttribute('data-value')); updateStarDisplay(hoverValue);
-    });
+    star.addEventListener('click', function() { selectedRating = parseInt(this.getAttribute('data-value')); updateStarDisplay(selectedRating); });
+    star.addEventListener('mouseover', function() { const hoverValue = parseInt(this.getAttribute('data-value')); updateStarDisplay(hoverValue); });
 });
 document.getElementById('star-rating-container')?.addEventListener('mouseleave', () => updateStarDisplay(selectedRating));
 
@@ -315,7 +315,7 @@ if(reviewForm) {
             if(data.success) {
                 alert(currentLang === 'tr' ? "Teşekkürler! Yorumunuz yönetici onayından sonra yayınlanacaktır." : "Thank you! Your review will be published after admin approval.");
                 reviewForm.reset(); selectedRating = 0; updateStarDisplay(0); 
-                if(reviewModal) reviewModal.style.display = 'none';
+                if(reviewModal) { reviewModal.style.display = 'none'; document.body.style.overflow = ''; }
             } else { alert("Hata / Error: " + data.error); }
         } catch(err) {
             alert(currentLang === 'tr' ? "Sistemde bir arıza oluştu, lütfen daha sonra tekrar deneyin." : "A system error occurred, please try again later.");
@@ -323,7 +323,6 @@ if(reviewForm) {
     });
 }
 
-// --- Menü ve Kaydırma ---
 const mobileMenuBtn = document.getElementById('mobile-menu-btn');
 const navLinks = document.getElementById('nav-links');
 const navLinksItems = document.querySelectorAll('.nav-links a');
@@ -335,7 +334,6 @@ if(mobileMenuBtn) {
         if(icon) { icon.classList.toggle('fa-bars'); icon.classList.toggle('fa-xmark'); }
     });
 }
-
 navLinksItems.forEach(item => {
     item.addEventListener('click', () => {
         if(navLinks) navLinks.classList.remove('active');
@@ -345,7 +343,6 @@ navLinksItems.forEach(item => {
 
 const navbar = document.getElementById('navbar');
 const sections = document.querySelectorAll('section');
-
 window.addEventListener('scroll', () => {
     if(navbar) navbar.classList.toggle('scrolled', window.scrollY > 50);
     let current = '';
@@ -357,17 +354,13 @@ window.addEventListener('scroll', () => {
 });
 
 const reveals = document.querySelectorAll('.reveal');
-const revealOnScroll = () => {
-    reveals.forEach(reveal => { if (reveal.getBoundingClientRect().top < window.innerHeight - 150) reveal.classList.add('active'); });
-}
-window.addEventListener('scroll', revealOnScroll);
-revealOnScroll();
+const revealOnScroll = () => { reveals.forEach(reveal => { if (reveal.getBoundingClientRect().top < window.innerHeight - 150) reveal.classList.add('active'); }); }
+window.addEventListener('scroll', revealOnScroll); revealOnScroll();
 
 const swatches = document.querySelectorAll('.color-swatch');
 const displayBox = document.getElementById('selected-color-box');
 const displayName = document.getElementById('selected-color-name');
 const displayHex = document.getElementById('selected-color-hex');
-
 swatches.forEach(swatch => {
     swatch.addEventListener('click', () => {
         swatches.forEach(s => s.classList.remove('selected'));
@@ -380,9 +373,8 @@ swatches.forEach(swatch => {
 });
 
 // ============================================
-// AUTH VE OTP MANTIĞI (Her İki Sayfa İçin)
+// AUTH & OTP SİSTEMİ (Her İki Sayfa İçin)
 // ============================================
-
 const authModalWrapper = document.getElementById('auth-modal-wrapper');
 const navAuthMainBtn = document.getElementById('nav-main-auth-btn');
 const closeAuthModalBtn = document.getElementById('close-auth-modal');
@@ -390,6 +382,7 @@ const profileFabBtn = document.getElementById('profile-fab-btn');
 
 function openAuthModal(formType) {
     if(authModalWrapper) {
+        document.body.style.overflow = 'hidden';
         authModalWrapper.classList.remove('tw-modal-hidden');
         authModalWrapper.classList.add('flex');
         toggleAuthForms(document.getElementById(`${formType}-form`));
@@ -402,16 +395,12 @@ if(closeAuthModalBtn) {
         if(authModalWrapper) {
             authModalWrapper.classList.add('tw-modal-hidden'); 
             authModalWrapper.classList.remove('flex');
+            document.body.style.overflow = '';
         }
     });
 }
 
-// AKILLI YÖNLENDİRİCİ: FAB'a basılınca artık Öz Social sayfasına gider.
-if(profileFabBtn) {
-    profileFabBtn.addEventListener('click', () => {
-        window.location.href = 'ozsocial.html';
-    });
-}
+if(profileFabBtn) profileFabBtn.addEventListener('click', () => { window.location.href = 'ozsocial.html'; });
 
 const showRegisterBtn = document.getElementById('show-register');
 const showLoginBtn = document.getElementById('show-login');
@@ -474,9 +463,7 @@ if(otpVerifyForm) {
 
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Doğrulanıyor...'; btn.disabled = true;
         try {
-            const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({ 
-                email: temporaryRegistrationData.email, token: otpCode, type: 'signup' 
-            });
+            const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({ email: temporaryRegistrationData.email, token: otpCode, type: 'signup' });
             if (verifyError) throw verifyError;
 
             if (verifyData.user) {
@@ -487,15 +474,16 @@ if(otpVerifyForm) {
                     const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, temporaryRegistrationData.file);
                     if (!uploadError) finalAvatarUrl = supabase.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
                 }
-                await supabase.from('uyeler').insert([{ 
-                    id: verifyData.user.id, ad_soyad: temporaryRegistrationData.name, 
-                    rol: temporaryRegistrationData.role, avatar_url: finalAvatarUrl, biyografi: "" 
-                }]);
+                await supabase.from('uyeler').insert([{ id: verifyData.user.id, ad_soyad: temporaryRegistrationData.name, rol: temporaryRegistrationData.role, avatar_url: finalAvatarUrl, biyografi: "" }]);
                 
                 Swal.fire({ icon: 'success', title: 'Hesabınız Açıldı!', timer: 1500, showConfirmButton: false });
                 regFormEl.reset(); otpVerifyForm.reset(); temporaryRegistrationData = null; selectedAvatarFile = null;
                 if(avatarPreview) avatarPreview.innerHTML = '<i class="fa-solid fa-camera text-2xl text-slate-400 group-hover:text-blue-500 transition-colors"></i>';
-                if(authModalWrapper) authModalWrapper.classList.add('tw-modal-hidden');
+                
+                if(authModalWrapper) {
+                    authModalWrapper.classList.add('tw-modal-hidden');
+                    document.body.style.overflow = '';
+                }
                 checkSession();
             }
         } catch (error) { Swal.fire({ icon: 'error', title: 'Geçersiz Kod', text: 'Girdiğiniz kod hatalı veya süresi dolmuş.' }); }
@@ -515,14 +503,16 @@ if(loginFormEl) {
             const { error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) throw error;
             loginFormEl.reset();
-            if(authModalWrapper) authModalWrapper.classList.add('tw-modal-hidden');
             
-            // Eğer Login işleminden sonra kişi index.html'deyse doğrudan Öz Social'a yönlendirilebilir.
-            if(window.location.pathname.includes('index') || window.location.pathname === '/') {
-                window.location.href = 'ozsocial.html';
-            } else {
-                checkSession();
+            if(authModalWrapper) {
+                authModalWrapper.classList.add('tw-modal-hidden');
+                document.body.style.overflow = '';
             }
+            
+            // Eğer Login işleminden sonra kişi index.html'deyse doğrudan atmıyoruz (1. Kural)
+            // Sadece FAB butonu görünür oluyor.
+            checkSession();
+
         } catch (error) { Swal.fire({ icon: 'error', title: 'Başarısız', text: "E-posta veya şifre hatalı!" }); }
         finally { btn.innerHTML = 'Giriş Yap'; btn.disabled = false; }
     });
@@ -574,15 +564,16 @@ const handleLogout = async () => {
     if (realtimeChannel) supabase.removeChannel(realtimeChannel);
     if (chatBroadcastChannel) supabase.removeChannel(chatBroadcastChannel);
     await supabase.auth.signOut();
-    window.location.href = 'index.html'; // Çıkış yapınca anasayfaya at
+    window.location.href = 'index.html'; 
 };
 const logoutTextBtn = document.getElementById('logout-text-btn');
 if(logoutTextBtn) logoutTextBtn.addEventListener('click', handleLogout);
+const upLogoutBtn = document.getElementById('up-logout-btn');
+if(upLogoutBtn) upLogoutBtn.addEventListener('click', handleLogout);
 
 // ============================================
-// ÖZ SOCIAL MANTIĞI (ozsocial.html İÇİN)
+// OTURUM (SESSION) VE ROUTING MANTIĞI
 // ============================================
-
 async function checkSession() {
     const { data: { session } } = await supabase.auth.getSession();
     const isSocialPage = window.location.pathname.includes('ozsocial.html');
@@ -601,6 +592,7 @@ async function checkSession() {
         try {
             const { data: userData } = await supabase.from('uyeler').select('*').eq('id', session.user.id).single();
             if (userData) {
+                userDataGlobal = userData; // Yorum kilidi için global
                 const nameText = userData.ad_soyad || 'İsimsiz';
                 const avatarUrl = userData.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(nameText)}&background=1e3a8a&color=fff`;
                 
@@ -622,18 +614,25 @@ async function checkSession() {
                 
                 const fabAvatar = document.getElementById('fab-avatar');
                 if(fabAvatar) fabAvatar.src = avatarUrl;
+
+                const bottomAvatar = document.getElementById('bottom-avatar');
+                if(bottomAvatar) bottomAvatar.src = avatarUrl;
             }
         } catch (e) {}
         
+        lockReviewNameIfLoggedIn(); 
+
         if(isSocialPage) {
             checkNotificationsBadge(); checkMessagesBadge(); setupRealtime(); loadFeed(currentFeedFilter);
         }
     } else {
         currentUserSession = null;
+        userDataGlobal = null;
         if (realtimeChannel) { supabase.removeChannel(realtimeChannel); realtimeChannel = null; }
         if (chatBroadcastChannel) { supabase.removeChannel(chatBroadcastChannel); chatBroadcastChannel = null; }
         
-        // EĞER SOCIAL SAYFASINDAYSA VE OTURUM YOKSA ANA SAYFAYA ŞUTLA
+        lockReviewNameIfLoggedIn(); 
+
         if(isSocialPage) {
             window.location.href = 'index.html';
         } else {
@@ -645,30 +644,62 @@ async function checkSession() {
     }
 }
 
-// Öz Social Sayfası Fonksiyonları
+// ============================================
+// ÖZ SOCIAL SAYFASI: FONKSİYONLAR VE BOTTOM NAV
+// ============================================
+
+// --- Bottom Navigation Bağlantıları ---
+const bottomHomeBtn = document.getElementById('bottom-home-btn');
+if(bottomHomeBtn) {
+    bottomHomeBtn.addEventListener('click', () => { window.scrollTo({top:0, behavior:'smooth'}); });
+}
+
+const bottomAddBtn = document.getElementById('bottom-add-btn');
+if(bottomAddBtn) {
+    bottomAddBtn.addEventListener('click', () => { showSimpleModal(document.getElementById('create-post-modal')); });
+}
+
+const bottomNotifBtn = document.getElementById('bottom-notif-btn');
+if(bottomNotifBtn) {
+    bottomNotifBtn.addEventListener('click', () => { 
+        openSideModal('notification-modal', 'notification-panel');
+        const topNotifBtn = document.getElementById('notification-btn');
+        if(topNotifBtn) topNotifBtn.click(); // İçerik yüklemesi için mevcut butonu taklit et
+    });
+}
+
+const bottomProfileBtn = document.getElementById('bottom-profile-btn');
+if(bottomProfileBtn) {
+    bottomProfileBtn.addEventListener('click', () => {
+        if(currentUserSession) openUserProfile(currentUserSession.user.id);
+    });
+}
+
+// --- Profili Düzenle Modal ---
 const editProfileBtn = document.getElementById('edit-profile-btn');
+const upEditProfileBtn = document.getElementById('up-edit-profile-btn'); 
 const cancelEditBtn = document.getElementById('cancel-edit-btn');
+const cancelEditBtnTop = document.getElementById('cancel-edit-btn-top');
+const editProfileModal = document.getElementById('edit-profile-modal');
 const editAvatarInput = document.getElementById('edit-avatar');
 const editAvatarImg = document.getElementById('edit-avatar-img');
 const editNameInput = document.getElementById('edit-name');
 const editBioInput = document.getElementById('edit-bio');
 const editProfileForm = document.getElementById('edit-profile-form');
-const dashboardView = document.getElementById('dashboard-view');
 
-if(editProfileBtn) {
-    editProfileBtn.addEventListener('click', () => {
-        if(dashboardView) dashboardView.classList.add('tw-modal-hidden'); 
-        if(editProfileForm) editProfileForm.classList.remove('tw-modal-hidden');
-        if(editNameInput) editNameInput.value = document.getElementById('dash-name').innerText;
-        if(editBioInput) editBioInput.value = document.getElementById('dash-bio').innerText;
-        if(editAvatarImg) editAvatarImg.src = document.getElementById('dash-avatar').src;
-        selectedUpdateAvatarFile = null;
-    });
-}
-if(cancelEditBtn) cancelEditBtn.addEventListener('click', () => { 
-    if(editProfileForm) editProfileForm.classList.add('tw-modal-hidden'); 
-    if(dashboardView) dashboardView.classList.remove('tw-modal-hidden'); 
-});
+const openEditModal = () => {
+    if(editProfileModal) showSimpleModal(editProfileModal);
+    if(editNameInput) editNameInput.value = document.getElementById('dash-name').innerText;
+    if(editBioInput) editBioInput.value = document.getElementById('dash-bio').innerText;
+    if(editAvatarImg) editAvatarImg.src = document.getElementById('dash-avatar').src;
+    selectedUpdateAvatarFile = null;
+};
+
+if(editProfileBtn) editProfileBtn.addEventListener('click', openEditModal);
+if(upEditProfileBtn) upEditProfileBtn.addEventListener('click', openEditModal);
+
+if(cancelEditBtn) cancelEditBtn.addEventListener('click', () => { if(editProfileModal) hideSimpleModal(editProfileModal); });
+if(cancelEditBtnTop) cancelEditBtnTop.addEventListener('click', () => { if(editProfileModal) hideSimpleModal(editProfileModal); });
 
 if(editAvatarInput) {
     editAvatarInput.addEventListener('change', (e) => {
@@ -699,14 +730,14 @@ if(editProfileForm) {
             if (updatedAvatarUrl) updateData.avatar_url = updatedAvatarUrl;
             await supabase.from('uyeler').update(updateData).eq('id', currentUserSession.user.id);
             
-            if(editProfileForm) editProfileForm.classList.add('tw-modal-hidden'); 
-            if(dashboardView) dashboardView.classList.remove('tw-modal-hidden');
+            if(editProfileModal) hideSimpleModal(editProfileModal);
             checkSession();
         } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
         finally { btn.innerHTML = 'Kaydet'; btn.disabled = false; }
     });
 }
 
+// --- Realtime Altyapısı ---
 function setupRealtime() {
     if (realtimeChannel) return;
     realtimeChannel = supabase.channel('oz-yapi-realtime')
@@ -723,6 +754,8 @@ function setupRealtime() {
             if (payload.new.alici_id === currentUserSession?.user?.id) {
                 const notificationBadge = document.getElementById('notification-badge');
                 if(notificationBadge) notificationBadge.classList.remove('hidden');
+                const bottomNotifBadge = document.querySelector('#bottom-notif-btn #notification-badge');
+                if(bottomNotifBadge) bottomNotifBadge.classList.remove('hidden');
             }
         })
         .on('postgres_changes', { event: '*', schema: 'public', table: 'mesajlar' }, (payload) => {
@@ -781,13 +814,21 @@ function setupRealtime() {
     }
 }
 
+// --- Bildirimler ---
 async function checkNotificationsBadge() {
     if (!currentUserSession) return;
     const notificationBadge = document.getElementById('notification-badge');
-    if(!notificationBadge) return;
+    const bottomNotifBadge = document.querySelector('#bottom-notif-btn #notification-badge');
+    
     try {
         const { count } = await supabase.from('bildirimler').select('*', { count: 'exact', head: true }).eq('alici_id', currentUserSession.user.id).eq('okundu', false);
-        if (count > 0) notificationBadge.classList.remove('hidden'); else notificationBadge.classList.add('hidden');
+        if (count > 0) {
+            if(notificationBadge) notificationBadge.classList.remove('hidden');
+            if(bottomNotifBadge) bottomNotifBadge.classList.remove('hidden');
+        } else {
+            if(notificationBadge) notificationBadge.classList.add('hidden');
+            if(bottomNotifBadge) bottomNotifBadge.classList.add('hidden');
+        }
     } catch (error) {}
 }
 
@@ -829,6 +870,7 @@ window.handleNotificationClick = async (notificationId, postId, senderId) => {
     else if (senderId && senderId !== 'null') openUserProfile(senderId);
 };
 
+// --- Mesajlaşma (DM) ---
 async function checkMessagesBadge() {
     if (!currentUserSession) return;
     const messagesBadge = document.getElementById('messages-badge');
@@ -1056,7 +1098,7 @@ if(dmHistoryEl) {
     });
 }
 
-// POST OLUŞTURMA & FİLTRELEME
+// POST OLUŞTURMA VE GÖSTERİM (Tamamen Sınıf Tabanlı - ID Çakışmasız)
 const postTypeRadios = document.getElementsByName('post_type');
 if(postTypeRadios) {
     postTypeRadios.forEach(radio => {
@@ -1204,6 +1246,7 @@ function generatePostHTML(post, isSingleView = false) {
         }
     }
 
+    // Ana karta "post-card" sınıfı eklendi
     return `
         <div class="post-card no-select bg-white p-5 rounded-2xl shadow-sm border border-slate-200 transition-all duration-300" data-post-id="${post.id}">
             <div class="flex justify-between items-start mb-3 pointer-events-auto">
@@ -1219,10 +1262,8 @@ function generatePostHTML(post, isSingleView = false) {
                 </div>
                 ${postOptionsHTML}
             </div>
-            
             <div class="text-slate-800 text-[15px] whitespace-pre-wrap pointer-events-auto">${post.metin}</div>
             ${mediaHTML}
-            
             <div class="flex items-center gap-6 mt-4 pt-3 border-t border-slate-100 pointer-events-auto">
                 <button class="action-btn like-btn flex items-center gap-2 text-sm font-semibold transition-colors outline-none border-none bg-transparent ${isLikedByMe ? 'text-red-500' : 'text-slate-500 hover:text-red-500'}" data-post-id="${post.id}" data-author-id="${post.user_id}">
                     <i class="${isLikedByMe ? 'fa-solid fa-heart' : 'fa-regular fa-heart'} like-icon" style="pointer-events:none;"></i> <span class="like-count" style="pointer-events:none;">${likesCount > 0 ? likesCount : 'Beğen'}</span>
@@ -1231,7 +1272,6 @@ function generatePostHTML(post, isSingleView = false) {
                     <i class="fa-regular fa-comment pointer-events-none"></i> <span class="pointer-events-none">${allComments.length > 0 ? allComments.length : 'Yorum Yap'}</span>
                 </button>
             </div>
-
             <div class="comment-section ${isSingleView ? '' : 'hidden'} mt-4 pt-4 border-t border-slate-100 pointer-events-auto">
                 <div class="mb-4 space-y-1">${commentsHTML}</div>
                 <div class="reply-indicator hidden items-center justify-between bg-blue-50 text-blue-700 px-3 py-1.5 rounded-t-lg text-xs font-bold border border-blue-100 border-b-0">
@@ -1264,15 +1304,17 @@ async function loadFeed(filterType) {
     } catch (e) {}
 }
 
-// EVENT DELEGATION (DOM ÇAKIŞMASI KORUMALI)
+// EVENT DELEGATION: EN KUSURSUZ (CLOSEST) YAPI (DOM ÇAKIŞMASI KORUMALI)
 document.addEventListener('click', async (e) => {
     if (!currentUserSession) return;
     const target = e.target;
-    const postCard = target.closest('.post-card');
-
-    if (target.classList.contains('like-btn')) {
-        const postId = target.getAttribute('data-post-id');
-        const authorId = target.getAttribute('data-author-id');
+    
+    // BEĞENİ BUTONU
+    const likeBtn = target.closest('.like-btn');
+    if (likeBtn) {
+        const postCard = likeBtn.closest('.post-card');
+        const postId = likeBtn.getAttribute('data-post-id');
+        const authorId = likeBtn.getAttribute('data-author-id');
         const icon = postCard.querySelector('.like-icon');
         const countSpan = postCard.querySelector('.like-count');
         const isLiked = icon.classList.contains('fa-solid');
@@ -1280,11 +1322,11 @@ document.addEventListener('click', async (e) => {
 
         if (isLiked) {
             icon.className = "fa-regular fa-heart like-icon text-slate-500"; 
-            target.classList.replace('text-red-500', 'text-slate-500');
+            likeBtn.classList.replace('text-red-500', 'text-slate-500');
             countSpan.innerText = currentCount > 1 ? currentCount - 1 : 'Beğen';
         } else {
             icon.className = "fa-solid fa-heart like-icon text-red-500"; 
-            target.classList.replace('text-slate-500', 'text-red-500');
+            likeBtn.classList.replace('text-slate-500', 'text-red-500');
             countSpan.innerText = isNaN(currentCount) || currentCount === 0 ? 1 : currentCount + 1;
         }
 
@@ -1296,14 +1338,18 @@ document.addEventListener('click', async (e) => {
                 if (authorId !== currentUserSession.user.id) await supabase.from('bildirimler').insert([{ alici_id: authorId, gonderen_id: currentUserSession.user.id, mesaj: 'Gönderini beğendi.', gonderi_id: postId }]);
             }
         } catch (err) {}
+        return;
     }
 
-    if (target.classList.contains('submit-comment-btn')) {
-        const postId = target.getAttribute('data-post-id');
-        const authorId = target.getAttribute('data-author-id');
+    // YORUM GÖNDERME BUTONU
+    const submitCommentBtn = target.closest('.submit-comment-btn');
+    if (submitCommentBtn) {
+        const postCard = submitCommentBtn.closest('.post-card');
+        const postId = submitCommentBtn.getAttribute('data-post-id');
+        const authorId = submitCommentBtn.getAttribute('data-author-id');
         const input = postCard.querySelector('.comment-input');
         if (!input.value.trim()) return;
-        target.disabled = true; target.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        submitCommentBtn.disabled = true; submitCommentBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
         try {
             const parentId = activeReplyData[postId] || null;
             await supabase.from('gonderi_yorumlari').insert([{ gonderi_id: postId, user_id: currentUserSession.user.id, metin: input.value.trim(), ust_yorum_id: parentId }]);
@@ -1312,73 +1358,97 @@ document.addEventListener('click', async (e) => {
             
             const { data: post } = await supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).eq('id', postId).single();
             postCard.outerHTML = generatePostHTML(post, true);
-        } catch(err) {} finally { target.disabled = false; target.innerHTML = '<i class="fa-solid fa-paper-plane text-sm"></i>'; }
+        } catch(err) {} finally { submitCommentBtn.disabled = false; submitCommentBtn.innerHTML = '<i class="fa-solid fa-paper-plane text-sm"></i>'; }
+        return;
     }
 
-    if (target.classList.contains('comment-toggle-btn')) {
+    // YORUM AÇ/KAPA BUTONU
+    const toggleBtn = target.closest('.comment-toggle-btn');
+    if (toggleBtn) {
+        const postCard = toggleBtn.closest('.post-card');
         postCard.querySelector('.comment-section').classList.toggle('hidden');
+        return;
     }
 
-    if (target.classList.contains('reply-to-comment-btn')) {
-        const pId = target.getAttribute('data-post-id');
-        activeReplyData[pId] = target.getAttribute('data-comment-id');
+    // YORUMA YANIT VER
+    const replyBtn = target.closest('.reply-to-comment-btn');
+    if (replyBtn) {
+        const postCard = replyBtn.closest('.post-card');
+        const pId = replyBtn.getAttribute('data-post-id');
+        activeReplyData[pId] = replyBtn.getAttribute('data-comment-id');
         const indicator = postCard.querySelector('.reply-indicator');
         indicator.classList.replace('hidden', 'flex');
-        indicator.querySelector('.reply-name').innerText = target.getAttribute('data-author-name');
+        indicator.querySelector('.reply-name').innerText = replyBtn.getAttribute('data-author-name');
         postCard.querySelector('.comment-input').focus();
+        return;
     }
 
-    if (target.classList.contains('cancel-reply-btn') || target.closest('.cancel-reply-btn')) {
-        const btn = target.classList.contains('cancel-reply-btn') ? target : target.closest('.cancel-reply-btn');
-        const pId = btn.getAttribute('data-post-id');
+    // YANITI İPTAL ET
+    const cancelReplyBtn = target.closest('.cancel-reply-btn');
+    if (cancelReplyBtn) {
+        const postCard = cancelReplyBtn.closest('.post-card');
+        const pId = cancelReplyBtn.getAttribute('data-post-id');
         delete activeReplyData[pId]; 
         postCard.querySelector('.reply-indicator').classList.replace('flex', 'hidden');
+        return;
     }
 
-    // SİLME İŞLEMİ VE ANINDA ARAYÜZ YENİLEME (UX DÜZELTMESİ)
-    if (target.classList.contains('delete-post-btn')) {
-        const postId = target.getAttribute('data-post-id');
+    // GÖNDERİ SİL BUTONU (PROFİL GÜNCELLEMESİYLE BİRLİKTE)
+    const deletePostBtn = target.closest('.delete-post-btn');
+    if (deletePostBtn) {
+        const postId = deletePostBtn.getAttribute('data-post-id');
         Swal.fire({
             title: 'Emin misin?', text: "Bu gönderiyi kalıcı olarak sileceksin!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Evet, Sil!', cancelButtonText: 'İptal'
         }).then(async (result) => {
             if (result.isConfirmed) { 
                 await supabase.from('gonderiler').delete().eq('id', postId); 
                 loadFeed(currentFeedFilter); 
+                
+                // Profil ekranındaysa profili yenile (Silinen anında kaybolur)
                 const upModal = document.getElementById('user-profile-modal');
                 if(currentlyViewingProfileId && upModal && !upModal.classList.contains('tw-modal-hidden')) {
-                    openUserProfile(currentlyViewingProfileId); // Profili anında yeniler
+                    openUserProfile(currentlyViewingProfileId);
                 }
+                // Tekil gönderi ekranındaysa o ekranı kapat
                 const singleModal = document.getElementById('single-post-modal');
                 if(singleModal && !singleModal.classList.contains('tw-modal-hidden')) {
-                    hideSimpleModal(singleModal); // Tekil gönderideyken sildiysen ekranı kapatır
+                    hideSimpleModal(singleModal);
                 }
             }
         });
+        return;
     }
 
-    if (target.classList.contains('delete-comment-btn')) {
-        const commentId = target.getAttribute('data-comment-id');
+    // YORUM SİL BUTONU
+    const deleteCommentBtn = target.closest('.delete-comment-btn');
+    if (deleteCommentBtn) {
+        const postCard = deleteCommentBtn.closest('.post-card');
+        const commentId = deleteCommentBtn.getAttribute('data-comment-id');
         Swal.fire({
             title: 'Yorumu Sil?', text: "Bu yorumu kalıcı olarak sileceksin!", icon: 'question', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Sil', cancelButtonText: 'İptal'
         }).then(async (result) => {
             if (result.isConfirmed) { 
                 await supabase.from('gonderi_yorumlari').delete().eq('id', commentId); 
                 loadFeed(currentFeedFilter); 
+                
                 const upModal = document.getElementById('user-profile-modal');
                 if(currentlyViewingProfileId && upModal && !upModal.classList.contains('tw-modal-hidden')) {
                     openUserProfile(currentlyViewingProfileId);
                 }
                 const singleModal = document.getElementById('single-post-modal');
                 if(singleModal && !singleModal.classList.contains('tw-modal-hidden')) {
-                    openSinglePost(postCard.getAttribute('data-post-id')); // Silinen yorumun olduğu gönderiyi yeniler
+                    openSinglePost(postCard.getAttribute('data-post-id')); 
                 }
             }
         });
+        return;
     }
 
-    if (target.classList.contains('edit-post-btn')) {
-        const postId = target.getAttribute('data-post-id');
-        const oldText = decodeURIComponent(target.getAttribute('data-text'));
+    // GÖNDERİ/YORUM DÜZENLEME BUTONLARI
+    const editPostBtn = target.closest('.edit-post-btn');
+    if (editPostBtn) {
+        const postId = editPostBtn.getAttribute('data-post-id');
+        const oldText = decodeURIComponent(editPostBtn.getAttribute('data-text'));
         const { value: newText } = await Swal.fire({ input: 'textarea', inputValue: oldText, showCancelButton: true, confirmButtonText: 'Kaydet', cancelButtonText: 'İptal' });
         if (newText && newText !== oldText) { 
             await supabase.from('gonderiler').update({ metin: newText }).eq('id', postId); 
@@ -1388,17 +1458,20 @@ document.addEventListener('click', async (e) => {
             const singleModal = document.getElementById('single-post-modal');
             if(singleModal && !singleModal.classList.contains('tw-modal-hidden')) openSinglePost(postId);
         }
+        return;
     }
 
-    if (target.classList.contains('edit-comment-btn')) {
-        const commentId = target.getAttribute('data-comment-id');
-        const oldText = decodeURIComponent(target.getAttribute('data-text'));
+    const editCommentBtn = target.closest('.edit-comment-btn');
+    if (editCommentBtn) {
+        const commentId = editCommentBtn.getAttribute('data-comment-id');
+        const oldText = decodeURIComponent(editCommentBtn.getAttribute('data-text'));
         const { value: newText } = await Swal.fire({ input: 'text', inputValue: oldText, showCancelButton: true, confirmButtonText: 'Kaydet', cancelButtonText: 'İptal' });
         if (newText && newText !== oldText) { await supabase.from('gonderi_yorumlari').update({ metin: newText }).eq('id', commentId); loadFeed(currentFeedFilter); }
+        return;
     }
 });
 
-// ÇİFT TIKLA BEĞENME (CLASS SEÇİMİYLE ÇAKIŞMA ÖNLENDİ)
+// ÇİFT TIKLA BEĞENME
 document.addEventListener('dblclick', async (e) => {
     if (!currentUserSession) return;
     const target = e.target;
@@ -1487,12 +1560,18 @@ window.openUserProfile = async (uId) => {
         const followBtn = document.getElementById('follow-btn');
         const unfollowBtn = document.getElementById('unfollow-btn');
         const messageUserBtn = document.getElementById('message-user-btn');
+        const upEditProfileBtn = document.getElementById('up-edit-profile-btn');
+        const upLogoutBtn = document.getElementById('up-logout-btn');
 
         if (currentUserSession && uId === currentUserSession.user.id) { 
             if(followBtn) followBtn.classList.add('tw-modal-hidden'); 
             if(unfollowBtn) unfollowBtn.classList.add('tw-modal-hidden'); 
             if(messageUserBtn) messageUserBtn.classList.add('tw-modal-hidden');
+            if(upEditProfileBtn) upEditProfileBtn.classList.remove('tw-modal-hidden');
+            if(upLogoutBtn) upLogoutBtn.classList.remove('tw-modal-hidden');
         } else if (currentUserSession) {
+            if(upEditProfileBtn) upEditProfileBtn.classList.add('tw-modal-hidden');
+            if(upLogoutBtn) upLogoutBtn.classList.add('tw-modal-hidden');
             if(messageUserBtn) {
                 messageUserBtn.classList.remove('tw-modal-hidden');
                 messageUserBtn.onclick = () => {
@@ -1585,7 +1664,7 @@ window.openSinglePost = async (postId) => {
 const closeSinglePostBtn = document.getElementById('close-single-post');
 if(closeSinglePostBtn) closeSinglePostBtn.addEventListener('click', () => hideSimpleModal(document.getElementById('single-post-modal')));
 
-// Başlangıç Yüklemeleri (Yalnızca varsa çalıştırır)
+// Başlangıç Yüklemeleri (Sadece varsa çalıştır)
 if(typeof fetchApprovedReviews === "function") fetchApprovedReviews();
 checkSession();
 
