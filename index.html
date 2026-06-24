@@ -17,16 +17,58 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
-        .avatar-upload:hover .avatar-overlay { opacity: 1; }
         .tw-modal-hidden { display: none !important; }
+        .avatar-upload:hover .avatar-overlay { opacity: 1; }
         button { border: none; background: transparent; outline: none; cursor: pointer; font-family: inherit; }
+        /* Arka plan kaymasını engellemek için JS ile body'ye eklenecek class */
+        .no-scroll { overflow: hidden !important; height: 100vh !important; }
     </style>
     
     <link rel="stylesheet" href="style.css">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HardwareStore",
+      "name": "Öz Yapı Market",
+      "description": "Filli Boya, Fawori ve Fırat Boru bayiliği. Kare ve Güven batarya çeşitleri. Bilgisayarlı anında renk karışım teknolojisi.",
+      "image": "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=800&q=80",
+      "telephone": "+905538730344",
+      "email": "enka1733yapimarket@gmail.com",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Pınarbaşı, Gazi İlkokulu Cd. 3/D",
+        "addressLocality": "Mut",
+        "addressRegion": "Mersin",
+        "postalCode": "33600",
+        "addressCountry": "TR"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 36.6444, 
+        "longitude": 33.4383
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+          "opens": "08:00",
+          "closes": "19:30"
+        }
+      ],
+      "brands": [
+        {"@type": "Brand", "name": "Filli Boya"},
+        {"@type": "Brand", "name": "Fawori"},
+        {"@type": "Brand", "name": "Fırat Boru"},
+        {"@type": "Brand", "name": "Kare Batarya"},
+        {"@type": "Brand", "name": "Güven Batarya"}
+      ],
+      "url": "https://www.ozyapimarket.com"
+    }
+    </script>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col items-center">
 
-    <!-- CHATBOT MODAL -->
     <div class="chat-modal" id="chat-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -57,7 +99,6 @@
         </div>
     </div>
 
-    <!-- PDF MODAL -->
     <div class="pdf-modal" id="pdf-modal">
         <div class="modal-content pdf-modal-content">
             <div class="modal-header">
@@ -75,7 +116,6 @@
         </div>
     </div>
 
-    <!-- KARTELA MODAL -->
     <div class="kartela-modal" id="kartela-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -106,7 +146,6 @@
         </div>
     </div>
 
-    <!-- REVIEW YORUM MODAL -->
     <div class="kartela-modal" id="review-modal" style="display: none; z-index: 3000;">
         <div class="modal-content" style="background: var(--bg-white); color: var(--text-dark); max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
             <div class="modal-header" style="border-bottom: 1px solid #e5e7eb; background: #f9fafb; border-radius: 15px 15px 0 0;">
@@ -119,8 +158,7 @@
                 <form id="user-review-form">
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-dark);" data-tr="Adınız Soyadınız" data-en="Your Name">Adınız Soyadınız</label>
-                        <!-- ID si rev-name, JS'den kontrol edilecek -->
-                        <input type="text" id="rev-name" required style="width: 100%; padding: 10px; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; outline: none; color: var(--text-dark); transition: 0.3s;" data-tr-placeholder="Örn: Ahmet Yılmaz" data-en-placeholder="e.g. John Doe" placeholder="Örn: Ahmet Yılmaz">
+                        <input type="text" id="rev-name" required style="width: 100%; padding: 10px; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; outline: none; color: var(--text-dark);" data-tr-placeholder="Örn: Ahmet Yılmaz" data-en-placeholder="e.g. John Doe" placeholder="Örn: Ahmet Yılmaz">
                     </div>
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-dark);" data-tr="Kategori / Unvan" data-en="Category / Title">Kategori / Unvan</label>
@@ -151,7 +189,6 @@
         </div>
     </div>
 
-    <!-- MAIN NAVBAR -->
     <nav class="navbar" id="navbar">
         <div class="nav-container">
             <a href="#" class="logo">
@@ -165,6 +202,7 @@
                         <i class="fa-solid fa-user"></i> <span class="hidden sm:inline-block" data-tr="Giriş / Kayıt" data-en="Login / Register">Giriş / Kayıt</span>
                     </button>
                 </div>
+                
                 <div class="mobile-menu-btn" id="mobile-menu-btn">
                     <i class="fa-solid fa-bars"></i>
                 </div>
@@ -178,6 +216,7 @@
                 <li><a href="#products" data-tr="Ürünler" data-en="Products">Ürünler</a></li>
                 <li><a href="#color-machine" data-tr="Renk Makinesi" data-en="Color Machine">Renk Makinesi</a></li>
                 <li><a href="#contact" data-tr="İletişim" data-en="Contact">İletişim</a></li>
+                
                 <li style="margin-top: 10px; display: flex; justify-content: center;">
                     <div class="lang-switcher">
                         <button class="lang-btn active" id="lang-tr" style="border: none; outline: none;">TR</button>
@@ -453,7 +492,6 @@
         </div>
     </footer>
 
-    <!-- SABİT BUTONLAR (Chatbot & WhatsApp) -->
     <button class="chatbot-btn" id="open-chatbot" aria-label="Asistan" style="border: 2px solid var(--secondary-color); outline: none;">
         <svg viewBox="0 0 100 100" width="45" height="45" xmlns="http://www.w3.org/2000/svg">
             <path d="M 25 40 C 25 10, 75 10, 75 40" fill="none" stroke="#9ca3af" stroke-width="5" stroke-linecap="round"/>
@@ -472,7 +510,6 @@
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
-    <!-- PROFİL FAB VE ÖZ SOCIAL BALONCUĞU (AKILLI YÖNLENDİRİCİ - ozsocial.html'ye atar) -->
     <div id="profile-fab-container" class="tw-modal-hidden fixed bottom-[180px] right-[30px] z-[90] flex-col items-center gap-2">
         <div class="bg-blue-600 text-white text-[12px] font-bold px-3 py-1.5 rounded-lg shadow-lg relative animate-bounce" style="white-space: nowrap;">
             Öz Social'e katıl
@@ -483,7 +520,6 @@
         </button>
     </div>
 
-    <!-- AUTH MODAL WRAPPER (OTP SİSTEMLİ) -->
     <div id="auth-modal-wrapper" class="fixed inset-0 bg-slate-900/70 z-[2000] tw-modal-hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
         <div class="relative w-full max-w-md">
             <button id="close-auth-modal" class="absolute -top-12 right-0 text-white text-3xl hover:text-red-500 transition-colors border-none bg-transparent outline-none"><i class="fa-solid fa-xmark"></i></button>
@@ -585,9 +621,7 @@
         </div>
     </div>
 
-    <!-- SCRIPTS -->
     <script src="colors.js"></script>
     <script type="module" src="app.js"></script>
 </body>
 </html>
-
