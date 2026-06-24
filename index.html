@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Öz Yapı Market - Filli Boya, Fawori ve Fırat Boru bayiliği. Kare ve Güven batarya çeşitleri. Bilgisayarlı renk karışım makinesi ile istediğiniz renk boya anında hazırlanır.">
-    <meta name="keywords" content="Öz Yapı Market, Filli Boya, Fawori, Fırat Boru, Kare Batarya, Güven Batarya, boya makinesi, renk kataloğu, Mut nalbur,Öz Yapı,">
     <title>Öz Yapı Market | Profesyonel Boya ve Tesisat Çözümleri</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -18,418 +16,567 @@
     
     <style>
         .avatar-upload:hover .avatar-overlay { opacity: 1; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .no-select { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
-        
+        .tw-modal-hidden { display: none !important; }
         button { border: none; background: transparent; outline: none; cursor: pointer; font-family: inherit; }
-        
-        @keyframes pop {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-            50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
-        }
-        .heart-pop { animation: pop 0.8s ease-out forwards; }
-
-        @keyframes chatHeartBounce {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.4); }
-            100% { transform: scale(1); }
-        }
-        .chat-heart-anim { animation: chatHeartBounce 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
     </style>
     
     <link rel="stylesheet" href="style.css">
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "HardwareStore",
-      "name": "Öz Yapı Market",
-      "description": "Filli Boya, Fawori ve Fırat Boru bayiliği. Kare ve Güven batarya çeşitleri. Bilgisayarlı anında renk karışım teknolojisi.",
-      "image": "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=800&q=80",
-      "telephone": "+905538730344",
-      "email": "enka1733yapimarket@gmail.com",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Pınarbaşı, Gazi İlkokulu Cd. 3/D",
-        "addressLocality": "Mut",
-        "addressRegion": "Mersin",
-        "postalCode": "33600",
-        "addressCountry": "TR"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": 36.6444, 
-        "longitude": 33.4383
-      },
-      "openingHoursSpecification": [
-        {
-          "@type": "OpeningHoursSpecification",
-          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-          "opens": "08:00",
-          "closes": "19:30"
-        }
-      ],
-      "brands": [
-        {"@type": "Brand", "name": "Filli Boya"},
-        {"@type": "Brand", "name": "Fawori"},
-        {"@type": "Brand", "name": "Fırat Boru"},
-        {"@type": "Brand", "name": "Kare Batarya"},
-        {"@type": "Brand", "name": "Güven Batarya"}
-      ],
-      "url": "https://www.ozyapimarket.com"
-    }
-    </script>
 </head>
-<body class="bg-slate-100 min-h-screen flex flex-col items-center py-10 px-4">
+<body class="bg-slate-100 min-h-screen flex flex-col items-center">
 
-    <div id="auth-container" class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md transition-all duration-300">
-        <div class="text-center mb-8">
-            <h2 class="text-2xl font-bold text-slate-800"><i class="fa-solid fa-helmet-safety text-blue-600"></i> Öz Yapı Beta</h2>
-            <p class="text-sm text-slate-500 mt-2" id="auth-subtitle">Sisteme giriş yapın veya hesap oluşturun</p>
-        </div>
-
-        <form id="login-form" class="space-y-4">
-            <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-1">E-posta</label>
-                <input type="email" id="login-email" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="ornek@mail.com">
+    <div class="chat-modal" id="chat-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>
+                    <svg viewBox="0 0 100 100" width="28" height="28" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
+                        <path d="M 25 40 C 25 10, 75 10, 75 40" fill="none" stroke="#9ca3af" stroke-width="5" stroke-linecap="round"/>
+                        <path d="M 25 38 L 30 85 C 31 92, 69 92, 70 85 L 75 38 Z" fill="#3b82f6"/>
+                        <path d="M 25 38 L 75 38 L 73 55 C 70 65, 65 50, 60 55 C 55 60, 50 45, 45 55 C 40 65, 35 50, 32 55 C 29 60, 27 50, 25 38 Z" fill="#ffffff"/>
+                        <rect x="22" y="34" width="56" height="8" rx="3" fill="#1e3a8a"/>
+                        <circle cx="40" cy="65" r="7" fill="#ffffff"/>
+                        <circle cx="60" cy="65" r="7" fill="#ffffff"/>
+                        <circle class="pupil" cx="40" cy="65" r="3.5" fill="#111827"/>
+                        <circle class="pupil" cx="60" cy="65" r="3.5" fill="#111827"/>
+                    </svg>
+                    <span data-tr="Öz Yapı Asistan" data-en="Öz Yapı Assistant">Öz Yapı Asistan</span>
+                </h2>
+                <button class="close-modal" id="close-chat" style="border: none; background: transparent; outline: none;"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div>
-                <div class="flex justify-between items-center mb-1">
-                    <label class="block text-sm font-semibold text-slate-700">Şifre</label>
-                    <a href="#" id="show-forgot-password" class="text-xs text-blue-600 font-semibold hover:underline">Şifremi Unuttum?</a>
+            <div class="modal-body">
+                <div class="chat-container">
+                    <div class="chat-messages" id="chat-messages"></div>
+                    <div class="chat-input-area">
+                        <input type="text" class="chat-input" id="chat-input" placeholder="Mesajınızı yazın..." style="outline: none; border: none;">
+                        <button class="chat-send" id="chat-send" style="border: none; outline: none;"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
                 </div>
-                <input type="password" id="login-password" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="••••••••">
             </div>
-            <button type="submit" id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors border-none">
-                Giriş Yap
-            </button>
-            <p class="text-center text-sm text-slate-600 mt-4">
-                Hesabın yok mu? <a href="#" id="show-register" class="text-blue-600 font-bold hover:underline">Hemen Kayıt Ol</a>
-            </p>
-        </form>
-
-        <form id="register-form" class="space-y-4 hidden">
-            <div class="flex justify-center mb-4">
-                <label for="reg-avatar" class="avatar-upload relative cursor-pointer group">
-                    <div id="avatar-preview" class="w-24 h-24 rounded-full bg-slate-100 border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden transition-all group-hover:border-blue-500">
-                        <i class="fa-solid fa-camera text-2xl text-slate-400 group-hover:text-blue-500 transition-colors"></i>
-                    </div>
-                    <div class="avatar-overlay absolute inset-0 bg-black/40 rounded-full opacity-0 flex items-center justify-center transition-opacity">
-                        <span class="text-white text-xs font-bold">Seç</span>
-                    </div>
-                    <input type="file" id="reg-avatar" accept="image/png, image/jpeg, image/jpg" class="hidden">
-                </label>
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-1">Ad Soyad</label>
-                <input type="text" id="reg-name" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="Adınız Soyadınız">
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-1">Hesap Türü</label>
-                <select id="reg-role" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 text-slate-700">
-                    <option value="Müşteri">Normal Müşteri</option>
-                    <option value="Usta">Usta (Boya/Tesisat)</option>
-                    <option value="Müteahhit">Müteahhit</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-1">E-posta</label>
-                <input type="email" id="reg-email" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="ornek@mail.com">
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-1">Şifre (En az 6 hane)</label>
-                <input type="password" id="reg-password" required minlength="6" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="••••••••">
-            </div>
-            <button type="submit" id="register-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition-colors border-none">
-                Kayıt Ol
-            </button>
-            <p class="text-center text-sm text-slate-600 mt-4">
-                Zaten üye misin? <a href="#" id="show-login" class="text-blue-600 font-bold hover:underline">Giriş Yap</a>
-            </p>
-        </form>
-
-        <form id="otp-verify-form" class="space-y-4 hidden">
-            <div class="text-center mb-4">
-                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-envelope-circle-check text-2xl text-blue-600"></i></div>
-                <h3 class="text-lg font-bold text-slate-800">E-Posta Doğrulama</h3>
-                <p class="text-sm text-slate-600 mt-1">Lütfen e-posta adresinize gönderilen 6 haneli kodu giriniz.</p>
-            </div>
-            <div>
-                <input type="text" id="reg-otp" required maxlength="6" class="w-full px-4 py-4 text-center tracking-[0.5em] text-2xl font-bold bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="000000">
-            </div>
-            <button type="submit" id="verify-otp-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors border-none">Doğrula & Hesabı Aç</button>
-            <p class="text-center text-sm text-slate-600 mt-4"><a href="#" id="back-to-reg-from-otp" class="text-blue-600 font-bold hover:underline"><i class="fa-solid fa-arrow-left"></i> İptal</a></p>
-        </form>
-
-        <form id="forgot-password-form" class="space-y-4 hidden">
-            <div class="text-center mb-4">
-                <p class="text-sm text-slate-600">Kayıtlı e-posta adresinizi girin, size 6 haneli şifre sıfırlama kodu gönderelim.</p>
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-1">E-posta Adresiniz</label>
-                <input type="email" id="forgot-email" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="ornek@mail.com">
-            </div>
-            <button type="submit" id="forgot-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors border-none">
-                Kod Gönder
-            </button>
-            <p class="text-center text-sm text-slate-600 mt-4">
-                <a href="#" id="back-to-login" class="text-blue-600 font-bold hover:underline"><i class="fa-solid fa-arrow-left"></i> Giriş Ekranına Dön</a>
-            </p>
-        </form>
-
-        <form id="reset-otp-form" class="space-y-4 hidden">
-            <div class="text-center mb-4">
-                <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-unlock-keyhole text-2xl text-emerald-600"></i></div>
-                <h3 class="text-lg font-bold text-slate-800">Şifre Yenileme</h3>
-                <p class="text-sm text-slate-600 mt-1">Mailinize gelen 6 haneli kodu ve yeni şifrenizi girin.</p>
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-1">6 Haneli Kod</label>
-                <input type="text" id="reset-otp-code" required maxlength="6" class="w-full px-4 py-3 text-center tracking-[0.3em] text-xl font-bold bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-emerald-500" placeholder="000000">
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-1">Yeni Şifre</label>
-                <input type="password" id="reset-new-password" required minlength="6" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-emerald-500" placeholder="••••••••">
-            </div>
-            <button type="submit" id="reset-otp-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition-colors border-none">Şifremi Güncelle</button>
-            <p class="text-center text-sm text-slate-600 mt-4"><a href="#" id="back-to-forgot-from-reset" class="text-blue-600 font-bold hover:underline"><i class="fa-solid fa-arrow-left"></i> İptal</a></p>
-        </form>
-
-        <form id="reset-password-form" class="space-y-4 hidden"></form>
+        </div>
     </div>
 
-    <div id="main-app-container" class="w-full max-w-2xl hidden space-y-6">
-        
-        <div id="dashboard-container" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-            <div class="flex justify-between items-center border-b pb-3 mb-4">
-                <h2 class="text-xl font-bold text-slate-800">Hesabım</h2>
-                <div class="flex gap-2">
-                    <button id="messages-btn" class="relative w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center transition-colors border-none">
-                        <i class="fa-regular fa-paper-plane"></i>
-                        <span class="absolute top-0 right-0 w-3 h-3 bg-blue-500 border-2 border-white rounded-full hidden" id="messages-badge"></span>
-                    </button>
-                    <button id="notification-btn" class="relative w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center transition-colors border-none">
-                        <i class="fa-regular fa-bell"></i>
-                        <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full hidden" id="notification-badge"></span>
-                    </button>
+    <div class="pdf-modal" id="pdf-modal">
+        <div class="modal-content pdf-modal-content">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-file-pdf"></i> <span data-tr="Filli İç Cephe Kataloğu" data-en="Filli Interior Catalog">Filli İç Cephe Kataloğu</span></h2>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <a href="https://www.filliboya.com/uploads/FILLI-IC-CEPHE-RENK-KARTELASI-V2.pdf" download target="_blank" class="btn btn-primary" style="padding: 6px 15px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; outline: none; border: none;" data-tr="İndir" data-en="Download">
+                        <i class="fa-solid fa-download"></i> İndir
+                    </a>
+                    <button class="close-modal" id="close-pdf-modal" style="border: none; background: transparent; outline: none;"><i class="fa-solid fa-xmark"></i></button>
                 </div>
             </div>
+            <div class="modal-body" style="padding: 0; overflow: hidden;">
+                <iframe src="https://www.filliboya.com/uploads/FILLI-IC-CEPHE-RENK-KARTELASI-V2.pdf" width="100%" height="100%" style="border: none;"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="kartela-modal" id="kartela-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-palette"></i> <span data-tr="Renk Kataloğu" data-en="Color Catalog">Renk Kataloğu</span></h2>
+                <button class="close-modal" id="close-modal" style="border: none; background: transparent; outline: none;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="filter-container" style="margin-bottom: 20px;">
+                    <div style="position: relative; margin-bottom: 15px;">
+                        <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af;"></i>
+                        <input type="text" id="color-search" 
+                               data-tr-placeholder="Renk veya kod ara..."
+                               data-en-placeholder="Search color or code..."
+                               placeholder="Renk veya kod ara..." 
+                               style="width: 100%; padding: 10px 10px 10px 35px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none;">
+                    </div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button id="open-pdf-btn" style="flex: 1; min-width: 120px; padding: 8px; border-radius: 6px; border: 1px solid #3b82f6; cursor: pointer; background: rgba(59, 130, 246, 0.15); color: white; font-size: 0.8rem; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px; outline: none;" data-tr="Filli İç Cephe" data-en="Filli Interior">
+                            <i class="fa-solid fa-file-pdf" style="color: #ef4444;"></i> Filli İç Cephe
+                        </button>
+                        <button class="filter-btn active" data-type="all" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s; outline: none;" data-tr="Tümü" data-en="All">Tümü</button>
+                        <button class="filter-btn" data-type="ic" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s; outline: none;" data-tr="İç Cephe" data-en="Interior">İç Cephe</button>
+                        <button class="filter-btn" data-type="dis" style="flex: 1; min-width: 60px; padding: 8px; border-radius: 6px; border: none; cursor: pointer; background: rgba(255,255,255,0.05); color: white; font-size: 0.8rem; transition: 0.3s; outline: none;" data-tr="Dış Cephe" data-en="Exterior">Dış Cephe</button>
+                    </div>
+                </div>
+                <div class="kartela-grid" id="modal-color-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="kartela-modal" id="review-modal" style="display: none; z-index: 3000;">
+        <div class="modal-content" style="background: var(--bg-white); color: var(--text-dark); max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <div class="modal-header" style="border-bottom: 1px solid #e5e7eb; background: #f9fafb; border-radius: 15px 15px 0 0;">
+                <h2 style="color: var(--primary-color); font-size: 1.3rem;">
+                    <i class="fa-solid fa-star" style="color: var(--accent-color);"></i> <span data-tr="Yorum Yapın" data-en="Write a Review">Yorum Yapın</span>
+                </h2>
+                <button class="close-modal" id="close-review-modal" style="background: rgba(0,0,0,0.05); color: var(--text-dark); border: none; outline: none;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" style="padding: 25px;">
+                <form id="user-review-form">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-dark);" data-tr="Adınız Soyadınız" data-en="Your Name">Adınız Soyadınız</label>
+                        <input type="text" id="rev-name" required style="width: 100%; padding: 10px; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; outline: none; color: var(--text-dark);" data-tr-placeholder="Örn: Ahmet Yılmaz" data-en-placeholder="e.g. John Doe" placeholder="Örn: Ahmet Yılmaz">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-dark);" data-tr="Kategori / Unvan" data-en="Category / Title">Kategori / Unvan</label>
+                        <select id="rev-category" required style="width: 100%; padding: 10px; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; outline: none; color: var(--text-dark);">
+                            <option value="Ev Sahibi" data-tr="Ev Sahibi" data-en="Homeowner">Ev Sahibi</option>
+                            <option value="Dekorasyon Ustası" data-tr="Dekorasyon Ustası" data-en="Decoration Master">Dekorasyon Ustası</option>
+                            <option value="Tesisat Ustası" data-tr="Tesisat Ustası" data-en="Plumbing Master">Tesisat Ustası</option>
+                            <option value="Müteahhit" data-tr="Müteahhit" data-en="Contractor">Müteahhit</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-dark);" data-tr="Puanınız" data-en="Your Rating">Puanınız</label>
+                        <div id="star-rating-container" style="display: flex; gap: 8px; font-size: 1.8rem; cursor: pointer;">
+                            <i class="fa-solid fa-star review-star" data-value="1" style="color: #cbd5e1; transition: 0.2s;"></i>
+                            <i class="fa-solid fa-star review-star" data-value="2" style="color: #cbd5e1; transition: 0.2s;"></i>
+                            <i class="fa-solid fa-star review-star" data-value="3" style="color: #cbd5e1; transition: 0.2s;"></i>
+                            <i class="fa-solid fa-star review-star" data-value="4" style="color: #cbd5e1; transition: 0.2s;"></i>
+                            <i class="fa-solid fa-star review-star" data-value="5" style="color: #cbd5e1; transition: 0.2s;"></i>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-dark);" data-tr="Yorumunuz" data-en="Your Review">Yorumunuz</label>
+                        <textarea id="rev-text" required rows="3" style="width: 100%; padding: 10px; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 6px; outline: none; resize: none; color: var(--text-dark);" data-tr-placeholder="Görüşlerinizi buraya yazın..." data-en-placeholder="Write your review here..." placeholder="Görüşlerinizi buraya yazın..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 1.1rem; border: none; outline: none;" data-tr="Yorumu Gönder" data-en="Submit Review">Yorumu Gönder</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLBB90v1MlBr1Ik4_NhKhz3Mr_7kQ9_el-qo-X3hBIEg&s" alt="Öz Yapı Market Logo">
+                <span>Öz Yapı Market</span>
+            </a>
             
-            <div id="dashboard-view" class="flex items-center gap-4 relative transition-all">
-                <button id="edit-profile-btn" class="absolute top-0 right-0 text-slate-400 hover:text-blue-600 transition-colors border-none" title="Profili Düzenle">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <div class="w-20 h-20 rounded-full bg-white border-2 border-slate-200 shadow-sm overflow-hidden flex-shrink-0 cursor-pointer user-profile-trigger" id="dash-my-profile-trigger">
-                    <img id="dash-avatar" src="https://via.placeholder.com/150?text=Profil" class="w-full h-full object-cover">
+            <div class="nav-right">
+                <div id="nav-auth-buttons" class="tw-modal-hidden flex items-center gap-2 mr-2">
+                    <button id="nav-main-auth-btn" class="btn btn-primary shadow-md hover:shadow-lg flex items-center gap-2" style="padding: 8px 16px; font-size: 0.85rem; border: none; outline: none;">
+                        <i class="fa-solid fa-user"></i> <span class="hidden sm:inline-block" data-tr="Giriş / Kayıt" data-en="Login / Register">Giriş / Kayıt</span>
+                    </button>
                 </div>
-                <div class="flex-1">
-                    <h3 id="dash-name" class="text-lg font-bold text-slate-800 mb-1 cursor-pointer hover:underline user-profile-trigger">Yükleniyor...</h3>
-                    <div class="flex items-center gap-2 mb-1">
-                        <span id="dash-role" class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-[11px] font-bold uppercase tracking-wider">Yükleniyor...</span>
-                        <span class="text-xs text-slate-500" id="dash-email">Yükleniyor...</span>
-                    </div>
-                    <p id="dash-bio" class="text-xs text-slate-600 line-clamp-2"></p>
+                
+                <div class="mobile-menu-btn" id="mobile-menu-btn">
+                    <i class="fa-solid fa-bars"></i>
                 </div>
             </div>
 
-            <button id="logout-btn" class="w-full mt-5 bg-red-50 hover:bg-red-500 hover:text-white text-red-500 font-bold py-2.5 rounded-lg transition-colors border-none flex justify-center items-center gap-2">
-                <i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap / Hesap Değiştir
-            </button>
-
-            <form id="edit-profile-form" class="hidden mt-4 pt-4 border-t border-slate-100 transition-all">
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <div class="flex justify-center sm:justify-start">
-                        <label for="edit-avatar" class="avatar-upload relative cursor-pointer group">
-                            <div id="edit-avatar-preview" class="w-20 h-20 rounded-full bg-white border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden transition-all group-hover:border-blue-500">
-                                <img id="edit-avatar-img" src="https://via.placeholder.com/150?text=Profil" class="w-full h-full object-cover">
-                            </div>
-                            <div class="avatar-overlay absolute inset-0 bg-black/50 rounded-full opacity-0 flex flex-col items-center justify-center transition-opacity">
-                                <i class="fa-solid fa-camera text-white mb-1"></i>
-                                <span class="text-white text-[10px] font-bold">Değiştir</span>
-                            </div>
-                            <input type="file" id="edit-avatar" accept="image/png, image/jpeg, image/jpg" class="hidden">
-                        </label>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#hero" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
+                <li><a href="#about" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
+                <li><a id="open-kartela-btn" style="cursor: pointer;" data-tr="Kartelalar" data-en="Color Charts">Kartelalar</a></li> 
+                <li><a href="#services" data-tr="Hizmetler" data-en="Services">Hizmetler</a></li>
+                <li><a href="#products" data-tr="Ürünler" data-en="Products">Ürünler</a></li>
+                <li><a href="#color-machine" data-tr="Renk Makinesi" data-en="Color Machine">Renk Makinesi</a></li>
+                <li><a href="#contact" data-tr="İletişim" data-en="Contact">İletişim</a></li>
+                
+                <li style="margin-top: 10px; display: flex; justify-content: center;">
+                    <div class="lang-switcher">
+                        <button class="lang-btn active" id="lang-tr" style="border: none; outline: none;">TR</button>
+                        <button class="lang-btn" id="lang-en" style="border: none; outline: none;">EN</button>
                     </div>
-                    <div class="flex-1 flex flex-col justify-center gap-2">
-                        <input type="text" id="edit-name" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded focus:outline-none focus:border-blue-500 text-sm" placeholder="Adınız Soyadınız">
-                        <textarea id="edit-bio" rows="2" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded focus:outline-none focus:border-blue-500 text-sm resize-none" placeholder="Kısa bir biyografi ekle..."></textarea>
-                        
-                        <div class="flex gap-2">
-                            <button type="button" id="cancel-edit-btn" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-bold py-2 rounded transition-colors border-none">İptal</button>
-                            <button type="submit" id="save-edit-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 rounded transition-colors border-none">Kaydet</button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section id="hero">
+        <div class="container hero-content">
+            <h1 class="hero-title" data-tr="Kaliteli Markalar, Güçlü Yapılar" data-en="Quality Brands, Strong Structures">Kaliteli Markalar, Güçlü Yapılar</h1>
+            <p class="hero-subtitle" data-tr="Filli Boya, Fawori ve Fırat Boru güvencesiyle; Kare ve Güven batarya çeşitlerini bilgisayarlı anında renk karışım teknolojisiyle buluşturuyoruz." data-en="With the assurance of Filli Boya, Fawori and Fırat Boru; we combine Kare and Güven battery varieties with computerized instant color mixing technology.">Filli Boya, Fawori ve Fırat Boru güvencesiyle; Kare ve Güven batarya çeşitlerini bilgisayarlı anında renk karışım teknolojisiyle buluşturuyoruz.</p>
+            <div class="hero-btns">
+                <a href="#services" class="btn btn-primary" data-tr="Hizmetlerimizi İncele" data-en="Explore Our Services">Hizmetlerimizi İncele</a>
+                <a href="#contact" class="btn btn-outline" data-tr="Bize Ulaşın" data-en="Contact Us" style="border-color: white; color: white;">Bize Ulaşın</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="reveal">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=800&q=80" alt="Öz Yapı Market Mağaza İçi">
+                </div>
+                <div class="about-text">
+                    <h2 class="section-title" style="text-align: left;" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</h2>
+                    <p data-tr="<strong>Öz Yapı Market</strong> olarak, uzun yıllardır yapı, dekorasyon ve tesisat sektöründe güvenilir hizmet sunmaktayız. Amacımız, müşterilerimizin ihtiyaç duydukları en kaliteli malzemelere en uygun fiyatlarla ulaşmalarını sağlamaktır." data-en="As <strong>Öz Yapı Market</strong>, we have been providing reliable services in the construction, decoration and plumbing sector for many years. Our goal is to ensure our customers access the highest quality materials at the most affordable prices."><strong>Öz Yapı Market</strong> olarak, uzun yıllardır yapı, dekorasyon ve tesisat sektöründe güvenilir hizmet sunmaktayız. Amacımız, müşterilerimizin ihtiyaç duydukları en kaliteli malzemelere en uygun fiyatlarla ulaşmalarını sağlamaktır.</p>
+                    <p data-tr="Filli Boya ve Fawori'nin eşsiz renk dünyasından Fırat Boru'nun sağlam tesisat çözümlerine, Kare ve Güven bataryaların şıklığına kadar geniş bir ürün yelpazesiyle Mut'ta hizmetinizdeyiz." data-en="From the unique color world of Filli Boya and Fawori to the robust plumbing solutions of Fırat Boru, and the elegance of Kare and Güven batteries, we serve you in Mut with a wide product range.">Filli Boya ve Fawori'nin eşsiz renk dünyasından Fırat Boru'nun sağlam tesisat çözümlerine, Kare ve Güven bataryaların şıklığına kadar geniş bir ürün yelpazesiyle Mut'ta hizmetinizdeyiz.</p>
+                    
+                    <div class="about-features">
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="fa-solid fa-medal"></i></div>
+                            <div>
+                                <h4 data-tr="Resmi Bayilik" data-en="Official Dealership">Resmi Bayilik</h4>
+                                <span style="font-size: 0.9rem; color: var(--text-light);">Filli Boya & Fawori & Fırat</span>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                            <div>
+                                <h4 data-tr="Hızlı Teslimat" data-en="Fast Delivery">Hızlı Teslimat</h4>
+                                <span style="font-size: 0.9rem; color: var(--text-light);" data-tr="Aynı gün sevkiyat" data-en="Same day shipping">Aynı gün sevkiyat</span>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="fa-solid fa-handshake"></i></div>
+                            <div>
+                                <h4 data-tr="Güvenilirlik" data-en="Reliability">Güvenilirlik</h4>
+                                <span style="font-size: 0.9rem; color: var(--text-light);" data-tr="%100 müşteri memnuniyeti" data-en="100% customer satisfaction">%100 müşteri memnuniyeti</span>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon"><i class="fa-solid fa-tags"></i></div>
+                            <div>
+                                <h4 data-tr="Uygun Fiyat" data-en="Affordable Price">Uygun Fiyat</h4>
+                                <span style="font-size: 0.9rem; color: var(--text-light);" data-tr="Toptan ve perakende" data-en="Wholesale and retail">Toptan ve perakende</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </form>
-        </div>
-
-        <div class="bg-transparent p-0 rounded-2xl">
-            <div class="p-4 mb-4 rounded-xl flex justify-between items-center bg-white shadow-sm border border-slate-200">
-                <h3 class="font-bold text-slate-800"><i class="fa-solid fa-users text-blue-500 mr-2"></i>Topluluk</h3>
-                <button id="open-create-post" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded-full transition-colors flex items-center gap-2 shadow-md shadow-blue-200 border-none">
-                    <i class="fa-solid fa-plus"></i> Gönderi Oluştur
-                </button>
-            </div>
-
-            <div class="flex gap-2 mb-6 overflow-x-auto hide-scrollbar">
-                <button class="feed-filter active px-4 py-1.5 rounded-full bg-slate-800 text-white text-sm font-semibold transition-colors border-none" data-filter="all">Tümü</button>
-                <button class="feed-filter px-4 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 text-sm font-semibold transition-colors shadow-sm border-none" data-filter="soru">Sorular</button>
-                <button class="feed-filter px-4 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 text-sm font-semibold transition-colors shadow-sm border-none" data-filter="medya">Medya & Reels</button>
-            </div>
-
-            <div id="feed-list" class="space-y-6">
             </div>
         </div>
-    </div>
+    </section>
 
-    <div id="create-post-modal" class="fixed inset-0 bg-slate-900/60 z-[3000] hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl transform transition-transform scale-100">
-            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-bold text-slate-800 text-lg">Yeni Paylaşım</h3>
-                <button id="close-post-modal" class="text-slate-400 hover:text-red-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 transition-colors border-none"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <section id="services" class="bg-gray reveal">
+        <div class="container">
+            <h2 class="section-title" data-tr="Hizmetlerimiz" data-en="Our Services">Hizmetlerimiz</h2>
+            <div class="grid-container">
+                <div class="card">
+                    <div class="card-icon"><i class="fa-solid fa-fill-drip"></i></div>
+                    <h3 data-tr="Bilgisayarlı Renk Karışımı" data-en="Computerized Color Mixing">Bilgisayarlı Renk Karışımı</h3>
+                    <p data-tr="Filli Boya ve Fawori kataloglarından seçtiğiniz rengi, hassas makinelerimiz ile dakikalar içinde hazırlayalım." data-en="We prepare the color you choose from Filli Boya and Fawori catalogs with our precision machines within minutes.">Filli Boya ve Fawori kataloglarından seçtiğiniz rengi, hassas makinelerimiz ile dakikalar içinde hazırlayalım.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fa-solid fa-faucet"></i></div>
+                    <h3 data-tr="Batarya & Armatür Seçimi" data-en="Battery & Fixture Selection">Batarya & Armatür Seçimi</h3>
+                    <p data-tr="Kare ve Güven marka bataryalar ile banyo ve mutfaklarınıza modern, dayanıklı dokunuşlar katın." data-en="Add modern, durable touches to your bathrooms and kitchens with Kare and Güven brand batteries.">Kare ve Güven marka bataryalar ile banyo ve mutfaklarınıza modern, dayanıklı dokunuşlar katın.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fa-solid fa-toolbox"></i></div>
+                    <h3 data-tr="Tesisat Danışmanlığı" data-en="Plumbing Consultancy">Tesisat Danışmanlığı</h3>
+                    <p data-tr="Fırat Boru ürünleri ile sızdırmaz ve uzun ömürlü tesisat projeleriniz için profesyonel malzeme tedariği." data-en="Professional material supply for your leak-proof and long-lasting plumbing projects with Fırat Boru products.">Fırat Boru ürünleri ile sızdırmaz ve uzun ömürlü tesisat projeleriniz için profesyonel malzeme tedariği.</p>
+                </div>
             </div>
-            
-            <form id="create-post-form" class="p-6 space-y-5">
-                <div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <label class="cursor-pointer">
-                            <input type="radio" name="post_type" value="soru" class="peer hidden" checked>
-                            <div class="text-center p-3 border-2 border-slate-200 rounded-xl peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
-                                <i class="fa-solid fa-circle-question text-xl mb-1 text-slate-400 peer-checked:text-blue-500"></i>
-                                <div class="font-bold text-sm text-slate-600 peer-checked:text-blue-700">Soru Sor</div>
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="post_type" value="medya" class="peer hidden">
-                            <div class="text-center p-3 border-2 border-slate-200 rounded-xl peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
-                                <i class="fa-solid fa-image text-xl mb-1 text-slate-400 peer-checked:text-blue-500"></i>
-                                <div class="font-bold text-sm text-slate-600 peer-checked:text-blue-700">Fotoğraf/Reels</div>
-                            </div>
-                        </label>
+        </div>
+    </section>
+
+    <section id="products" class="reveal">
+        <div class="container">
+            <h2 class="section-title" data-tr="Ürün Kategorilerimiz" data-en="Our Product Categories">Ürün Kategorilerimiz</h2>
+            <div class="grid-container">
+                <div class="card product-card">
+                    <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=600&q=80" alt="İç ve Dış Cephe Boyaları" class="product-img">
+                    <div class="product-info">
+                        <h3>Filli Boya & Fawori</h3>
+                        <p data-tr="Plastik, silikonlu boyalar ve binlerce renk seçeneği ile estetik çözümler." data-en="Aesthetic solutions with plastic, silicone paints and thousands of color options.">Plastik, silikonlu boyalar ve binlerce renk seçeneği ile estetik çözümler.</p>
                     </div>
                 </div>
-
-                <div id="media-upload-container" class="hidden animate-fade-in">
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Dosya Seç</label>
-                    <input type="file" id="post-media" accept="image/*,video/mp4" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                <div class="card product-card">
+                    <img src="https://images.unsplash.com/photo-1581166397057-235af2b3c6dd?auto=format&fit=crop&w=600&q=80" alt="Tesisat Malzemeleri" class="product-img">
+                    <div class="product-info">
+                        <h3 data-tr="Fırat Boru Tesisat" data-en="Fırat Pipe Plumbing">Fırat Boru Tesisat</h3>
+                        <p data-tr="PPRC boru, ek parçaları ve dayanıklı altyapı-üstyapı tesisat ürünleri." data-en="PPRC pipes, fittings and durable infrastructure-superstructure plumbing products.">PPRC boru, ek parçaları ve dayanıklı altyapı-üstyapı tesisat ürünleri.</p>
+                    </div>
                 </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Açıklama / Soru Detayı</label>
-                    <textarea id="post-text" required rows="4" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white resize-none transition-colors" placeholder="Düşüncelerini veya sorunu buraya yaz..."></textarea>
+                <div class="card product-card">
+                    <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80" alt="Batarya ve Armatür" class="product-img">
+                    <div class="product-info">
+                        <h3 data-tr="Kare & Güven Batarya" data-en="Kare & Güven Batteries">Kare & Güven Batarya</h3>
+                        <p data-tr="Aç-kapa bataryalar, mutfak armatürleri ve lüks banyo setleri." data-en="On-off batteries, kitchen faucets and luxury bathroom sets.">Aç-kapa bataryalar, mutfak armatürleri ve lüks banyo setleri.</p>
+                    </div>
                 </div>
-                
-                <button type="submit" id="submit-post-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-blue-200 transition-all border-none">
-                    Paylaş
+            </div>
+        </div>
+    </section>
+
+    <section id="color-machine" class="bg-gray reveal">
+        <div class="container">
+            <h2 class="section-title" data-tr="Siz Hayal Edin, Biz Karalım" data-en="You Dream It, We'll Paint It">Siz Hayal Edin, Biz Karalım</h2>
+            <div class="color-system">
+                <div class="color-header">
+                    <h3 data-tr="Makineli Renk Seçim Sistemi" data-en="Machine Color Selection System">Makineli Renk Seçim Sistemi</h3>
+                    <p data-tr="Filli Boya ve Fawori renk kartelalarından zevkinize uygun olanı seçin. Renk kodunu saniyeler içinde sıfır hata ile hazırlayıp teslim ediyoruz." data-en="Choose the one that suits your taste from Filli Boya and Fawori color charts. We prepare and deliver the color code within seconds with zero errors.">Filli Boya ve Fawori renk kartelalarından zevkinize uygun olanı seçin. Renk kodunu saniyeler içinde sıfır hata ile hazırlayıp teslim ediyoruz.</p>
+                </div>
+                <div class="interactive-palette">
+                    <div class="palette-grid" id="palette">
+                        <div class="color-swatch" style="background-color: #f8fafc;" data-name="Buz Beyazı" data-hex="#f8fafc"></div>
+                        <div class="color-swatch" style="background-color: #f1f5f9;" data-name="Kırık Beyaz" data-hex="#f1f5f9"></div>
+                        <div class="color-swatch" style="background-color: #e2e8f0;" data-name="Açık Gri" data-hex="#e2e8f0"></div>
+                        <div class="color-swatch" style="background-color: #94a3b8;" data-name="Gümüş Gri" data-hex="#94a3b8"></div>
+                        <div class="color-swatch" style="background-color: #dbeafe;" data-name="Buz Mavisi" data-hex="#dbeafe"></div>
+                        <div class="color-swatch" style="background-color: #93c5fd;" data-name="Gök Mavisi" data-hex="#93c5fd"></div>
+                        <div class="color-swatch" style="background-color: #3b82f6;" data-name="Okyanus" data-hex="#3b82f6"></div>
+                        <div class="color-swatch" style="background-color: #1e3a8a;" data-name="Lacivert" data-hex="#1e3a8a"></div>
+                        <div class="color-swatch" style="background-color: #fce7f3;" data-name="Pudra Pembe" data-hex="#fce7f3"></div>
+                        <div class="color-swatch" style="background-color: #fca5a5;" data-name="Somon" data-hex="#fca5a5"></div>
+                        <div class="color-swatch" style="background-color: #ef4444;" data-name="Kiremit" data-hex="#ef4444"></div>
+                        <div class="color-swatch" style="background-color: #991b1b;" data-name="Bordo" data-hex="#991b1b"></div>
+                        <div class="color-swatch" style="background-color: #fef3c7;" data-name="Krem" data-hex="#fef3c7"></div>
+                        <div class="color-swatch" style="background-color: #fde047;" data-name="Güneş Sarısı" data-hex="#fde047"></div>
+                        <div class="color-swatch" style="background-color: #d97706;" data-name="Hardal" data-hex="#d97706"></div>
+                        <div class="color-swatch" style="background-color: #451a03;" data-name="Kahve" data-hex="#451a03"></div>
+                    </div>
+                    <div class="color-display">
+                        <div class="selected-color-box" id="selected-color-box"></div>
+                        <h3 id="selected-color-name">Buz Beyazı</h3>
+                        <p id="selected-color-hex" style="color: var(--text-light); margin-bottom: 15px;">#f8fafc</p>
+                        <a href="https://wa.me/905538730344?text=Merhaba%2C%20renk%20sipari%C5%9Fi%20vermek%20istiyorum." class="btn btn-primary" style="padding: 8px 20px; font-size: 0.9rem; border: none; outline: none;" data-tr="Bu Rengi Sipariş Ver" data-en="Order This Color">Bu Rengi Sipariş Ver</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="brands" class="reveal bg-gray" style="border-top: 1px solid #eaeaea; border-bottom: 1px solid #eaeaea;">
+        <div class="container">
+            <h2 class="section-title" data-tr="Resmi Bayiliklerimiz" data-en="Our Official Dealerships">Resmi Bayiliklerimiz</h2>
+            <div class="brands-container">
+                <div class="brand-logo">
+                    <svg width="65" height="65" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <defs><linearGradient id="filliGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6" /><stop offset="100%" stop-color="#1e3a8a" /></linearGradient></defs>
+                        <path d="M32 6C20 18 12 30 12 42C12 53.046 20.954 62 32 62C43.046 62 52 53.046 52 42C52 30 44 18 32 6Z" fill="url(#filliGrad)"/><path d="M32 18C25 28 20 36 20 44C20 50.627 25.373 56 32 56C38.627 56 44 50.627 44 44C44 36 39 28 32 18Z" fill="#ffffff" opacity="0.2"/><circle cx="26" cy="42" r="5" fill="#ffffff"/>
+                    </svg>
+                    <span class="brand-name">FİLLİ BOYA</span>
+                </div>
+                <div class="brand-logo">
+                    <svg width="65" height="65" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <defs><linearGradient id="faworiGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ef4444" /><stop offset="100%" stop-color="#991b1b" /></linearGradient></defs>
+                        <path d="M32 4 L41 22 L61 25 L46 39 L50 59 L32 49 L14 59 L18 39 L3 25 L23 22 Z" fill="url(#faworiGrad)"/><path d="M32 16 L37 27 L50 29 L40 38 L43 51 L32 44 L21 51 L24 38 L14 29 L27 27 Z" fill="#ffffff" opacity="0.3"/>
+                    </svg>
+                    <span class="brand-name">FAWORİ</span>
+                </div>
+                <div class="brand-logo">
+                    <svg width="65" height="65" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <defs><linearGradient id="firatGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b" /><stop offset="100%" stop-color="#d97706" /></linearGradient></defs>
+                        <path d="M10 26 H34 A14 14 0 0 1 48 40 V60" fill="none" stroke="url(#firatGrad)" stroke-width="12" stroke-linecap="round"/><path d="M10 44 H20 A14 14 0 0 0 34 30 V10" fill="none" stroke="#1e3a8a" stroke-width="12" stroke-linecap="round"/>
+                    </svg>
+                    <span class="brand-name">FIRAT BORU</span>
+                </div>
+                <div class="brand-logo">
+                    <svg width="65" height="65" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="8" y="8" width="48" height="48" rx="8" fill="none" stroke="#3b82f6" stroke-width="6"/><path d="M32 18 C24 26 18 32 18 40 C18 47.732 24.268 54 32 54 C39.732 54 46 47.732 46 40 C46 32 40 26 32 18 Z" fill="#1e3a8a"/>
+                    </svg>
+                    <span class="brand-name">KARE</span>
+                </div>
+                <div class="brand-logo">
+                    <svg width="65" height="65" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M32 4 L56 14 V34 C56 48 46 58 32 62 C18 58 8 48 8 34 V14 Z" fill="none" stroke="#10b981" stroke-width="6" stroke-linejoin="round"/><path d="M20 34 L28 42 L44 24" fill="none" stroke="#1e3a8a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="brand-name">GÜVEN</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="bg-gray reveal">
+        <div class="container">
+            <h2 class="section-title" data-tr="Müşterilerimiz Ne Diyor?" data-en="What Our Customers Say?">Müşterilerimiz Ne Diyor?</h2>
+            <div class="grid-container" id="dynamic-testimonials-list"></div>
+            <div style="text-align: center; margin-top: 40px;">
+                <button id="open-review-modal" class="btn btn-primary" style="padding: 12px 25px; font-size: 1.1rem; border-radius: 30px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); border: none; outline: none;">
+                    <i class="fa-solid fa-pen-to-square"></i> <span data-tr="Deneyiminizi Paylaşın" data-en="Share Your Experience">Deneyiminizi Paylaşın</span>
                 </button>
-            </form>
-        </div>
-    </div>
-
-    <div id="notification-modal" class="fixed inset-0 bg-slate-900/60 z-[3000] hidden flex justify-end p-0 backdrop-blur-sm transition-opacity" onclick="if(event.target===this) { this.classList.add('hidden'); }">
-        <div class="bg-white w-full max-w-sm h-full shadow-2xl flex flex-col transform transition-transform duration-300">
-            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-bold text-slate-800 text-lg"><i class="fa-regular fa-bell text-blue-500 mr-2"></i>Bildirimler</h3>
-                <button id="close-notification-modal" class="text-slate-400 hover:text-red-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 transition-colors border-none"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <div id="notification-list" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50"></div>
         </div>
-    </div>
+    </section>
 
-    <div id="messages-list-modal" class="fixed inset-0 bg-slate-900/60 z-[3000] hidden flex justify-end p-0 backdrop-blur-sm transition-opacity" onclick="if(event.target===this) { this.classList.add('hidden'); }">
-        <div class="bg-white w-full max-w-sm h-full shadow-2xl flex flex-col transform transition-transform duration-300">
-            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-bold text-slate-800 text-lg"><i class="fa-regular fa-paper-plane text-blue-500 mr-2"></i>Mesajlar</h3>
-                <button id="close-messages-list-modal" class="text-slate-400 hover:text-red-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 transition-colors border-none"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <div id="conversations-list" class="flex-1 overflow-y-auto p-4 space-y-1 bg-white"></div>
-        </div>
-    </div>
-
-    <div id="dm-modal" class="fixed inset-0 bg-slate-50 z-[3100] hidden flex-col transition-transform transform translate-x-full duration-300">
-        <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-20 shadow-sm">
-            <button id="close-dm-btn" class="text-slate-800 text-xl mr-4 border-none"><i class="fa-solid fa-arrow-left"></i></button>
-            <img id="dm-user-avatar" src="" class="w-9 h-9 rounded-full object-cover mr-3 cursor-pointer user-profile-trigger">
-            <div class="flex-1">
-                <h2 id="dm-user-name" class="text-[15px] font-bold text-slate-800 cursor-pointer user-profile-trigger hover:underline">İsim</h2>
-            </div>
-            <button id="close-dm-btn-alt" class="text-slate-400 hover:text-red-500 text-xl ml-2 border-none"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        
-        <div id="dm-history" class="flex-1 overflow-y-auto p-4 flex flex-col pb-[90px] bg-slate-50 relative"></div>
-        
-        <div id="dm-typing-indicator" class="absolute bottom-[75px] left-4 hidden bg-white border border-slate-200 rounded-full shadow-sm px-4 py-2 flex items-center gap-1.5 z-10 transition-all">
-            <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span>
-            <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></span>
-            <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></span>
-        </div>
-        
-        <form id="dm-form" class="p-2 bg-white border-t border-slate-200 flex gap-2 items-center fixed bottom-0 left-0 w-full z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-            <label class="cursor-pointer text-slate-400 hover:text-blue-600 transition-colors p-2">
-                <i class="fa-solid fa-image text-[22px]"></i>
-                <input type="file" id="dm-media-input" accept="image/*" class="hidden">
-            </label>
-            <input type="text" id="dm-input" autocomplete="off" class="flex-1 px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-full text-[14px] focus:outline-none focus:border-slate-300 focus:bg-white" placeholder="Mesaj yaz...">
-            <button type="submit" id="send-dm-btn" class="w-10 h-10 bg-slate-800 hover:bg-slate-900 text-white rounded-full flex items-center justify-center transition-colors shadow-sm border-none"><i class="fa-solid fa-paper-plane text-sm"></i></button>
-        </form>
-    </div>
-
-    <div id="likes-modal" class="fixed inset-0 bg-slate-900/60 z-[3000] hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity" onclick="if(event.target===this) { this.classList.add('hidden'); }">
-        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl">
-            <div class="px-5 py-3 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-bold text-slate-800 text-md"><i class="fa-solid fa-heart text-red-500 mr-2"></i>Beğenenler</h3>
-                <button id="close-likes-modal" class="text-slate-400 hover:text-red-500 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 border-none"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="likes-list" class="p-4 max-h-64 overflow-y-auto space-y-3"></div>
-        </div>
-    </div>
-
-    <div id="user-profile-modal" class="fixed inset-0 w-full h-[100dvh] bg-white z-[3000] hidden flex-col transition-transform transform translate-x-full duration-300">
-        <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-10">
-            <button id="close-user-profile" class="text-slate-800 text-xl mr-4 border-none"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 id="up-header-name" class="text-lg font-bold text-slate-800 flex-1">Kullanıcı</h2>
-        </div>
-        
-        <div class="p-4 border-b border-slate-100">
-            <div class="flex items-center justify-between mb-4">
-                <img id="up-avatar" src="https://via.placeholder.com/150" class="w-20 h-20 rounded-full object-cover border border-slate-200 p-0.5">
-                <div class="flex flex-1 justify-center gap-6 text-center">
-                    <div><div id="up-post-count" class="font-bold text-lg text-slate-800">0</div><div class="text-xs text-slate-500">Gönderi</div></div>
-                    <div><div id="up-follower-count" class="font-bold text-lg text-slate-800">0</div><div class="text-xs text-slate-500">Takipçi</div></div>
-                    <div><div id="up-following-count" class="font-bold text-lg text-slate-800">0</div><div class="text-xs text-slate-500">Takip</div></div>
+    <section id="contact" class="reveal">
+        <div class="container">
+            <h2 class="section-title" data-tr="İletişim" data-en="Contact">İletişim</h2>
+            <div class="contact-wrapper">
+                <div class="contact-info">
+                    <h3 data-tr="Bize Ulaşın" data-en="Get In Touch">Bize Ulaşın</h3>
+                    <p style="margin-bottom: 20px; color: var(--text-light);" data-tr="Boya fiyatları, Fırat Boru tesisat çözümleri veya batarya modellerimiz hakkında bilgi almak için bizimle iletişime geçebilirsiniz." data-en="You can contact us for information about paint prices, Fırat Boru plumbing solutions or our battery models.">Boya fiyatları, Fırat Boru tesisat çözümleri veya batarya modellerimiz hakkında bilgi almak için bizimle iletişime geçebilirsiniz.</p>
+                    <ul class="contact-list">
+                        <li><i class="fa-solid fa-location-dot"></i><div><strong data-tr="Adres:" data-en="Address:">Adres:</strong><br>Pınarbaşı, Gazi İlkokulu Cd. 3/D, 33600 Mut/Mersin</div></li>
+                        <li><i class="fa-solid fa-phone"></i><div><strong data-tr="Telefon:" data-en="Phone:">Telefon:</strong><br><a href="tel:+905538730344">+90 553 873 03 44</a></div></li>
+                        <li><i class="fa-solid fa-envelope"></i><div><strong data-tr="E-posta:" data-en="E-mail:">E-posta:</strong><br><a href="mailto:enka1733yapimarket@gmail.com">enka1733yapimarket@gmail.com</a></div></li>
+                        <li><i class="fa-solid fa-clock"></i><div><strong data-tr="Çalışma Saatleri:" data-en="Working Hours:">Çalışma Saatleri:</strong><br><span data-tr="Pazartesi - Cumartesi: 08:00 - 19:30" data-en="Monday - Saturday: 08:00 - 19:30">Pazartesi - Cumartesi: 08:00 - 19:30</span><br><span data-tr="Pazar: Kapalı" data-en="Sunday: Closed">Pazar: Kapalı</span></div></li>
+                    </ul>
+                    <a href="https://wa.me/905538730344?text=Merhaba%2C%20boya%20ve%20tesisat%20fiyatlar%C4%B1%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" class="btn btn-primary" data-tr="WhatsApp'tan Yazın" data-en="Message on WhatsApp">
+                        <i class="fa-brands fa-whatsapp"></i> <span data-tr="WhatsApp'tan Yazın" data-en="Message on WhatsApp">WhatsApp'tan Yazın</span>
+                    </a>
+                </div>
+                <div class="map-container">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3224.288926207865!2d33.4383303!3d36.645779!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14d96cd34226557b%3A0xd3cb914c839737fa!2sMarshall%20-%20Keskin%20Yap%C4%B1%20Market!5e0!3m2!1str!2str!4v1715000000000!5m2!1str!2str" allowfullscreen="" loading="lazy"></iframe>
                 </div>
             </div>
-            <div>
-                <h3 id="up-name" class="font-bold text-sm text-slate-800">İsim Soyisim</h3>
-                <span id="up-role" class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-bold uppercase mt-1 inline-block">Rol</span>
-                <p id="up-bio" class="text-sm text-slate-700 mt-1 whitespace-pre-wrap"></p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <a href="#" class="logo" style="color: white; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLBB90v1MlBr1Ik4_NhKhz3Mr_7kQ9_el-qo-X3hBIEg&s" alt="Öz Yapı Market Logo" style="height: 35px; border-radius: 4px;"> 
+                        <span>Öz Yapı Market</span>
+                    </a>
+                    <p data-tr="Kaliteli Filli Boya, Fawori, Fırat Boru tesisat ürünleri ve Kare/Güven bataryalar ile evinize değer katıyoruz." data-en="We add value to your home with quality Filli Boya, Fawori, Fırat Boru plumbing products and Kare/Güven batteries.">Kaliteli Filli Boya, Fawori, Fırat Boru tesisat ürünleri ve Kare/Güven bataryalar ile evinize değer katıyoruz.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4 data-tr="Hızlı Linkler" data-en="Quick Links">Hızlı Linkler</h4>
+                    <ul class="footer-links">
+                        <li><a href="#hero" data-tr="Ana Sayfa" data-en="Home">Ana Sayfa</a></li>
+                        <li><a href="#about" data-tr="Hakkımızda" data-en="About Us">Hakkımızda</a></li>
+                        <li><a href="#products" data-tr="Ürünlerimiz" data-en="Our Products">Ürünlerimiz</a></li>
+                        <li><a href="#color-machine" data-tr="Renk Seçimi" data-en="Color Selection">Renk Seçimi</a></li>
+                        <li><a href="#contact" data-tr="İletişim" data-en="Contact">İletişim</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4 data-tr="Bayiliklerimiz" data-en="Our Dealerships">Bayiliklerimiz</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Filli Boya</a></li>
+                        <li><a href="#">Fawori</a></li>
+                        <li><a href="#">Fırat Boru</a></li>
+                        <li><a href="#" data-tr="Kare Batarya" data-en="Kare Battery">Kare Batarya</a></li>
+                        <li><a href="#" data-tr="Güven Batarya" data-en="Güven Battery">Güven Batarya</a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="mt-4 flex gap-2" id="up-action-buttons">
-                <button id="follow-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 rounded-lg text-sm transition-colors hidden border-none">Takip Et</button>
-                <button id="unfollow-btn" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-1.5 rounded-lg text-sm transition-colors hidden border-none">Takipten Çık</button>
-                <button id="message-user-btn" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white font-bold py-1.5 rounded-lg text-sm transition-colors hidden border-none">Mesaj</button>
+            <div class="footer-bottom">
+                <p>© 2026 Öz Yapı Market. <span data-tr="Tüm hakları saklıdır." data-en="All rights reserved.">Tüm hakları saklıdır.</span></p>
             </div>
         </div>
+    </footer>
 
-        <div class="flex border-b border-slate-200 bg-white sticky top-[53px] z-10">
-            <button id="tab-grid" class="flex-1 py-3 border-b-2 border-slate-800 text-slate-800 flex justify-center transition-all border-none outline-none"><i class="fa-solid fa-table-cells text-xl"></i></button>
-            <button id="tab-questions" class="flex-1 py-3 border-b-2 border-transparent text-slate-400 flex justify-center transition-all border-none outline-none"><i class="fa-solid fa-circle-question text-xl"></i></button>
+    <button class="chatbot-btn" id="open-chatbot" aria-label="Asistan" style="border: 2px solid var(--secondary-color); outline: none;">
+        <svg viewBox="0 0 100 100" width="45" height="45" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 25 40 C 25 10, 75 10, 75 40" fill="none" stroke="#9ca3af" stroke-width="5" stroke-linecap="round"/>
+            <path d="M 25 38 L 30 85 C 31 92, 69 92, 70 85 L 75 38 Z" fill="#3b82f6"/>
+            <path d="M 25 38 L 75 38 L 73 55 C 70 65, 65 50, 60 55 C 55 60, 50 45, 45 55 C 40 65, 35 50, 32 55 C 29 60, 27 50, 25 38 Z" fill="#ffffff"/>
+            <rect x="22" y="34" width="56" height="8" rx="3" fill="#1e3a8a"/>
+            <circle cx="40" cy="65" r="7" fill="#ffffff"/>
+            <circle cx="60" cy="65" r="7" fill="#ffffff"/>
+            <circle class="pupil" cx="40" cy="65" r="3.5" fill="#111827"/>
+            <circle class="pupil" cx="60" cy="65" r="3.5" fill="#111827"/>
+            <ellipse cx="30" cy="70" rx="3.5" ry="2" fill="#1e3a8a" opacity="0.3"/>
+            <ellipse cx="70" cy="70" rx="3.5" ry="2" fill="#1e3a8a" opacity="0.3"/>
+        </svg>
+    </button>
+    <a href="https://wa.me/905538730344?text=Merhaba%2C%20boya%20fiyatlar%C4%B1%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." class="whatsapp-btn" target="_blank" aria-label="WhatsApp İletişim">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <div id="profile-fab-container" class="tw-modal-hidden fixed bottom-[180px] right-[30px] z-[90] flex-col items-center gap-2">
+        <div class="bg-blue-600 text-white text-[12px] font-bold px-3 py-1.5 rounded-lg shadow-lg relative animate-bounce" style="white-space: nowrap;">
+            Öz Social'e katıl
+            <div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-blue-600 rotate-45"></div>
         </div>
-
-        <div id="up-grid" class="flex-1 overflow-y-auto grid grid-cols-3 gap-0.5 bg-slate-100"></div>
-        <div id="up-questions-list" class="flex-1 overflow-y-auto hidden p-4 space-y-6 bg-slate-50"></div>
+        <button id="profile-fab-btn" class="w-[60px] h-[60px] rounded-full border-2 border-blue-500 overflow-hidden shadow-xl hover:scale-105 transition-transform bg-white p-0.5 outline-none" title="Öz Social'i Aç">
+            <img id="fab-avatar" src="https://via.placeholder.com/150" alt="Profil" class="w-full h-full rounded-full object-cover">
+        </button>
     </div>
 
-    <div id="single-post-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-50 z-[3100] hidden flex-col transition-transform transform translate-x-full duration-300">
-        <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm">
-            <button id="close-single-post" class="text-slate-800 text-xl mr-4 border-none"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 class="text-lg font-bold text-slate-800 flex-1">Gönderi</h2>
+    <div id="auth-modal-wrapper" class="fixed inset-0 bg-slate-900/70 z-[2000] tw-modal-hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="relative w-full max-w-md">
+            <button id="close-auth-modal" class="absolute -top-12 right-0 text-white text-3xl hover:text-red-500 transition-colors border-none bg-transparent outline-none"><i class="fa-solid fa-xmark"></i></button>
+            <div id="auth-container" class="bg-white p-8 rounded-2xl shadow-xl w-full transition-all duration-300">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800"><i class="fa-solid fa-helmet-safety text-blue-600"></i> Öz Yapı Beta</h2>
+                    <p class="text-sm text-slate-500 mt-2" id="auth-subtitle">Sisteme giriş yapın veya hesap oluşturun</p>
+                </div>
+
+                <form id="login-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">E-posta</label>
+                        <input type="email" id="login-email" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="ornek@mail.com" style="outline: none;">
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-sm font-semibold text-slate-700">Şifre</label>
+                            <a href="#" id="show-forgot-password" class="text-xs text-blue-600 font-semibold hover:underline">Şifremi Unuttum?</a>
+                        </div>
+                        <input type="password" id="login-password" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="••••••••" style="outline: none;">
+                    </div>
+                    <button type="submit" id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors border-none outline-none shadow-none">Giriş Yap</button>
+                    <p class="text-center text-sm text-slate-600 mt-4">Hesabın yok mu? <a href="#" id="show-register" class="text-blue-600 font-bold hover:underline">Hemen Kayıt Ol</a></p>
+                </form>
+
+                <form id="register-form" class="space-y-4 tw-modal-hidden">
+                    <div class="flex justify-center mb-4">
+                        <label for="reg-avatar" class="avatar-upload relative cursor-pointer group">
+                            <div id="avatar-preview" class="w-24 h-24 rounded-full bg-slate-100 border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden transition-all group-hover:border-blue-500"><i class="fa-solid fa-camera text-2xl text-slate-400 group-hover:text-blue-500 transition-colors"></i></div>
+                            <div class="avatar-overlay absolute inset-0 bg-black/40 rounded-full opacity-0 flex items-center justify-center transition-opacity"><span class="text-white text-xs font-bold">Seç</span></div>
+                            <input type="file" id="reg-avatar" accept="image/png, image/jpeg, image/jpg" class="hidden">
+                        </label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Ad Soyad</label>
+                        <input type="text" id="reg-name" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="Adınız Soyadınız" style="outline: none;">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Hesap Türü</label>
+                        <select id="reg-role" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 text-slate-700" style="outline: none;">
+                            <option value="Müşteri">Normal Müşteri</option>
+                            <option value="Usta">Usta (Boya/Tesisat)</option>
+                            <option value="Müteahhit">Müteahhit</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">E-posta</label>
+                        <input type="email" id="reg-email" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="ornek@mail.com" style="outline: none;">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Şifre (En az 6 hane)</label>
+                        <input type="password" id="reg-password" required minlength="6" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="••••••••" style="outline: none;">
+                    </div>
+                    <button type="submit" id="register-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition-colors border-none outline-none shadow-none">Kayıt Ol</button>
+                    <p class="text-center text-sm text-slate-600 mt-4">Zaten üye misin? <a href="#" id="show-login" class="text-blue-600 font-bold hover:underline">Giriş Yap</a></p>
+                </form>
+
+                <form id="otp-verify-form" class="space-y-4 tw-modal-hidden">
+                    <div class="text-center mb-4">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-envelope-circle-check text-2xl text-blue-600"></i></div>
+                        <h3 class="text-lg font-bold text-slate-800">E-Posta Doğrulama</h3>
+                        <p class="text-sm text-slate-600 mt-1">Lütfen e-posta adresinize gönderilen 6 haneli kodu giriniz.</p>
+                    </div>
+                    <div>
+                        <input type="text" id="reg-otp" required maxlength="6" class="w-full px-4 py-4 text-center tracking-[0.5em] text-2xl font-bold bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="000000" style="outline: none;">
+                    </div>
+                    <button type="submit" id="verify-otp-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors border-none outline-none shadow-none">Doğrula & Hesabı Aç</button>
+                    <p class="text-center text-sm text-slate-600 mt-4"><a href="#" id="back-to-reg-from-otp" class="text-blue-600 font-bold hover:underline"><i class="fa-solid fa-arrow-left"></i> Geri Dön</a></p>
+                </form>
+
+                <form id="forgot-password-form" class="space-y-4 tw-modal-hidden">
+                    <div class="text-center mb-4"><p class="text-sm text-slate-600">Kayıtlı e-posta adresinizi girin, size 6 haneli şifre sıfırlama kodu gönderelim.</p></div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">E-posta Adresiniz</label>
+                        <input type="email" id="forgot-email" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="ornek@mail.com" style="outline: none;">
+                    </div>
+                    <button type="submit" id="forgot-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors border-none outline-none shadow-none">Kod Gönder</button>
+                    <p class="text-center text-sm text-slate-600 mt-4"><a href="#" id="back-to-login" class="text-blue-600 font-bold hover:underline"><i class="fa-solid fa-arrow-left"></i> Giriş Ekranına Dön</a></p>
+                </form>
+
+                <form id="reset-otp-form" class="space-y-4 tw-modal-hidden">
+                    <div class="text-center mb-4">
+                        <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-unlock-keyhole text-2xl text-emerald-600"></i></div>
+                        <h3 class="text-lg font-bold text-slate-800">Şifre Yenileme</h3>
+                        <p class="text-sm text-slate-600 mt-1">Mailinize gelen 6 haneli kodu ve yeni şifrenizi girin.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">6 Haneli Kod</label>
+                        <input type="text" id="reset-otp-code" required maxlength="6" class="w-full px-4 py-3 text-center tracking-[0.3em] text-xl font-bold bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-emerald-500" placeholder="000000" style="outline: none;">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Yeni Şifre</label>
+                        <input type="password" id="reset-new-password" required minlength="6" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-emerald-500" placeholder="••••••••" style="outline: none;">
+                    </div>
+                    <button type="submit" id="reset-otp-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition-colors border-none outline-none shadow-none">Şifremi Güncelle</button>
+                    <p class="text-center text-sm text-slate-600 mt-4"><a href="#" id="back-to-forgot-from-reset" class="text-blue-600 font-bold hover:underline"><i class="fa-solid fa-arrow-left"></i> İptal</a></p>
+                </form>
+            </div>
         </div>
-        <div id="single-post-container" class="flex-1 overflow-y-auto p-4 space-y-6"></div>
     </div>
 
+    <script src="colors.js"></script>
     <script type="module" src="app.js"></script>
 </body>
 </html>
