@@ -16,7 +16,7 @@ let typingTimeout;
 let userDataGlobal = null;
 
 // ============================================
-// YARDIMCI MODAL FONKSİYONLARI
+// YARDIMCI MODAL FONKSİYONLARI (KİLİTLENMEYİ ÇÖZEN YAPI)
 // ============================================
 window.openSideModal = function(wrapperId, panelId) {
     const wrapper = document.getElementById(wrapperId);
@@ -35,24 +35,6 @@ window.closeSideModal = function(wrapperId, panelId) {
         panel.classList.add('translate-x-full');
         setTimeout(() => {
             wrapper.classList.add('tw-modal-hidden');
-            document.body.style.overflow = '';
-        }, 300);
-    }
-}
-
-function showSimpleModal(modalEl) {
-    if(modalEl) {
-        document.body.style.overflow = 'hidden';
-        modalEl.classList.remove('tw-modal-hidden');
-        setTimeout(() => modalEl.classList.remove('translate-x-full'), 10);
-    }
-}
-
-function hideSimpleModal(modalEl) {
-    if(modalEl) {
-        modalEl.classList.add('translate-x-full');
-        setTimeout(() => {
-            modalEl.classList.add('tw-modal-hidden');
             document.body.style.overflow = '';
         }, 300);
     }
@@ -97,9 +79,28 @@ if(bottomHomeBtn) bottomHomeBtn.addEventListener('click', () => { window.scrollT
 
 const bottomSearchBtn = document.getElementById('bottom-search-btn');
 if(bottomSearchBtn) bottomSearchBtn.addEventListener('click', () => { 
-    showSimpleModal(document.getElementById('search-modal')); 
+    // Sadece Wrapper olan modallar (arama ekranı) için
+    const searchModal = document.getElementById('search-modal');
+    if(searchModal) {
+        document.body.style.overflow = 'hidden';
+        searchModal.classList.remove('tw-modal-hidden');
+        setTimeout(() => searchModal.classList.remove('translate-x-full'), 10);
+    }
 });
 
+// Arama Modalını Kapama
+window.closeSearchModal = function() {
+    const searchModal = document.getElementById('search-modal');
+    if(searchModal) {
+        searchModal.classList.add('translate-x-full');
+        setTimeout(() => {
+            searchModal.classList.add('tw-modal-hidden');
+            document.body.style.overflow = '';
+        }, 300);
+    }
+}
+
+// Arama HTML'de closeSideModal çağırıyor, bu yüzden ekledim
 const searchInput = document.getElementById('user-search-input');
 if(searchInput) {
     searchInput.addEventListener('input', async (e) => {
@@ -116,7 +117,7 @@ if(searchInput) {
             users.forEach(u => {
                 const avatar = u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.ad_soyad || 'U')}`;
                 resDiv.insertAdjacentHTML('beforeend', `
-                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors user-profile-trigger" data-user-id="${u.id}" onclick="hideSimpleModal(document.getElementById('search-modal'))">
+                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors user-profile-trigger" data-user-id="${u.id}" onclick="window.closeSearchModal()">
                         <img src="${avatar}" class="w-12 h-12 rounded-full object-cover border border-slate-200 pointer-events-none">
                         <div class="pointer-events-none">
                             <h4 class="font-bold text-slate-800 text-sm">${u.ad_soyad}</h4>
@@ -130,7 +131,13 @@ if(searchInput) {
 }
 
 const bottomAddBtn = document.getElementById('bottom-add-btn');
-if(bottomAddBtn) bottomAddBtn.addEventListener('click', () => { showSimpleModal(document.getElementById('create-post-modal')); });
+if(bottomAddBtn) bottomAddBtn.addEventListener('click', () => { 
+    const createModal = document.getElementById('create-post-modal');
+    if(createModal) {
+        document.body.style.overflow = 'hidden';
+        createModal.classList.remove('tw-modal-hidden');
+    }
+});
 
 const bottomNotifBtn = document.getElementById('bottom-notif-btn');
 if(bottomNotifBtn) bottomNotifBtn.addEventListener('click', () => { 
@@ -160,16 +167,29 @@ const editNameInput = document.getElementById('edit-name');
 const editBioInput = document.getElementById('edit-bio');
 const editAvatarImg = document.getElementById('edit-avatar-img');
 
+function showEditProfileModal() {
+    if(editProfileModal) {
+        document.body.style.overflow = 'hidden';
+        editProfileModal.classList.remove('tw-modal-hidden');
+    }
+}
+function hideEditProfileModal() {
+    if(editProfileModal) {
+        document.body.style.overflow = '';
+        editProfileModal.classList.add('tw-modal-hidden');
+    }
+}
+
 if(editProfileBtn) editProfileBtn.addEventListener('click', () => {
-    if(editProfileModal) showSimpleModal(editProfileModal);
+    showEditProfileModal();
     if(editNameInput && userDataGlobal) editNameInput.value = userDataGlobal.ad_soyad || '';
     if(editBioInput && userDataGlobal) editBioInput.value = userDataGlobal.biyografi || '';
     if(editAvatarImg && userDataGlobal) editAvatarImg.src = userDataGlobal.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userDataGlobal.ad_soyad || 'U')}`;
     selectedUpdateAvatarFile = null;
 });
 
-if(cancelEditBtn) cancelEditBtn.addEventListener('click', () => { if(editProfileModal) hideSimpleModal(editProfileModal); });
-if(cancelEditBtnTop) cancelEditBtnTop.addEventListener('click', () => { if(editProfileModal) hideSimpleModal(editProfileModal); });
+if(cancelEditBtn) cancelEditBtn.addEventListener('click', hideEditProfileModal);
+if(cancelEditBtnTop) cancelEditBtnTop.addEventListener('click', hideEditProfileModal);
 
 const upLogoutBtn = document.getElementById('up-logout-btn');
 if(upLogoutBtn) upLogoutBtn.addEventListener('click', handleLogout);
@@ -205,7 +225,7 @@ if(editProfileForm) {
             if (updatedAvatarUrl) updateData.avatar_url = updatedAvatarUrl;
             await supabase.from('uyeler').update(updateData).eq('id', currentUserSession.user.id);
             
-            if(editProfileModal) hideSimpleModal(editProfileModal);
+            hideEditProfileModal();
             window.location.reload(); 
         } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
         finally { btn.innerHTML = 'Kaydet'; btn.disabled = false; }
@@ -619,7 +639,7 @@ if(feedFilters) {
     });
 }
 
-// TEMPLATE ÜRETİMİ (CLASS TABANLI, DOM ÇAKIŞMASIZ)
+// TEMPLATE ÜRETİMİ (KLONLANAN YAPI - ID'SİZ CLASS TABANLI - KİLİTLENME VE HATALARI ÖNLER)
 function generatePostHTML(post, isSingleView = false) {
     const author = post.yazar || {};
     const avatar = author.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(author.ad_soyad || 'U')}&background=1e3a8a&color=fff`;
@@ -855,7 +875,7 @@ document.addEventListener('click', async (e) => {
                 await supabase.from('gonderiler').delete().eq('id', postId); 
                 loadFeed(currentFeedFilter); 
                 
-                // Profil ekranındaysa profili yenile (Silinen anında kaybolur)
+                // Profil ekranındaysa profili yenile
                 const upModal = document.getElementById('user-profile-modal');
                 if(currentlyViewingProfileId && upModal && !upModal.classList.contains('tw-modal-hidden')) {
                     openUserProfile(currentlyViewingProfileId);
@@ -926,15 +946,20 @@ document.addEventListener('click', async (e) => {
 document.addEventListener('dblclick', async (e) => {
     if (!currentUserSession) return;
     const target = e.target;
+    
     if (target.classList.contains('post-media-item')) {
-        if (window.getSelection) window.getSelection().removeAllRanges();
+        if (window.getSelection) { window.getSelection().removeAllRanges(); }
         
         const postCard = target.closest('.post-card');
         const postId = target.getAttribute('data-post-id');
         const authorId = target.getAttribute('data-author-id');
         
         const bigHeart = postCard.querySelector('.big-heart');
-        if (bigHeart) { bigHeart.classList.remove('heart-pop'); void bigHeart.offsetWidth; bigHeart.classList.add('heart-pop'); }
+        if (bigHeart) {
+            bigHeart.classList.remove('heart-pop');
+            void bigHeart.offsetWidth;
+            bigHeart.classList.add('heart-pop');
+        }
 
         const icon = postCard.querySelector('.like-icon');
         const countSpan = postCard.querySelector('.like-count');
@@ -945,9 +970,12 @@ document.addEventListener('dblclick', async (e) => {
             icon.className = "fa-solid fa-heart like-icon text-red-500";
             postCard.querySelector('.like-btn').classList.replace('text-slate-500', 'text-red-500');
             countSpan.innerText = isNaN(currentCount) || currentCount === 0 ? 1 : currentCount + 1;
+
             try {
                 await supabase.from('etkilesimler').insert([{ gonderi_id: postId, user_id: currentUserSession.user.id, etkilesim_tipi: 'like' }]);
-                if (authorId !== currentUserSession.user.id) await supabase.from('bildirimler').insert([{ alici_id: authorId, gonderen_id: currentUserSession.user.id, mesaj: 'Gönderini beğendi.', gonderi_id: postId }]);
+                if (authorId !== currentUserSession.user.id) {
+                    await supabase.from('bildirimler').insert([{ alici_id: authorId, gonderen_id: currentUserSession.user.id, mesaj: 'Gönderini beğendi.', gonderi_id: postId }]);
+                }
             } catch (err) {}
         }
     }
