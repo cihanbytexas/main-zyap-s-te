@@ -1,16 +1,23 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
+// ============================================
+// SUPABASE BAĞLANTISI
+// ============================================
 const supabaseUrl = "https://ppdwtpjglkphayfxexhv.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwZHd0cGpnbGtwaGF5ZnhleGh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNTc5ODEsImV4cCI6MjA5NjgzMzk4MX0.fJIyyxfU15EgrNARWkISFHJvU7-o-QpZbIKbRc3q_-s";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// ============================================
+// GLOBAL STATE (DURUM) DEĞİŞKENLERİ
+// ============================================
 let currentUserSession = null;
 let temporaryRegistrationData = null; 
 let currentLang = 'tr';
 let userDataGlobal = null;
+let selectedAvatarFile = null;
 
 // ============================================
-// MODAL & UI YARDIMCILARI
+// YARDIMCI FONKSİYONLAR (UI & AUTH)
 // ============================================
 function toggleAuthForms(activeForm) {
     const forms = [
@@ -25,6 +32,7 @@ function toggleAuthForms(activeForm) {
     if(activeForm) activeForm.classList.remove('tw-modal-hidden');
 }
 
+// 2. Kural İsteği: Yorum kısmında giriş yapan kişinin ismi kilitlensin ve sönük olsun
 function lockReviewNameIfLoggedIn() {
     const revNameInput = document.getElementById('rev-name');
     if(revNameInput) {
@@ -41,7 +49,7 @@ function lockReviewNameIfLoggedIn() {
 }
 
 // ============================================
-// DİL SEÇİMİ
+// DİL SEÇİMİ VE ÇEVİRİ MANTIĞI
 // ============================================
 const langTrBtn = document.getElementById('lang-tr');
 const langEnBtn = document.getElementById('lang-en');
@@ -52,6 +60,7 @@ function applyLanguage(lang) {
         langTrBtn.classList.toggle('active', lang === 'tr');
         langEnBtn.classList.toggle('active', lang === 'en');
     }
+
     document.querySelectorAll('[data-tr]').forEach(el => {
         const text = lang === 'tr' ? el.getAttribute('data-tr') : el.getAttribute('data-en');
         if (text) {
@@ -59,14 +68,17 @@ function applyLanguage(lang) {
             else el.textContent = text;
         }
     });
+
     document.querySelectorAll('[data-tr-placeholder]').forEach(el => {
         const ph = lang === 'tr' ? el.getAttribute('data-tr-placeholder') : el.getAttribute('data-en-placeholder');
         if (ph) el.placeholder = ph;
     });
+
     const botChatInput = document.getElementById('chat-input');
     if (botChatInput) {
         botChatInput.placeholder = lang === 'tr' ? 'Mesajınızı yazın...' : 'Type your message...';
     }
+
     if(typeof renderColors === "function") renderColors();
     if(typeof fetchApprovedReviews === "function") fetchApprovedReviews();
     document.documentElement.lang = lang === 'tr' ? 'tr' : 'en';
@@ -105,7 +117,7 @@ if(openChatBtn) {
     openChatBtn.onclick = () => {
         if(botChatModal) {
             botChatModal.style.display = 'flex';
-            document.body.classList.add('no-scroll');
+            document.body.classList.add('no-scroll'); // Arka sayfa kayması (bleed) engellendi
         }
         if (!botChatInitialized) {
             botChatInitialized = true;
@@ -150,7 +162,7 @@ if(chatSend) chatSend.onclick = handleSend;
 if(botChatInput) botChatInput.onkeypress = (e) => { if(e.key === 'Enter') handleSend(); };
 
 // ============================================
-// KARTELA, PDF VE YORUM MODALLARI
+// KARTELA VE PDF MODALLARI
 // ============================================
 const openModalBtn = document.getElementById('open-kartela-btn');
 const kartelaModal = document.getElementById('kartela-modal');
@@ -166,6 +178,7 @@ if(openPdfBtn) { openPdfBtn.onclick = () => { if(kartelaModal) kartelaModal.styl
 if(closePdfModalBtn) { closePdfModalBtn.onclick = () => { if(pdfModal) pdfModal.style.display = 'none'; if(kartelaModal) kartelaModal.style.display = 'flex'; }; }
 
 let activeFilter = 'all'; let searchTerm = '';
+
 window.renderColors = function() {
     if(!colorGrid) return;
     colorGrid.innerHTML = '';
@@ -176,6 +189,7 @@ window.renderColors = function() {
         const matchesType = activeFilter === 'all' || color.type === activeFilter;
         return matchesSearch && matchesType;
     });
+
     const typeLabel = currentLang === 'tr' ? { ic: 'İç Cephe', dis: 'Dış Cephe' } : { ic: 'Interior', dis: 'Exterior' };
 
     filtered.forEach(color => {
@@ -187,6 +201,7 @@ window.renderColors = function() {
 }
 
 if(colorSearch) colorSearch.addEventListener('input', (e) => { searchTerm = e.target.value; if(typeof renderColors === "function") renderColors(); });
+
 if(filterBtns.length > 0) {
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -200,11 +215,14 @@ if(filterBtns.length > 0) {
 if(openModalBtn) openModalBtn.onclick = () => { if(kartelaModal) { kartelaModal.style.display = 'flex'; document.body.classList.add('no-scroll'); } if(typeof renderColors === "function") renderColors(); };
 if(closeKartelaBtn) closeKartelaBtn.onclick = () => { if(kartelaModal) { kartelaModal.style.display = 'none'; document.body.classList.remove('no-scroll'); } };
 
+// ============================================
+// YORUM (REVIEW) SİSTEMİ
+// ============================================
 const reviewModal = document.getElementById('review-modal');
 const openReviewBtn = document.getElementById('open-review-modal');
 const closeReviewBtn = document.getElementById('close-review-modal');
 
-if (openReviewBtn) openReviewBtn.onclick = () => { if(reviewModal) { reviewModal.style.display = 'flex'; document.body.classList.add('no-scroll'); } };
+if (openReviewBtn) openReviewBtn.onclick = () => { if(reviewModal) { reviewModal.style.display = 'flex'; document.body.classList.add('no-scroll'); lockReviewNameIfLoggedIn(); } };
 if (closeReviewBtn) closeReviewBtn.onclick = () => { if(reviewModal) { reviewModal.style.display = 'none'; document.body.classList.remove('no-scroll'); } };
 
 let selectedRating = 0;
@@ -273,6 +291,9 @@ if(reviewForm) {
     });
 }
 
+// ============================================
+// GENEL SİTE ETKİLEŞİMLERİ (Navigasyon vs.)
+// ============================================
 const mobileMenuBtn = document.getElementById('mobile-menu-btn');
 const navLinks = document.getElementById('nav-links');
 const navLinksItems = document.querySelectorAll('.nav-links a');
@@ -284,6 +305,7 @@ if(mobileMenuBtn) {
         if(icon) { icon.classList.toggle('fa-bars'); icon.classList.toggle('fa-xmark'); }
     });
 }
+
 navLinksItems.forEach(item => {
     item.addEventListener('click', () => {
         if(navLinks) navLinks.classList.remove('active');
@@ -293,6 +315,7 @@ navLinksItems.forEach(item => {
 
 const navbar = document.getElementById('navbar');
 const sections = document.querySelectorAll('section');
+
 window.addEventListener('scroll', () => {
     if(navbar) navbar.classList.toggle('scrolled', window.scrollY > 50);
     let current = '';
@@ -303,8 +326,28 @@ window.addEventListener('scroll', () => {
     });
 });
 
+const reveals = document.querySelectorAll('.reveal');
+const revealOnScroll = () => { reveals.forEach(reveal => { if (reveal.getBoundingClientRect().top < window.innerHeight - 150) reveal.classList.add('active'); }); }
+window.addEventListener('scroll', revealOnScroll); revealOnScroll();
+
+const swatches = document.querySelectorAll('.color-swatch');
+const displayBox = document.getElementById('selected-color-box');
+const displayName = document.getElementById('selected-color-name');
+const displayHex = document.getElementById('selected-color-hex');
+
+swatches.forEach(swatch => {
+    swatch.addEventListener('click', () => {
+        swatches.forEach(s => s.classList.remove('selected'));
+        swatch.classList.add('selected');
+        const hexColor = swatch.getAttribute('data-hex');
+        if(displayBox) displayBox.style.backgroundColor = hexColor;
+        if(displayName) displayName.textContent = swatch.getAttribute('data-name');
+        if(displayHex) displayHex.textContent = hexColor;
+    });
+});
+
 // ============================================
-// AUTH, OTP & SESSION YÖNETİMİ
+// AUTH & OTP SİSTEMİ MANTIĞI
 // ============================================
 const authModalWrapper = document.getElementById('auth-modal-wrapper');
 const navAuthMainBtn = document.getElementById('nav-main-auth-btn');
@@ -321,6 +364,7 @@ function openAuthModal(formType) {
 }
 
 if(navAuthMainBtn) navAuthMainBtn.addEventListener('click', () => openAuthModal('login'));
+
 if(closeAuthModalBtn) {
     closeAuthModalBtn.addEventListener('click', () => {
         if(authModalWrapper) {
@@ -331,7 +375,7 @@ if(closeAuthModalBtn) {
     });
 }
 
-// FAB Butonu Yönlendirmesi
+// Girişli kullanıcı doğrudan Öz Social'a fırlatılır
 if(profileFabBtn) profileFabBtn.addEventListener('click', () => { window.location.href = 'ozsocial.html'; });
 
 const showRegisterBtn = document.getElementById('show-register');
@@ -488,6 +532,9 @@ if(resetOtpForm) {
     });
 }
 
+// ============================================
+// OTURUM (SESSION) KONTROLÜ (Giriş yapan direk atılmaz, sadece FAB butonu çıkar)
+// ============================================
 async function checkSession() {
     const { data: { session } } = await supabase.auth.getSession();
     
