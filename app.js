@@ -8,6 +8,38 @@ const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // ============================================
+// GÜVENLİ YAN MENÜ AÇMA/KAPAMA FONKSİYONLARI
+// ============================================
+window.openSideModal = function(wrapperId, panelId) {
+    const wrapper = document.getElementById(wrapperId);
+    const panel = document.getElementById(panelId);
+    if(wrapper && panel) {
+        wrapper.classList.remove('tw-modal-hidden');
+        setTimeout(() => panel.classList.remove('translate-x-full'), 10);
+    }
+}
+window.closeSideModal = function(wrapperId, panelId) {
+    const wrapper = document.getElementById(wrapperId);
+    const panel = document.getElementById(panelId);
+    if(wrapper && panel) {
+        panel.classList.add('translate-x-full');
+        setTimeout(() => wrapper.classList.add('tw-modal-hidden'), 300);
+    }
+}
+function showSimpleModal(modalEl) {
+    if(modalEl) {
+        modalEl.classList.remove('tw-modal-hidden');
+        setTimeout(() => modalEl.classList.remove('translate-x-full'), 10);
+    }
+}
+function hideSimpleModal(modalEl) {
+    if(modalEl) {
+        modalEl.classList.add('translate-x-full');
+        setTimeout(() => modalEl.classList.add('tw-modal-hidden'), 300);
+    }
+}
+
+// ============================================
 // ANA SİTE MANTIĞI (DİL, KARTELA, CHATBOT)
 // ============================================
 let currentLang = 'tr';
@@ -427,21 +459,7 @@ let currentChatUserId = null;
 let realtimeChannel = null;
 let chatBroadcastChannel = null;
 let typingTimeout;
-let temporaryRegistrationData = null; // OTP için
-
-// --- YARDIMCI (UTILITY) MODAL FONKSİYONLARI ---
-function showSimpleModal(modalEl) {
-    if(modalEl) {
-        modalEl.classList.remove('tw-modal-hidden');
-        setTimeout(() => modalEl.classList.remove('translate-x-full'), 10);
-    }
-}
-function hideSimpleModal(modalEl) {
-    if(modalEl) {
-        modalEl.classList.add('translate-x-full');
-        setTimeout(() => modalEl.classList.add('tw-modal-hidden'), 300);
-    }
-}
+let temporaryRegistrationData = null;
 
 // --- Auth Açılışları ---
 function openAuthModal(formType) {
@@ -498,7 +516,6 @@ if(backToLoginBtn) backToLoginBtn.addEventListener('click', (e) => { e.preventDe
 if(backToRegBtn) backToRegBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(registerForm); });
 if(backToForgotBtn) backToForgotBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(forgotPasswordForm); });
 
-// OTP'li Kayıt (Aşama 1)
 if(registerForm) {
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -521,7 +538,6 @@ if(registerForm) {
     });
 }
 
-// OTP'li Kayıt (Aşama 2)
 if(otpVerifyForm) {
     otpVerifyForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -578,7 +594,6 @@ if(loginForm) {
     });
 }
 
-// Şifre Sıfırlama OTP (Aşama 1)
 if(forgotPasswordForm) {
     forgotPasswordForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -595,7 +610,6 @@ if(forgotPasswordForm) {
     });
 }
 
-// Şifre Sıfırlama OTP (Aşama 2)
 if(resetOtpForm) {
     resetOtpForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -1095,6 +1109,7 @@ if(feedFilters) {
     });
 }
 
+// TEMPLATE: ID'LER CLASS'A ÇEVRİLDİ (DOM ÇAKIŞMASI DÜZELTİLDİ)
 function generatePostHTML(post, isSingleView = false) {
     const author = post.yazar || {};
     const avatar = author.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(author.ad_soyad || 'U')}&background=1e3a8a&color=fff`;
@@ -1164,14 +1179,15 @@ function generatePostHTML(post, isSingleView = false) {
             mediaHTML = `
                 <div class="relative mt-3 rounded-xl overflow-hidden bg-slate-50 border border-slate-100">
                     <img src="${post.medya_url}" class="post-media-item w-full h-auto max-h-96 object-cover pointer-events-auto cursor-pointer" data-post-id="${post.id}" data-author-id="${post.user_id}">
-                    <i class="fa-solid fa-heart absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-6xl opacity-0 pointer-events-none drop-shadow-md z-10" id="big-heart-${post.id}"></i>
+                    <i class="fa-solid fa-heart absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-6xl opacity-0 pointer-events-none drop-shadow-md z-10 big-heart"></i>
                 </div>
             `;
         }
     }
 
+    // Ana karta "post-card" sınıfı eklendi, id kullanımı kaldırıldı (Çakışmayı önlemek için)
     return `
-        <div id="post-${post.id}" class="post-card no-select bg-white p-5 rounded-2xl shadow-sm border border-slate-200 transition-all duration-300" data-post-id="${post.id}">
+        <div class="post-card no-select bg-white p-5 rounded-2xl shadow-sm border border-slate-200 transition-all duration-300" data-post-id="${post.id}">
             <div class="flex justify-between items-start mb-3 pointer-events-auto">
                 <div class="flex items-center gap-3">
                     <img src="${avatar}" class="w-11 h-11 rounded-full object-cover border border-slate-200 cursor-pointer user-profile-trigger" data-user-id="${post.user_id}">
@@ -1189,20 +1205,20 @@ function generatePostHTML(post, isSingleView = false) {
             ${mediaHTML}
             <div class="flex items-center gap-6 mt-4 pt-3 border-t border-slate-100 pointer-events-auto">
                 <button class="action-btn like-btn flex items-center gap-2 text-sm font-semibold transition-colors border-none bg-transparent outline-none shadow-none ${isLikedByMe ? 'text-red-500' : 'text-slate-500 hover:text-red-500'}" data-post-id="${post.id}" data-author-id="${post.user_id}">
-                    <i class="${isLikedByMe ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}" id="like-icon-${post.id}" style="pointer-events:none;"></i> <span style="pointer-events:none;" id="like-count-${post.id}">${likesCount > 0 ? likesCount : 'Beğen'}</span>
+                    <i class="${isLikedByMe ? 'fa-solid fa-heart' : 'fa-regular fa-heart'} like-icon" style="pointer-events:none;"></i> <span class="like-count" style="pointer-events:none;">${likesCount > 0 ? likesCount : 'Beğen'}</span>
                 </button>
                 <button class="action-btn comment-toggle-btn flex items-center gap-2 text-slate-500 hover:text-blue-500 transition-colors text-sm font-semibold border-none bg-transparent outline-none shadow-none" data-post-id="${post.id}">
                     <i class="fa-regular fa-comment pointer-events-none"></i> <span class="pointer-events-none">${allComments.length > 0 ? allComments.length : 'Yorum Yap'}</span>
                 </button>
             </div>
-            <div class="comment-section ${isSingleView ? '' : 'hidden'} mt-4 pt-4 border-t border-slate-100 pointer-events-auto" id="comment-section-${post.id}">
+            <div class="comment-section ${isSingleView ? '' : 'hidden'} mt-4 pt-4 border-t border-slate-100 pointer-events-auto">
                 <div class="mb-4 space-y-1">${commentsHTML}</div>
-                <div id="reply-indicator-${post.id}" class="hidden items-center justify-between bg-blue-50 text-blue-700 px-3 py-1.5 rounded-t-lg text-xs font-bold border border-blue-100 border-b-0">
-                    <span><i class="fa-solid fa-reply mr-1"></i> <span id="reply-name-${post.id}"></span> kullanıcısına yanıt veriliyor</span>
+                <div class="reply-indicator hidden items-center justify-between bg-blue-50 text-blue-700 px-3 py-1.5 rounded-t-lg text-xs font-bold border border-blue-100 border-b-0">
+                    <span><i class="fa-solid fa-reply mr-1"></i> <span class="reply-name"></span> kullanıcısına yanıt veriliyor</span>
                     <button class="cancel-reply-btn hover:text-red-500 border-none bg-transparent outline-none shadow-none" data-post-id="${post.id}"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div class="flex gap-2">
-                    <input type="text" id="comment-input-${post.id}" class="flex-1 px-4 py-2 bg-slate-100 border border-slate-200 rounded-full text-sm focus:outline-none focus:border-blue-400 focus:bg-white transition-colors" placeholder="Yorum ekle..." style="outline: none;">
+                    <input type="text" class="comment-input flex-1 px-4 py-2 bg-slate-100 border border-slate-200 rounded-full text-sm focus:outline-none focus:border-blue-400 focus:bg-white transition-colors" placeholder="Yorum ekle..." style="outline: none;">
                     <button class="submit-comment-btn w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center shadow-sm transition-colors border-none outline-none" data-post-id="${post.id}" data-author-id="${post.user_id}">
                         <i class="fa-solid fa-paper-plane pointer-events-none text-sm"></i>
                     </button>
@@ -1212,38 +1228,28 @@ function generatePostHTML(post, isSingleView = false) {
     `;
 }
 
-async function loadFeed(filterType) {
-    if (!currentUserSession || !feedList) return;
-    feedList.innerHTML = '<div class="p-8 text-center text-slate-400 bg-white rounded-xl border border-slate-200"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><p>Yükleniyor...</p></div>';
-    try {
-        let query = supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).order('created_at', { ascending: false });
-        if (filterType !== 'all') query = query.eq('gonderi_tipi', filterType);
-        const { data: posts } = await query;
-        if (!posts || posts.length === 0) { feedList.innerHTML = '<div class="bg-white p-8 border border-slate-200 rounded-xl text-center text-slate-500"><i class="fa-regular fa-folder-open text-3xl mb-2"></i><p>Henüz paylaşım yok.</p></div>'; return; }
-        feedList.innerHTML = '';
-        posts.forEach(p => feedList.insertAdjacentHTML('beforeend', generatePostHTML(p, false)));
-    } catch (e) {}
-}
-
+// EVENT DELEGATION: Tıklamalar artık DOM çakışması yapmadan ".post-card" üzerinden bulunur.
 document.addEventListener('click', async (e) => {
     if (!currentUserSession) return;
     const target = e.target;
+    const postCard = target.closest('.post-card');
 
     if (target.classList.contains('like-btn')) {
         const postId = target.getAttribute('data-post-id');
         const authorId = target.getAttribute('data-author-id');
-        const icon = document.getElementById(`like-icon-${postId}`);
-        const countSpan = document.getElementById(`like-count-${postId}`);
+        const icon = postCard.querySelector('.like-icon');
+        const countSpan = postCard.querySelector('.like-count');
         const isLiked = icon.classList.contains('fa-solid');
         let currentCount = parseInt(countSpan.innerText) || 0;
 
         if (isLiked) {
-            icon.className = "fa-regular fa-heart"; target.classList.replace('text-red-500', 'text-slate-500');
+            icon.className = "fa-regular fa-heart like-icon"; target.classList.replace('text-red-500', 'text-slate-500');
             countSpan.innerText = currentCount > 1 ? currentCount - 1 : 'Beğen';
         } else {
-            icon.className = "fa-solid fa-heart text-red-500"; target.classList.replace('text-slate-500', 'text-red-500');
+            icon.className = "fa-solid fa-heart like-icon text-red-500"; target.classList.replace('text-slate-500', 'text-red-500');
             countSpan.innerText = isNaN(currentCount) || currentCount === 0 ? 1 : currentCount + 1;
         }
+
         try {
             const { data: existingLike } = await supabase.from('etkilesimler').select('id').eq('gonderi_id', postId).eq('user_id', currentUserSession.user.id).single();
             if (existingLike) { await supabase.from('etkilesimler').delete().eq('id', existingLike.id); } 
@@ -1257,7 +1263,7 @@ document.addEventListener('click', async (e) => {
     if (target.classList.contains('submit-comment-btn')) {
         const postId = target.getAttribute('data-post-id');
         const authorId = target.getAttribute('data-author-id');
-        const input = document.getElementById(`comment-input-${postId}`);
+        const input = postCard.querySelector('.comment-input');
         if (!input.value.trim()) return;
         target.disabled = true; target.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
         try {
@@ -1267,33 +1273,48 @@ document.addEventListener('click', async (e) => {
             delete activeReplyData[postId]; input.value = '';
             
             const { data: post } = await supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).eq('id', postId).single();
-            document.getElementById(`post-${postId}`).outerHTML = generatePostHTML(post, true);
+            postCard.outerHTML = generatePostHTML(post, true);
         } catch(err) {} finally { target.disabled = false; target.innerHTML = '<i class="fa-solid fa-paper-plane text-sm"></i>'; }
     }
 
     if (target.classList.contains('comment-toggle-btn')) {
-        document.getElementById(`comment-section-${target.getAttribute('data-post-id')}`).classList.toggle('hidden');
+        postCard.querySelector('.comment-section').classList.toggle('hidden');
     }
 
     if (target.classList.contains('reply-to-comment-btn')) {
         const pId = target.getAttribute('data-post-id');
         activeReplyData[pId] = target.getAttribute('data-comment-id');
-        document.getElementById(`reply-indicator-${pId}`).classList.replace('hidden', 'flex');
-        document.getElementById(`reply-name-${pId}`).innerText = target.getAttribute('data-author-name');
-        document.getElementById(`comment-input-${pId}`).focus();
+        const indicator = postCard.querySelector('.reply-indicator');
+        indicator.classList.replace('hidden', 'flex');
+        indicator.querySelector('.reply-name').innerText = target.getAttribute('data-author-name');
+        postCard.querySelector('.comment-input').focus();
     }
 
     if (target.classList.contains('cancel-reply-btn') || target.closest('.cancel-reply-btn')) {
-        const pId = (target.getAttribute('data-post-id') || target.closest('.cancel-reply-btn').getAttribute('data-post-id'));
-        delete activeReplyData[pId]; document.getElementById(`reply-indicator-${pId}`).classList.replace('flex', 'hidden');
+        const btn = target.classList.contains('cancel-reply-btn') ? target : target.closest('.cancel-reply-btn');
+        const pId = btn.getAttribute('data-post-id');
+        delete activeReplyData[pId]; 
+        postCard.querySelector('.reply-indicator').classList.replace('flex', 'hidden');
     }
 
+    // Silme ve Profil/SinglePost Yenileme
     if (target.classList.contains('delete-post-btn')) {
         const postId = target.getAttribute('data-post-id');
         Swal.fire({
             title: 'Emin misin?', text: "Bu gönderiyi kalıcı olarak sileceksin!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Evet, Sil!', cancelButtonText: 'İptal'
         }).then(async (result) => {
-            if (result.isConfirmed) { await supabase.from('gonderiler').delete().eq('id', postId); loadFeed(currentFeedFilter); if(closeSinglePostBtn) hideSimpleModal(singlePostModal); }
+            if (result.isConfirmed) { 
+                await supabase.from('gonderiler').delete().eq('id', postId); 
+                loadFeed(currentFeedFilter); 
+                // Eğer Profil Açıksa profili yenile
+                if(currentlyViewingProfileId && !userProfileModal.classList.contains('tw-modal-hidden')) {
+                    openUserProfile(currentlyViewingProfileId);
+                }
+                // Eğer Tekil Gönderi Açıksa onu kapat
+                if(singlePostModal && !singlePostModal.classList.contains('tw-modal-hidden')) {
+                    hideSimpleModal(singlePostModal);
+                }
+            }
         });
     }
 
@@ -1310,7 +1331,12 @@ document.addEventListener('click', async (e) => {
         const postId = target.getAttribute('data-post-id');
         const oldText = decodeURIComponent(target.getAttribute('data-text'));
         const { value: newText } = await Swal.fire({ input: 'textarea', inputValue: oldText, showCancelButton: true, confirmButtonText: 'Kaydet', cancelButtonText: 'İptal' });
-        if (newText && newText !== oldText) { await supabase.from('gonderiler').update({ metin: newText }).eq('id', postId); loadFeed(currentFeedFilter); if(closeSinglePostBtn) hideSimpleModal(singlePostModal); }
+        if (newText && newText !== oldText) { 
+            await supabase.from('gonderiler').update({ metin: newText }).eq('id', postId); 
+            loadFeed(currentFeedFilter); 
+            if(currentlyViewingProfileId && !userProfileModal.classList.contains('tw-modal-hidden')) openUserProfile(currentlyViewingProfileId);
+            if(singlePostModal && !singlePostModal.classList.contains('tw-modal-hidden')) hideSimpleModal(singlePostModal);
+        }
     }
 
     if (target.classList.contains('edit-comment-btn')) {
@@ -1321,24 +1347,28 @@ document.addEventListener('click', async (e) => {
     }
 });
 
+// Çift Tıkla Beğenme (Class Traversing ile düzeltildi)
 document.addEventListener('dblclick', async (e) => {
     if (!currentUserSession) return;
     const target = e.target;
     if (target.classList.contains('post-media-item')) {
         if (window.getSelection) window.getSelection().removeAllRanges();
+        
+        const postCard = target.closest('.post-card');
         const postId = target.getAttribute('data-post-id');
         const authorId = target.getAttribute('data-author-id');
-        const bigHeart = document.getElementById(`big-heart-${postId}`);
+        
+        const bigHeart = postCard.querySelector('.big-heart');
         if (bigHeart) { bigHeart.classList.remove('heart-pop'); void bigHeart.offsetWidth; bigHeart.classList.add('heart-pop'); }
 
-        const icon = document.getElementById(`like-icon-${postId}`);
-        const countSpan = document.getElementById(`like-count-${postId}`);
+        const icon = postCard.querySelector('.like-icon');
+        const countSpan = postCard.querySelector('.like-count');
         const isLiked = icon.classList.contains('fa-solid');
         
         if (!isLiked) {
             let currentCount = parseInt(countSpan.innerText) || 0;
-            icon.className = "fa-solid fa-heart text-red-500";
-            document.querySelector(`.like-btn[data-post-id="${postId}"]`).classList.replace('text-slate-500', 'text-red-500');
+            icon.className = "fa-solid fa-heart like-icon text-red-500";
+            postCard.querySelector('.like-btn').classList.replace('text-slate-500', 'text-red-500');
             countSpan.innerText = isNaN(currentCount) || currentCount === 0 ? 1 : currentCount + 1;
             try {
                 await supabase.from('etkilesimler').insert([{ gonderi_id: postId, user_id: currentUserSession.user.id, etkilesim_tipi: 'like' }]);
@@ -1469,3 +1499,4 @@ if(closeSinglePostBtn) closeSinglePostBtn.addEventListener('click', () => hideSi
 // Başlangıç Yüklemeleri
 fetchApprovedReviews();
 checkSession();
+
