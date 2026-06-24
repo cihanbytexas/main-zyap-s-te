@@ -78,7 +78,6 @@ async function checkSession() {
         
         checkNotificationsBadge(); checkMessagesBadge(); setupRealtime(); loadFeed(currentFeedFilter);
     } else {
-        // Oturum yoksa ana siteye şutla
         window.location.href = 'index.html';
     }
 }
@@ -91,10 +90,44 @@ const handleLogout = async () => {
 };
 
 // ============================================
-// BOTTOM NAVIGATION BARI (INSTAGRAM MANTIĞI)
+// BOTTOM NAVIGATION BARI VE ARAMA
 // ============================================
 const bottomHomeBtn = document.getElementById('bottom-home-btn');
 if(bottomHomeBtn) bottomHomeBtn.addEventListener('click', () => { window.scrollTo({top:0, behavior:'smooth'}); });
+
+const bottomSearchBtn = document.getElementById('bottom-search-btn');
+if(bottomSearchBtn) bottomSearchBtn.addEventListener('click', () => { 
+    showSimpleModal(document.getElementById('search-modal')); 
+});
+
+const searchInput = document.getElementById('user-search-input');
+if(searchInput) {
+    searchInput.addEventListener('input', async (e) => {
+        const val = e.target.value.trim();
+        const resDiv = document.getElementById('search-results');
+        if(!val) { resDiv.innerHTML = '<p class="text-center text-slate-400 mt-10 text-sm">Aramak istediğiniz kişinin adını yazın.</p>'; return; }
+        
+        try {
+            const { data: users, error } = await supabase.from('uyeler').select('id, ad_soyad, avatar_url, rol').ilike('ad_soyad', `%${val}%`).limit(10);
+            if(error) throw error;
+            if(!users || users.length === 0) { resDiv.innerHTML = '<p class="text-center text-slate-400 mt-10 text-sm">Kullanıcı bulunamadı.</p>'; return; }
+            
+            resDiv.innerHTML = '';
+            users.forEach(u => {
+                const avatar = u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.ad_soyad || 'U')}`;
+                resDiv.insertAdjacentHTML('beforeend', `
+                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors user-profile-trigger" data-user-id="${u.id}" onclick="hideSimpleModal(document.getElementById('search-modal'))">
+                        <img src="${avatar}" class="w-12 h-12 rounded-full object-cover border border-slate-200 pointer-events-none">
+                        <div class="pointer-events-none">
+                            <h4 class="font-bold text-slate-800 text-sm">${u.ad_soyad}</h4>
+                            <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded uppercase">${u.rol}</span>
+                        </div>
+                    </div>
+                `);
+            });
+        } catch(err) { resDiv.innerHTML = '<p class="text-center text-red-500 mt-10 text-sm">Arama hatası.</p>'; }
+    });
+}
 
 const bottomAddBtn = document.getElementById('bottom-add-btn');
 if(bottomAddBtn) bottomAddBtn.addEventListener('click', () => { showSimpleModal(document.getElementById('create-post-modal')); });
@@ -111,16 +144,13 @@ if(bottomProfileBtn) bottomProfileBtn.addEventListener('click', () => {
 });
 
 // ============================================
-// DİĞER MODALLAR (Üst Menü / Profil Ayarları)
+// DİĞER MODALLAR (Mesajlar / Profil Ayarları)
 // ============================================
 const messagesBtn = document.getElementById('messages-btn');
 if(messagesBtn) messagesBtn.addEventListener('click', () => {
     openSideModal('messages-list-modal', 'messages-list-panel');
     loadConversations();
 });
-
-const closeMessagesListBtn = document.getElementById('close-messages-list-btn');
-if(closeMessagesListBtn) closeMessagesListBtn.addEventListener('click', () => closeSideModal('messages-list-modal', 'messages-list-panel'));
 
 const editProfileBtn = document.getElementById('up-edit-profile-btn');
 const cancelEditBtnTop = document.getElementById('cancel-edit-btn-top');
@@ -142,9 +172,7 @@ if(cancelEditBtn) cancelEditBtn.addEventListener('click', () => { if(editProfile
 if(cancelEditBtnTop) cancelEditBtnTop.addEventListener('click', () => { if(editProfileModal) hideSimpleModal(editProfileModal); });
 
 const upLogoutBtn = document.getElementById('up-logout-btn');
-const logoutTextBtn = document.getElementById('logout-text-btn');
 if(upLogoutBtn) upLogoutBtn.addEventListener('click', handleLogout);
-if(logoutTextBtn) logoutTextBtn.addEventListener('click', handleLogout);
 
 const editAvatarInput = document.getElementById('edit-avatar');
 if(editAvatarInput) {
@@ -178,7 +206,7 @@ if(editProfileForm) {
             await supabase.from('uyeler').update(updateData).eq('id', currentUserSession.user.id);
             
             if(editProfileModal) hideSimpleModal(editProfileModal);
-            window.location.reload(); // Değişiklikleri görmek için yenile
+            window.location.reload(); 
         } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
         finally { btn.innerHTML = 'Kaydet'; btn.disabled = false; }
     });
@@ -250,7 +278,7 @@ function setupRealtime() {
         chatBroadcastChannel.on('broadcast', { event: 'typing' }, payload => {
             const dmModal = document.getElementById('dm-modal');
             if (payload.payload.to === currentUserSession.user.id && payload.payload.from === currentChatUserId && dmModal && !dmModal.classList.contains('tw-modal-hidden')) {
-                const dmTypingIndicator = document.getElementById('dm-typing-indicator');
+                const dmTypingIndicator = document.getElementById('chat-typing-indicator');
                 if(dmTypingIndicator) {
                     dmTypingIndicator.classList.remove('hidden'); dmTypingIndicator.classList.add('flex');
                     scrollToChatBottom(); clearTimeout(typingTimeout);
@@ -261,6 +289,7 @@ function setupRealtime() {
     }
 }
 
+// --- Bildirimler ---
 async function checkNotificationsBadge() {
     if (!currentUserSession) return;
     const bottomNotifBadge = document.querySelector('#bottom-notif-btn #notification-badge');
@@ -300,9 +329,6 @@ async function loadNotifications() {
     } catch (error) {}
 }
 
-const closeNotificationBtn = document.getElementById('close-notification-btn');
-if(closeNotificationBtn) closeNotificationBtn.addEventListener('click', () => { closeSideModal('notification-modal', 'notification-panel'); checkNotificationsBadge(); });
-
 window.handleNotificationClick = async (notificationId, postId, senderId) => {
     await supabase.from('bildirimler').update({ okundu: true }).eq('id', notificationId);
     closeSideModal('notification-modal', 'notification-panel'); 
@@ -311,6 +337,7 @@ window.handleNotificationClick = async (notificationId, postId, senderId) => {
     else if (senderId && senderId !== 'null') openUserProfile(senderId);
 };
 
+// --- Mesajlaşma (DM) ---
 async function checkMessagesBadge() {
     if (!currentUserSession) return;
     const messagesBadge = document.getElementById('messages-badge');
@@ -347,12 +374,12 @@ async function loadConversations() {
             
             conversationsList.insertAdjacentHTML('beforeend', `
                 <div class="p-3 flex items-center gap-3 cursor-pointer hover:bg-slate-50 transition-colors border-b ${bgClass}" onclick="openChat('${c.user.id}', '${c.user.ad_soyad}', '${avatar}')">
-                    <img src="${avatar}" class="w-12 h-12 rounded-full object-cover flex-shrink-0 border border-slate-200">
-                    <div class="flex-1 overflow-hidden">
+                    <img src="${avatar}" class="w-12 h-12 rounded-full object-cover flex-shrink-0 border border-slate-200 pointer-events-none">
+                    <div class="flex-1 overflow-hidden pointer-events-none">
                         <div class="font-bold text-[14px] text-slate-800">${c.user.ad_soyad}</div>
                         <div class="text-[13px] truncate mt-0.5 ${textWeight}">${c.senderLabel}${c.lastMsg}</div>
                     </div>
-                    ${c.isUnread ? '<span class="w-2.5 h-2.5 bg-blue-500 rounded-full"></span>' : ''}
+                    ${c.isUnread ? '<span class="w-2.5 h-2.5 bg-blue-500 rounded-full pointer-events-none"></span>' : ''}
                 </div>
             `);
         });
@@ -436,9 +463,6 @@ function scrollToChatBottom() {
     const dmHistory = document.getElementById('chat-history');
     if(dmHistory) dmHistory.scrollTop = dmHistory.scrollHeight; 
 }
-
-const closeDmBtn = document.getElementById('close-dm-btn');
-if(closeDmBtn) closeDmBtn.addEventListener('click', () => { currentChatUserId = null; closeSideModal('dm-modal', 'dm-panel'); });
 
 const dmInput = document.getElementById('dm-input');
 if(dmInput) {
@@ -533,7 +557,9 @@ if(dmHistoryEl) {
     });
 }
 
-// POST OLUŞTURMA
+// ============================================
+// GÖNDERİ PAYLAŞIM VE AKIŞ (FEED)
+// ============================================
 const postTypeRadios = document.getElementsByName('post_type');
 if(postTypeRadios) {
     postTypeRadios.forEach(radio => {
@@ -545,15 +571,6 @@ if(postTypeRadios) {
         });
     });
 }
-
-const closePostModalBtn = document.getElementById('close-post-modal');
-if(closePostModalBtn) closePostModalBtn.addEventListener('click', () => { 
-    hideSimpleModal(document.getElementById('create-post-modal')); 
-    const createPostForm = document.getElementById('create-post-form');
-    if(createPostForm) createPostForm.reset(); 
-    const mediaUploadContainer = document.getElementById('media-upload-container');
-    if(mediaUploadContainer) mediaUploadContainer.classList.add('tw-modal-hidden'); 
-});
 
 const createPostForm = document.getElementById('create-post-form');
 if(createPostForm) {
@@ -738,7 +755,7 @@ async function loadFeed(filterType) {
     } catch (e) {}
 }
 
-// EVENT DELEGATION: EN KUSURSUZ (CLOSEST) YAPI (DOM ÇAKIŞMASI KORUMALI)
+// EVENT DELEGATION (DOM ÇAKIŞMASI KORUMALI)
 document.addEventListener('click', async (e) => {
     if (!currentUserSession) return;
     const target = e.target;
@@ -936,6 +953,9 @@ document.addEventListener('dblclick', async (e) => {
     }
 });
 
+// ============================================
+// PROFİL SAYFASI VE KULLANICI İŞLEMLERİ
+// ============================================
 const tabGridBtn = document.getElementById('tab-grid');
 const tabQuestionsBtn = document.getElementById('tab-questions');
 if(tabGridBtn && tabQuestionsBtn) {
@@ -1098,6 +1118,5 @@ window.openSinglePost = async (postId) => {
 const closeSinglePostBtn = document.getElementById('close-single-post');
 if(closeSinglePostBtn) closeSinglePostBtn.addEventListener('click', () => hideSimpleModal(document.getElementById('single-post-modal')));
 
-// Başlangıç Yüklemeleri
-if(typeof fetchApprovedReviews === "function") fetchApprovedReviews();
+// Başlangıç
 checkSession();
