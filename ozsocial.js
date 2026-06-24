@@ -16,7 +16,7 @@ let typingTimeout;
 let userDataGlobal = null;
 
 // ============================================
-// YARDIMCI MODAL FONKSİYONLARI (KİLİTLENMEYİ ÇÖZEN YAPI)
+// YARDIMCI MODAL FONKSİYONLARI
 // ============================================
 window.openSideModal = function(wrapperId, panelId) {
     const wrapper = document.getElementById(wrapperId);
@@ -35,6 +35,24 @@ window.closeSideModal = function(wrapperId, panelId) {
         panel.classList.add('translate-x-full');
         setTimeout(() => {
             wrapper.classList.add('tw-modal-hidden');
+            document.body.style.overflow = '';
+        }, 300);
+    }
+}
+
+function showSimpleModal(modalEl) {
+    if(modalEl) {
+        document.body.style.overflow = 'hidden';
+        modalEl.classList.remove('tw-modal-hidden');
+        setTimeout(() => modalEl.classList.remove('translate-x-full'), 10);
+    }
+}
+
+function hideSimpleModal(modalEl) {
+    if(modalEl) {
+        modalEl.classList.add('translate-x-full');
+        setTimeout(() => {
+            modalEl.classList.add('tw-modal-hidden');
             document.body.style.overflow = '';
         }, 300);
     }
@@ -79,7 +97,6 @@ if(bottomHomeBtn) bottomHomeBtn.addEventListener('click', () => { window.scrollT
 
 const bottomSearchBtn = document.getElementById('bottom-search-btn');
 if(bottomSearchBtn) bottomSearchBtn.addEventListener('click', () => { 
-    // Sadece Wrapper olan modallar (arama ekranı) için
     const searchModal = document.getElementById('search-modal');
     if(searchModal) {
         document.body.style.overflow = 'hidden';
@@ -88,7 +105,6 @@ if(bottomSearchBtn) bottomSearchBtn.addEventListener('click', () => {
     }
 });
 
-// Arama Modalını Kapama
 window.closeSearchModal = function() {
     const searchModal = document.getElementById('search-modal');
     if(searchModal) {
@@ -100,7 +116,6 @@ window.closeSearchModal = function() {
     }
 }
 
-// Arama HTML'de closeSideModal çağırıyor, bu yüzden ekledim
 const searchInput = document.getElementById('user-search-input');
 if(searchInput) {
     searchInput.addEventListener('input', async (e) => {
@@ -167,29 +182,16 @@ const editNameInput = document.getElementById('edit-name');
 const editBioInput = document.getElementById('edit-bio');
 const editAvatarImg = document.getElementById('edit-avatar-img');
 
-function showEditProfileModal() {
-    if(editProfileModal) {
-        document.body.style.overflow = 'hidden';
-        editProfileModal.classList.remove('tw-modal-hidden');
-    }
-}
-function hideEditProfileModal() {
-    if(editProfileModal) {
-        document.body.style.overflow = '';
-        editProfileModal.classList.add('tw-modal-hidden');
-    }
-}
-
 if(editProfileBtn) editProfileBtn.addEventListener('click', () => {
-    showEditProfileModal();
+    if(editProfileModal) showSimpleModal(editProfileModal);
     if(editNameInput && userDataGlobal) editNameInput.value = userDataGlobal.ad_soyad || '';
     if(editBioInput && userDataGlobal) editBioInput.value = userDataGlobal.biyografi || '';
     if(editAvatarImg && userDataGlobal) editAvatarImg.src = userDataGlobal.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userDataGlobal.ad_soyad || 'U')}`;
     selectedUpdateAvatarFile = null;
 });
 
-if(cancelEditBtn) cancelEditBtn.addEventListener('click', hideEditProfileModal);
-if(cancelEditBtnTop) cancelEditBtnTop.addEventListener('click', hideEditProfileModal);
+if(cancelEditBtn) cancelEditBtn.addEventListener('click', () => { if(editProfileModal) hideSimpleModal(editProfileModal); });
+if(cancelEditBtnTop) cancelEditBtnTop.addEventListener('click', () => { if(editProfileModal) hideSimpleModal(editProfileModal); });
 
 const upLogoutBtn = document.getElementById('up-logout-btn');
 if(upLogoutBtn) upLogoutBtn.addEventListener('click', handleLogout);
@@ -225,7 +227,7 @@ if(editProfileForm) {
             if (updatedAvatarUrl) updateData.avatar_url = updatedAvatarUrl;
             await supabase.from('uyeler').update(updateData).eq('id', currentUserSession.user.id);
             
-            hideEditProfileModal();
+            if(editProfileModal) hideSimpleModal(editProfileModal);
             window.location.reload(); 
         } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
         finally { btn.innerHTML = 'Kaydet'; btn.disabled = false; }
@@ -360,7 +362,7 @@ window.handleNotificationClick = async (notificationId, postId, senderId) => {
 // --- Mesajlaşma (DM) ---
 async function checkMessagesBadge() {
     if (!currentUserSession) return;
-    const messagesBadge = document.getElementById('messages-badge');
+    const messagesBadge = document.querySelector('#messages-btn #messages-badge');
     if(!messagesBadge) return;
     try {
         const { count } = await supabase.from('mesajlar').select('*', { count: 'exact', head: true }).eq('alici_id', currentUserSession.user.id).eq('okundu', false);
@@ -619,7 +621,9 @@ if(createPostForm) {
                 await supabase.from('bildirimler').insert(notifications);
             }
 
-            hideSimpleModal(document.getElementById('create-post-modal')); createPostForm.reset(); 
+            const createModal = document.getElementById('create-post-modal');
+            if(createModal) { createModal.classList.add('tw-modal-hidden'); document.body.style.overflow = ''; }
+            createPostForm.reset(); 
             const mediaUploadContainer = document.getElementById('media-upload-container');
             if(mediaUploadContainer) mediaUploadContainer.classList.add('tw-modal-hidden');
             loadFeed(currentFeedFilter);
@@ -639,7 +643,7 @@ if(feedFilters) {
     });
 }
 
-// TEMPLATE ÜRETİMİ (KLONLANAN YAPI - ID'SİZ CLASS TABANLI - KİLİTLENME VE HATALARI ÖNLER)
+// TEMPLATE ÜRETİMİ (CLASS TABANLI, DOM ÇAKIŞMASIZ)
 function generatePostHTML(post, isSingleView = false) {
     const author = post.yazar || {};
     const avatar = author.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(author.ad_soyad || 'U')}&background=1e3a8a&color=fff`;
@@ -875,7 +879,7 @@ document.addEventListener('click', async (e) => {
                 await supabase.from('gonderiler').delete().eq('id', postId); 
                 loadFeed(currentFeedFilter); 
                 
-                // Profil ekranındaysa profili yenile
+                // Profil ekranındaysa profili yenile (Silinen anında kaybolur)
                 const upModal = document.getElementById('user-profile-modal');
                 if(currentlyViewingProfileId && upModal && !upModal.classList.contains('tw-modal-hidden')) {
                     openUserProfile(currentlyViewingProfileId);
@@ -883,7 +887,7 @@ document.addEventListener('click', async (e) => {
                 // Tekil gönderi ekranındaysa o ekranı kapat
                 const singleModal = document.getElementById('single-post-modal');
                 if(singleModal && !singleModal.classList.contains('tw-modal-hidden')) {
-                    hideSimpleModal(singleModal);
+                    closeSideModal('single-post-modal', 'single-post-panel');
                 }
             }
         });
@@ -1012,8 +1016,7 @@ if(tabGridBtn && tabQuestionsBtn) {
 window.openUserProfile = async (uId) => {
     if(!uId || uId === 'null' || uId === 'undefined') return;
     currentlyViewingProfileId = uId;
-    const userProfileModal = document.getElementById('user-profile-modal');
-    showSimpleModal(userProfileModal);
+    openSideModal('user-profile-modal', 'user-profile-panel');
     
     if(tabGridBtn) tabGridBtn.click();
 
@@ -1057,7 +1060,7 @@ window.openUserProfile = async (uId) => {
             if(messageUserBtn) {
                 messageUserBtn.classList.remove('tw-modal-hidden');
                 messageUserBtn.onclick = () => {
-                    hideSimpleModal(userProfileModal);
+                    closeSideModal('user-profile-modal', 'user-profile-panel');
                     openChat(uId, user.ad_soyad, userAvatar);
                 };
             }
@@ -1107,7 +1110,7 @@ document.addEventListener('click', async (e) => {
 });
 
 const closeUserProfileBtn = document.getElementById('close-user-profile');
-if(closeUserProfileBtn) closeUserProfileBtn.addEventListener('click', () => hideSimpleModal(document.getElementById('user-profile-modal')));
+if(closeUserProfileBtn) closeUserProfileBtn.addEventListener('click', () => closeSideModal('user-profile-modal', 'user-profile-panel'));
 
 const followBtnEl = document.getElementById('follow-btn');
 if(followBtnEl) {
@@ -1134,8 +1137,7 @@ if(unfollowBtnEl) {
 }
 
 window.openSinglePost = async (postId) => {
-    const singlePostModal = document.getElementById('single-post-modal');
-    showSimpleModal(singlePostModal);
+    openSideModal('single-post-modal', 'single-post-panel');
     const singlePostContainer = document.getElementById('single-post-container');
     if(singlePostContainer) singlePostContainer.innerHTML = '<p class="text-center mt-20 text-slate-400"><i class="fa-solid fa-spinner fa-spin text-3xl mb-2"></i><br>Yükleniyor...</p>';
     try {
@@ -1144,7 +1146,9 @@ window.openSinglePost = async (postId) => {
     } catch (e) {}
 };
 const closeSinglePostBtn = document.getElementById('close-single-post');
-if(closeSinglePostBtn) closeSinglePostBtn.addEventListener('click', () => hideSimpleModal(document.getElementById('single-post-modal')));
+if(closeSinglePostBtn) closeSinglePostBtn.addEventListener('click', () => closeSideModal('single-post-modal', 'single-post-panel'));
 
-// Başlangıç
+// Başlangıç Yüklemeleri (Sadece varsa çalıştır)
+if(typeof fetchApprovedReviews === "function") fetchApprovedReviews();
 checkSession();
+
