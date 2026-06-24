@@ -10,17 +10,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <script>
-        window.tailwind = { config: { corePlugins: { preflight: false } } };
-    </script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            corePlugins: { preflight: false }
+        }
+    </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
         .tw-modal-hidden { display: none !important; }
         .avatar-upload:hover .avatar-overlay { opacity: 1; }
         button { border: none; background: transparent; outline: none; cursor: pointer; font-family: inherit; }
-        /* Arka plan kaymasını engellemek için JS ile body'ye eklenecek class */
         .no-scroll { overflow: hidden !important; height: 100vh !important; }
     </style>
     
@@ -202,7 +204,6 @@
                         <i class="fa-solid fa-user"></i> <span class="hidden sm:inline-block" data-tr="Giriş / Kayıt" data-en="Login / Register">Giriş / Kayıt</span>
                     </button>
                 </div>
-                
                 <div class="mobile-menu-btn" id="mobile-menu-btn">
                     <i class="fa-solid fa-bars"></i>
                 </div>
@@ -625,3 +626,4 @@
     <script type="module" src="app.js"></script>
 </body>
 </html>
+
