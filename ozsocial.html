@@ -25,22 +25,11 @@
         .no-scroll { overflow: hidden !important; height: 100vh !important; touch-action: none; }
         .swal2-container { z-index: 9999 !important; }
         
-        /* Çift Tıklama Animasyonları */
-        @keyframes pop {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-            50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
-        }
+        @keyframes pop { 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; } 50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 0; } }
         .heart-pop { animation: pop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        
-        @keyframes chatHeartBounce {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.4); }
-            100% { transform: scale(1); }
-        }
+        @keyframes chatHeartBounce { 0% { transform: scale(0); } 50% { transform: scale(1.4); } 100% { transform: scale(1); } }
         .chat-heart-anim { animation: chatHeartBounce 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         
-        /* Reels Tarzı Video Oynatıcı Kontrolleri */
         .reels-video-container { position: relative; width: 100%; max-height: 85vh; background: #000; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         .reels-video { width: 100%; max-height: 85vh; object-fit: contain; cursor: pointer; }
         .reels-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 64px; height: 64px; background: rgba(0,0,0,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem; backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
@@ -48,17 +37,16 @@
         .reels-mute-btn:hover { background: rgba(0,0,0,0.8); transform: scale(1.1); }
         .reels-video.paused ~ .reels-play-btn { opacity: 1; }
         
-        /* Galeri Modalı Animasyonları */
         @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .gallery-content { animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
-        /* Modern Gradient & UI İnce Ayarlar */
         .premium-shadow { box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
         .premium-border { border: 1px solid rgba(0,0,0,0.06); }
     </style>
 </head>
 <body class="text-slate-800 antialiased pb-20 selection:bg-blue-100 selection:text-blue-900">
 
+    <!-- ÜST NAVBAR -->
     <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-40 border-b border-slate-100">
         <div class="max-w-2xl mx-auto px-4 py-3 flex justify-between items-center">
             <h1 class="text-2xl font-extrabold tracking-tight text-slate-900 flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
@@ -73,18 +61,20 @@
         </div>
     </header>
 
+    <!-- ANA İÇERİK (Feed) -->
     <main class="max-w-2xl mx-auto p-4 space-y-6">
         <div class="bg-transparent p-0 rounded-2xl">
+            <!-- Kategoriler -->
             <div class="flex gap-2 mb-6 overflow-x-auto hide-scrollbar pb-1">
                 <button class="feed-filter active px-5 py-2 rounded-full bg-slate-900 text-white text-[13px] font-bold transition-colors border-none outline-none shadow-md" data-filter="all">Tümü</button>
                 <button class="feed-filter px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-[13px] font-bold transition-colors shadow-sm outline-none" data-filter="soru">Sorular</button>
                 <button class="feed-filter px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-[13px] font-bold transition-colors shadow-sm outline-none" data-filter="medya">Medya & Reels</button>
             </div>
-
             <div id="feed-list" class="space-y-6"></div>
         </div>
     </main>
 
+    <!-- ALT NAVİGASYON BARI -->
     <nav class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-slate-200 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
         <div class="max-w-2xl mx-auto flex justify-around items-center px-4 py-2.5">
             <button id="bottom-home-btn" class="text-slate-800 text-[26px] transition-transform hover:scale-110 active:scale-95 border-none outline-none bg-transparent p-2" onclick="window.scrollTo({top:0, behavior:'smooth'})"><i class="fa-solid fa-house"></i></button>
@@ -100,30 +90,35 @@
         </div>
     </nav>
 
-    <div id="gallery-modal" class="fixed inset-0 bg-black/95 z-[3000] tw-modal-hidden flex items-center justify-center backdrop-blur-md transition-opacity" onclick="if(event.target === this) closeSideModal('gallery-modal', 'gallery-panel')">
+    <!-- TAM EKRAN FOTOĞRAF GALERİSİ MODALI Z-[1090] -->
+    <div id="gallery-modal" class="fixed inset-0 bg-black/95 z-[1090] tw-modal-hidden flex items-center justify-center backdrop-blur-md transition-opacity" onclick="if(event.target === this) closeSideModal('gallery-modal', 'gallery-panel')">
         <button onclick="closeSideModal('gallery-modal', 'gallery-panel')" class="absolute top-5 right-5 text-white text-3xl hover:text-red-500 transition-colors z-50 border-none bg-transparent outline-none"><i class="fa-solid fa-xmark"></i></button>
         <div id="gallery-panel" class="w-full h-full p-2 flex items-center justify-center transform transition-transform duration-300 scale-95 gallery-content">
             <img id="gallery-image" src="" class="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl transition-transform duration-300 select-none" style="touch-action: pan-y pinch-zoom;">
         </div>
     </div>
 
-    <div id="search-modal" class="fixed inset-0 w-full h-[100dvh] bg-white z-[2000] tw-modal-hidden flex-col transition-transform transform translate-x-full duration-300">
-        <div class="flex items-center px-4 py-3 border-b border-slate-100 bg-white sticky top-0 z-10 shadow-sm">
-            <button onclick="closeSideModal('search-modal', 'search-modal')" class="text-slate-800 text-[22px] mr-4 border-none bg-transparent outline-none active:scale-95"><i class="fa-solid fa-arrow-left"></i></button>
-            <div class="flex-1 relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
-                <input type="text" id="user-search-input" class="w-full pl-11 pr-4 py-2.5 bg-slate-100 border border-transparent rounded-xl text-[15px] focus:outline-none focus:border-slate-300 focus:bg-white transition-all" placeholder="Kişi ara..." autocomplete="off">
+    <!-- ARAMA MODALI Z-[1000] -->
+    <div id="search-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-100 z-[1000] tw-modal-hidden flex-col">
+        <div id="search-modal-panel" class="max-w-2xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
+            <div class="flex items-center px-4 py-3 border-b border-slate-100 bg-white sticky top-0 z-10 shadow-sm">
+                <button onclick="closeSideModal('search-modal', 'search-modal-panel')" class="text-slate-800 text-[22px] mr-4 border-none bg-transparent outline-none active:scale-95"><i class="fa-solid fa-arrow-left"></i></button>
+                <div class="flex-1 relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="user-search-input" class="w-full pl-11 pr-4 py-2.5 bg-slate-100 border border-transparent rounded-xl text-[15px] focus:outline-none focus:border-slate-300 focus:bg-white transition-all" placeholder="Kişi ara..." autocomplete="off">
+                </div>
             </div>
-        </div>
-        <div id="search-results" class="flex-1 overflow-y-auto p-4 space-y-2 bg-white">
-            <div class="flex flex-col items-center justify-center h-40 text-slate-400">
-                <i class="fa-solid fa-magnifying-glass text-4xl mb-3 opacity-50"></i>
-                <p class="text-[14px] font-medium">Aramak istediğiniz kişinin adını yazın.</p>
+            <div id="search-results" class="flex-1 overflow-y-auto p-4 space-y-2 bg-white">
+                <div class="flex flex-col items-center justify-center h-40 text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass text-4xl mb-3 opacity-50"></i>
+                    <p class="text-[14px] font-medium">Aramak istediğiniz kişinin adını yazın.</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="create-post-modal" class="fixed inset-0 bg-slate-900/70 z-[2000] tw-modal-hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) { this.classList.add('tw-modal-hidden'); document.getElementById('create-post-form').reset(); document.getElementById('media-upload-container').classList.add('tw-modal-hidden'); document.body.classList.remove('no-scroll'); }">
+    <!-- GÖNDERİ OLUŞTURMA MODALI Z-[1010] (Overlay'li Mod) -->
+    <div id="create-post-modal" class="fixed inset-0 bg-slate-900/70 z-[1010] tw-modal-hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) { this.classList.add('tw-modal-hidden'); document.getElementById('create-post-form').reset(); document.getElementById('media-upload-container').classList.add('tw-modal-hidden'); document.body.classList.remove('no-scroll'); }">
         <div class="bg-white rounded-t-[30px] sm:rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl transform transition-transform translate-y-full sm:translate-y-0 relative z-10" id="create-post-panel" style="transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
             <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-20">
                 <h3 class="font-extrabold text-slate-900 text-lg flex items-center gap-2">Yeni Paylaşım</h3>
@@ -140,22 +135,22 @@
                         <input type="radio" name="post_type" value="medya" class="peer hidden">
                         <div class="text-center py-2.5 rounded-lg text-[14px] font-bold text-slate-500 peer-checked:text-slate-900 transition-colors">Medya / Reels</div>
                     </label>
-                    <div class="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-lg shadow-sm transition-transform duration-300 z-0" id="type-slider"></div>
                 </div>
 
                 <div id="media-upload-container" class="tw-modal-hidden animate-fade-in space-y-3">
                     <label class="block text-[13px] font-bold text-slate-800 uppercase tracking-wide">İçerik Seç</label>
                     <div class="grid grid-cols-2 gap-3">
+                        <!-- KAMERA DÜZELTİLDİ: Sadece image/* ile galeriden ayrıştırıldı -->
                         <div class="relative border-2 border-slate-200 rounded-2xl p-5 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all group active:scale-95 shadow-sm" onclick="document.getElementById('post-media-camera').click()">
                             <div class="w-12 h-12 bg-slate-100 group-hover:bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm transition-colors"><i class="fa-solid fa-camera text-xl text-slate-700 group-hover:text-blue-600"></i></div>
                             <div class="text-[13px] font-bold text-slate-800">Kamerayı Aç</div>
-                            <div class="text-[10px] text-slate-400 mt-1 font-medium">Fotoğraf / Video Çek</div>
-                            <input type="file" id="post-media-camera" accept="image/*,video/*" capture="environment" class="hidden">
+                            <div class="text-[10px] text-slate-400 mt-1 font-medium">Anlık Fotoğraf Çek</div>
+                            <input type="file" id="post-media-camera" accept="image/*" capture="environment" class="hidden">
                         </div>
                         <div class="relative border-2 border-slate-200 rounded-2xl p-5 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all group active:scale-95 shadow-sm" onclick="document.getElementById('post-media-gallery').click()">
                             <div class="w-12 h-12 bg-slate-100 group-hover:bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm transition-colors"><i class="fa-solid fa-images text-xl text-slate-700 group-hover:text-blue-600"></i></div>
                             <div class="text-[13px] font-bold text-slate-800">Galeriden Seç</div>
-                            <div class="text-[10px] text-slate-400 mt-1 font-medium">Dosyalara Göz At</div>
+                            <div class="text-[10px] text-slate-400 mt-1 font-medium">Dosya / Video Yükle</div>
                             <input type="file" id="post-media-gallery" accept="image/*,video/*" class="hidden">
                         </div>
                     </div>
@@ -171,7 +166,7 @@
 
                 <div>
                     <label class="block text-[13px] font-bold text-slate-800 uppercase tracking-wide mb-2">Açıklama</label>
-                    <textarea id="post-text" required rows="4" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-slate-800 focus:bg-white resize-none transition-all shadow-inner text-[15px]" placeholder="Düşüncelerini veya sorunu buraya yaz..."></textarea>
+                    <textarea id="post-text" required rows="4" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-slate-800 focus:bg-white resize-none transition-all shadow-inner text-[15px]" placeholder="Düşüncelerini buraya yaz..."></textarea>
                 </div>
                 
                 <button type="submit" id="submit-post-btn" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-4 rounded-xl shadow-lg transition-transform active:scale-95 border-none outline-none">Paylaş</button>
@@ -179,86 +174,20 @@
         </div>
     </div>
 
-    <div id="edit-profile-modal" class="fixed inset-0 bg-slate-900/70 z-[2500] tw-modal-hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) { this.classList.add('tw-modal-hidden'); document.body.classList.remove('no-scroll'); }">
-        <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl transform transition-transform scale-100 relative z-10">
-            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
-                <h3 class="font-extrabold text-slate-900 text-lg">Profili Düzenle</h3>
-                <button id="cancel-edit-btn-top" class="text-slate-400 hover:text-slate-800 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 transition-colors border-none outline-none"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form id="edit-profile-form" class="p-6">
-                <div class="flex flex-col gap-5">
-                    <div class="flex justify-center">
-                        <label for="edit-avatar" class="avatar-upload relative cursor-pointer group">
-                            <div id="edit-avatar-preview" class="w-24 h-24 rounded-full bg-white border-4 border-slate-50 flex items-center justify-center overflow-hidden transition-all shadow-md group-hover:shadow-lg group-hover:border-slate-200">
-                                <img id="edit-avatar-img" src="https://via.placeholder.com/150" class="w-full h-full object-cover">
-                            </div>
-                            <div class="avatar-overlay absolute inset-0 bg-black/50 rounded-full opacity-0 flex flex-col items-center justify-center transition-opacity backdrop-blur-[2px]">
-                                <i class="fa-solid fa-camera text-white mb-1 text-lg"></i>
-                            </div>
-                            <input type="file" id="edit-avatar" accept="image/png, image/jpeg, image/jpg" class="hidden">
-                        </label>
-                    </div>
-                    <div class="flex-1 flex flex-col justify-center gap-4">
-                        <div>
-                            <label class="block text-[12px] font-bold text-slate-500 uppercase tracking-wide mb-1">İsim Soyisim</label>
-                            <input type="text" id="edit-name" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800 text-[15px] font-semibold text-slate-900 transition-colors">
-                        </div>
-                        <div>
-                            <label class="block text-[12px] font-bold text-slate-500 uppercase tracking-wide mb-1">Biyografi</label>
-                            <textarea id="edit-bio" rows="3" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800 text-[14px] resize-none transition-colors"></textarea>
-                        </div>
-                        
-                        <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-xl mt-1">
-                            <div>
-                                <h4 class="text-[14px] font-bold text-slate-800"><i class="fa-solid fa-lock text-slate-400 mr-1"></i> Gizli Hesap</h4>
-                                <p class="text-[11px] text-slate-500 mt-0.5">Sadece seni takip edenler görebilir.</p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="privacy-toggle" class="sr-only peer">
-                                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-slate-900"></div>
-                            </label>
-                        </div>
-
-                        <div class="flex gap-3 mt-3">
-                            <button type="button" id="cancel-edit-btn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[15px] font-bold py-3.5 rounded-xl transition-colors border-none outline-none">İptal</button>
-                            <button type="submit" id="save-edit-btn" class="flex-1 bg-slate-900 hover:bg-black text-white text-[15px] font-bold py-3.5 rounded-xl transition-all shadow-md active:scale-95 border-none outline-none">Kaydet</button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="notification-modal" class="fixed inset-0 bg-slate-900/60 z-[2000] tw-modal-hidden flex justify-end p-0 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) closeSideModal('notification-modal', 'notification-panel')">
-        <div id="notification-panel" class="bg-white w-full max-w-sm h-full shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative z-10">
+    <!-- ZENGİN BİLDİRİMLER MODALI Z-[1020] -->
+    <div id="notification-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-100 z-[1020] tw-modal-hidden flex-col">
+        <div id="notification-panel" class="max-w-2xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-20">
                 <h3 class="font-extrabold text-slate-900 text-xl">Bildirimler</h3>
                 <button onclick="closeSideModal('notification-modal', 'notification-panel')" class="text-slate-800 text-xl hover:bg-slate-100 w-8 h-8 flex items-center justify-center rounded-full transition-colors border-none bg-transparent outline-none"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="notification-list" class="flex-1 overflow-y-auto p-2 bg-white hide-scrollbar">
-                </div>
+            <div id="notification-list" class="flex-1 overflow-y-auto p-2 bg-white hide-scrollbar"></div>
         </div>
     </div>
 
-    <div id="activity-modal" class="fixed inset-0 bg-slate-900/60 z-[2000] tw-modal-hidden flex justify-end p-0 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) closeSideModal('activity-modal', 'activity-panel')">
-        <div id="activity-panel" class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative z-10">
-            <div class="flex items-center px-4 py-3 border-b border-slate-100 bg-white sticky top-0 z-20 shadow-sm">
-                <button onclick="closeSideModal('activity-modal', 'activity-panel')" class="text-slate-800 text-[22px] mr-4 border-none bg-transparent outline-none active:scale-95"><i class="fa-solid fa-arrow-left"></i></button>
-                <h2 class="text-lg font-extrabold text-slate-900 flex-1">Hareketlerin</h2>
-            </div>
-            
-            <div class="flex border-b border-slate-200 bg-white sticky top-[53px] z-10">
-                <button id="tab-activity-likes" class="flex-1 py-3 border-0 border-b-[3px] border-slate-900 bg-transparent text-slate-900 font-bold text-[14px] flex justify-center transition-all outline-none">Beğeniler</button>
-                <button id="tab-activity-comments" class="flex-1 py-3 border-0 border-b-[3px] border-transparent bg-transparent text-slate-400 font-bold text-[14px] flex justify-center transition-all outline-none">Yorumlar</button>
-            </div>
-
-            <div id="activity-content" class="flex-1 overflow-y-auto p-2 bg-slate-50 hide-scrollbar grid grid-cols-3 gap-1">
-                </div>
-        </div>
-    </div>
-
-    <div id="messages-list-modal" class="fixed inset-0 bg-slate-900/60 z-[2000] tw-modal-hidden flex justify-end p-0 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) closeSideModal('messages-list-modal', 'messages-list-panel')">
-        <div id="messages-list-panel" class="bg-white w-full max-w-sm h-full shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative z-10">
+    <!-- MESAJLAR LİSTESİ MODALI Z-[1030] -->
+    <div id="messages-list-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-100 z-[1030] tw-modal-hidden flex-col">
+        <div id="messages-list-panel" class="max-w-2xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-20">
                 <h3 class="font-extrabold text-slate-900 text-xl">Mesajlar</h3>
                 <button onclick="closeSideModal('messages-list-modal', 'messages-list-panel')" class="text-slate-800 text-xl hover:bg-slate-100 w-8 h-8 flex items-center justify-center rounded-full transition-colors border-none bg-transparent outline-none"><i class="fa-solid fa-xmark"></i></button>
@@ -267,46 +196,14 @@
         </div>
     </div>
 
-    <div id="dm-modal" class="fixed inset-0 bg-slate-900/60 z-[2100] tw-modal-hidden flex justify-end p-0 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) closeSideModal('dm-modal', 'dm-panel')">
-        <div id="dm-panel" class="bg-slate-50 w-full max-w-md h-full shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative z-10">
-            <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-20 shadow-sm">
-                <button onclick="closeSideModal('dm-modal', 'dm-panel')" class="text-slate-800 text-[22px] mr-4 border-none bg-transparent outline-none active:scale-95"><i class="fa-solid fa-arrow-left"></i></button>
-                <img id="chat-user-avatar" src="" class="w-9 h-9 rounded-full object-cover mr-3 cursor-pointer user-profile-trigger border border-slate-100 shadow-sm">
-                <div class="flex-1"><h2 id="chat-user-name" class="text-[15px] font-bold text-slate-800 cursor-pointer user-profile-trigger hover:underline">İsim</h2></div>
-            </div>
-            <div id="chat-history" class="flex-1 overflow-y-auto p-4 flex flex-col pb-[90px] bg-slate-50 relative hide-scrollbar"></div>
-            <div id="chat-typing-indicator" class="absolute bottom-[80px] left-4 hidden bg-white border border-slate-200 rounded-2xl rounded-bl-sm shadow-sm px-4 py-3 flex items-center gap-1.5 z-10 transition-all">
-                <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span>
-                <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></span>
-                <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></span>
-            </div>
-            <form id="dm-form" class="p-2 bg-white border-t border-slate-200 flex gap-2 items-center absolute bottom-0 left-0 w-full z-20 shadow-[0_-4px_10px_rgba(0,0,0,0.03)] pb-safe">
-                <label class="cursor-pointer text-slate-800 hover:text-blue-600 transition-colors p-2 active:scale-95">
-                    <i class="fa-solid fa-image text-[24px]"></i>
-                    <input type="file" id="chat-media-input" accept="image/*" class="hidden">
-                </label>
-                <input type="text" id="dm-input" autocomplete="off" class="flex-1 px-4 py-3 bg-slate-100 border border-transparent rounded-full text-[14px] focus:outline-none focus:border-slate-300 focus:bg-white transition-colors" placeholder="Mesaj yaz...">
-                <button type="submit" id="send-msg-btn" class="w-[42px] h-[42px] bg-slate-900 hover:bg-black text-white rounded-full flex items-center justify-center transition-transform active:scale-95 shadow-sm border-none outline-none"><i class="fa-solid fa-paper-plane text-[13px] ml-[-2px]"></i></button>
-            </form>
-        </div>
-    </div>
-
-    <div id="follow-list-modal" class="fixed inset-0 bg-slate-900/60 z-[2200] tw-modal-hidden flex justify-end p-0 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) closeSideModal('follow-list-modal', 'follow-list-panel')">
-        <div id="follow-list-panel" class="bg-white w-full max-w-sm h-full shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative z-10">
-            <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
-                <h3 id="follow-list-title" class="font-extrabold text-slate-900 text-lg">Takipçiler</h3>
-                <button onclick="closeSideModal('follow-list-modal', 'follow-list-panel')" class="text-slate-800 text-xl hover:bg-slate-100 w-8 h-8 flex items-center justify-center rounded-full transition-colors border-none bg-transparent outline-none"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="follow-list-content" class="flex-1 overflow-y-auto p-2 bg-white hide-scrollbar">
-                </div>
-        </div>
-    </div>
-
-    <div id="user-profile-modal" class="fixed inset-0 bg-slate-900/60 z-[2000] tw-modal-hidden flex justify-end p-0 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) closeSideModal('user-profile-modal', 'user-profile-panel')">
-        <div id="user-profile-panel" class="bg-white w-full max-w-md h-[100dvh] shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative z-10">
+    <!-- PROFİL MODALI Z-[1040] (ANA UYGULAMA MANTIĞI) -->
+    <div id="user-profile-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-100 z-[1040] tw-modal-hidden flex-col">
+        <div id="user-profile-panel" class="max-w-2xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
+            <!-- Profil Üst Barı -->
             <div class="flex items-center px-4 py-3 border-b border-slate-100 bg-white sticky top-0 z-20">
                 <button onclick="closeSideModal('user-profile-modal', 'user-profile-panel')" class="text-slate-900 text-[22px] mr-4 border-none bg-transparent outline-none active:scale-95"><i class="fa-solid fa-arrow-left"></i></button>
                 <h2 id="up-header-name" class="text-lg font-extrabold text-slate-900 flex-1 truncate">Kullanıcı</h2>
+                <!-- Sağ Üst Menü İkonu -->
                 <div class="relative group" id="my-profile-menu-container" style="display:none;">
                     <button class="text-slate-900 text-[24px] border-none bg-transparent outline-none p-1 active:scale-95"><i class="fa-solid fa-bars"></i></button>
                     <div class="absolute right-0 mt-2 w-52 bg-white border border-slate-100 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.08)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-30 overflow-hidden py-1">
@@ -359,13 +256,118 @@
         </div>
     </div>
 
-    <div id="single-post-modal" class="fixed inset-0 bg-slate-900/60 z-[2300] tw-modal-hidden flex justify-end p-0 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) closeSideModal('single-post-modal', 'single-post-panel')">
-        <div id="single-post-panel" class="bg-slate-50 w-full max-w-md h-[100dvh] shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative z-10">
+    <!-- HAREKETLERİN (ACTIVITY) MODALI Z-[1050] -->
+    <div id="activity-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-100 z-[1050] tw-modal-hidden flex-col">
+        <div id="activity-panel" class="max-w-2xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
+            <div class="flex items-center px-4 py-3 border-b border-slate-100 bg-white sticky top-0 z-20 shadow-sm">
+                <button onclick="closeSideModal('activity-modal', 'activity-panel')" class="text-slate-800 text-[22px] mr-4 border-none bg-transparent outline-none active:scale-95"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-lg font-extrabold text-slate-900 flex-1">Hareketlerin</h2>
+            </div>
+            
+            <div class="flex border-b border-slate-200 bg-white sticky top-[53px] z-10">
+                <button id="tab-activity-likes" class="flex-1 py-3 border-0 border-b-[3px] border-slate-900 bg-transparent text-slate-900 font-bold text-[14px] flex justify-center transition-all outline-none">Beğeniler</button>
+                <button id="tab-activity-comments" class="flex-1 py-3 border-0 border-b-[3px] border-transparent bg-transparent text-slate-400 font-bold text-[14px] flex justify-center transition-all outline-none">Yorumlar</button>
+            </div>
+
+            <div id="activity-content" class="flex-1 overflow-y-auto p-2 bg-slate-50 hide-scrollbar grid grid-cols-3 gap-1"></div>
+        </div>
+    </div>
+
+    <!-- TAKİP LİSTESİ MODALI Z-[1050] -->
+    <div id="follow-list-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-100 z-[1050] tw-modal-hidden flex-col">
+        <div id="follow-list-panel" class="max-w-2xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
+            <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
+                <button onclick="closeSideModal('follow-list-modal', 'follow-list-panel')" class="text-slate-800 text-[22px] mr-4 border-none bg-transparent outline-none active:scale-95"><i class="fa-solid fa-arrow-left"></i></button>
+                <h3 id="follow-list-title" class="font-extrabold text-slate-900 text-lg flex-1">Takipçiler</h3>
+            </div>
+            <div id="follow-list-content" class="flex-1 overflow-y-auto p-2 bg-white hide-scrollbar"></div>
+        </div>
+    </div>
+
+    <!-- DM (MESAJLAŞMA) MODALI Z-[1060] -->
+    <div id="dm-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-100 z-[1060] tw-modal-hidden flex-col">
+        <div id="dm-panel" class="max-w-2xl mx-auto w-full h-full bg-slate-50 shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
+            <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-20 shadow-sm">
+                <button onclick="closeSideModal('dm-modal', 'dm-panel')" class="text-slate-800 text-[22px] mr-4 border-none bg-transparent outline-none active:scale-95"><i class="fa-solid fa-arrow-left"></i></button>
+                <img id="chat-user-avatar" src="" class="w-9 h-9 rounded-full object-cover mr-3 cursor-pointer user-profile-trigger border border-slate-100 shadow-sm">
+                <div class="flex-1"><h2 id="chat-user-name" class="text-[15px] font-bold text-slate-800 cursor-pointer user-profile-trigger hover:underline">İsim</h2></div>
+            </div>
+            <div id="chat-history" class="flex-1 overflow-y-auto p-4 flex flex-col pb-[90px] bg-slate-50 relative hide-scrollbar"></div>
+            <div id="chat-typing-indicator" class="absolute bottom-[80px] left-4 hidden bg-white border border-slate-200 rounded-2xl rounded-bl-sm shadow-sm px-4 py-3 flex items-center gap-1.5 z-10 transition-all">
+                <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span>
+                <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></span>
+                <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></span>
+            </div>
+            <form id="dm-form" class="p-2 bg-white border-t border-slate-200 flex gap-2 items-center absolute bottom-0 left-0 w-full z-20 shadow-[0_-4px_10px_rgba(0,0,0,0.03)] pb-safe">
+                <label class="cursor-pointer text-slate-800 hover:text-blue-600 transition-colors p-2 active:scale-95">
+                    <i class="fa-solid fa-image text-[24px]"></i>
+                    <input type="file" id="chat-media-input" accept="image/*" class="hidden">
+                </label>
+                <input type="text" id="dm-input" autocomplete="off" class="flex-1 px-4 py-3 bg-slate-100 border border-transparent rounded-full text-[14px] focus:outline-none focus:border-slate-300 focus:bg-white transition-colors" placeholder="Mesaj yaz...">
+                <button type="submit" id="send-msg-btn" class="w-[42px] h-[42px] bg-slate-900 hover:bg-black text-white rounded-full flex items-center justify-center transition-transform active:scale-95 shadow-sm border-none outline-none"><i class="fa-solid fa-paper-plane text-[13px] ml-[-2px]"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- TEKİL GÖNDERİ MODALI Z-[1070] -->
+    <div id="single-post-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-100 z-[1070] tw-modal-hidden flex-col">
+        <div id="single-post-panel" class="max-w-2xl mx-auto w-full h-full bg-slate-50 shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-10 shadow-sm">
                 <button onclick="closeSideModal('single-post-modal', 'single-post-panel')" class="text-slate-900 text-[22px] mr-4 border-none bg-transparent outline-none active:scale-95"><i class="fa-solid fa-arrow-left"></i></button>
                 <h2 class="text-lg font-extrabold text-slate-900 flex-1">Gönderi</h2>
             </div>
             <div id="single-post-container" class="flex-1 overflow-y-auto p-4 space-y-6 pb-20 hide-scrollbar"></div>
+        </div>
+    </div>
+
+    <!-- PROFİLİ DÜZENLE MODALI Z-[1080] (Overlay'li) -->
+    <div id="edit-profile-modal" class="fixed inset-0 bg-slate-900/70 z-[1080] tw-modal-hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity" onclick="if(event.target === this) { this.classList.add('tw-modal-hidden'); document.body.classList.remove('no-scroll'); }">
+        <div class="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl transform transition-transform scale-100 relative z-10">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
+                <h3 class="font-extrabold text-slate-900 text-lg">Profili Düzenle</h3>
+                <button id="cancel-edit-btn-top" class="text-slate-400 hover:text-slate-800 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 transition-colors border-none outline-none"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="edit-profile-form" class="p-6">
+                <div class="flex flex-col gap-5">
+                    <div class="flex justify-center">
+                        <label for="edit-avatar" class="avatar-upload relative cursor-pointer group">
+                            <div id="edit-avatar-preview" class="w-24 h-24 rounded-full bg-white border-4 border-slate-50 flex items-center justify-center overflow-hidden transition-all shadow-md group-hover:shadow-lg group-hover:border-slate-200">
+                                <img id="edit-avatar-img" src="https://via.placeholder.com/150" class="w-full h-full object-cover">
+                            </div>
+                            <div class="avatar-overlay absolute inset-0 bg-black/50 rounded-full opacity-0 flex flex-col items-center justify-center transition-opacity backdrop-blur-[2px]">
+                                <i class="fa-solid fa-camera text-white mb-1 text-lg"></i>
+                            </div>
+                            <input type="file" id="edit-avatar" accept="image/png, image/jpeg, image/jpg" class="hidden">
+                        </label>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-center gap-4">
+                        <div>
+                            <label class="block text-[12px] font-bold text-slate-500 uppercase tracking-wide mb-1">İsim Soyisim</label>
+                            <input type="text" id="edit-name" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800 text-[15px] font-semibold text-slate-900 transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-[12px] font-bold text-slate-500 uppercase tracking-wide mb-1">Biyografi</label>
+                            <textarea id="edit-bio" rows="3" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800 text-[14px] resize-none transition-colors"></textarea>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-xl mt-1">
+                            <div>
+                                <h4 class="text-[14px] font-bold text-slate-800"><i class="fa-solid fa-lock text-slate-400 mr-1"></i> Gizli Hesap</h4>
+                                <p class="text-[11px] text-slate-500 mt-0.5">Sadece seni takip edenler görebilir.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="privacy-toggle" class="sr-only peer">
+                                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-slate-900"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex gap-3 mt-3">
+                            <button type="button" id="cancel-edit-btn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[15px] font-bold py-3.5 rounded-xl transition-colors border-none outline-none">İptal</button>
+                            <button type="submit" id="save-edit-btn" class="flex-1 bg-slate-900 hover:bg-black text-white text-[15px] font-bold py-3.5 rounded-xl transition-all shadow-md active:scale-95 border-none outline-none">Kaydet</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
