@@ -16,7 +16,7 @@ let typingTimeout;
 let userDataGlobal = null;
 
 // ============================================
-// YARDIMCI MODAL FONKSİYONLARI
+// YARDIMCI MODAL FONKSİYONLARI VE GALERİ
 // ============================================
 window.openSideModal = function(wrapperId, panelId) {
     const wrapper = document.getElementById(wrapperId);
@@ -24,7 +24,7 @@ window.openSideModal = function(wrapperId, panelId) {
     if(wrapper && panel) {
         document.body.style.overflow = 'hidden';
         wrapper.classList.remove('tw-modal-hidden');
-        setTimeout(() => panel.classList.remove('translate-x-full'), 10);
+        setTimeout(() => panel.classList.remove('translate-x-full', 'scale-95'), 10);
     }
 }
 
@@ -32,7 +32,7 @@ window.closeSideModal = function(wrapperId, panelId) {
     const wrapper = document.getElementById(wrapperId);
     const panel = document.getElementById(panelId);
     if(wrapper && panel) {
-        panel.classList.add('translate-x-full');
+        panel.classList.add('translate-x-full', 'scale-95');
         setTimeout(() => {
             wrapper.classList.add('tw-modal-hidden');
             document.body.style.overflow = '';
@@ -44,19 +44,64 @@ function showSimpleModal(modalEl) {
     if(modalEl) {
         document.body.style.overflow = 'hidden';
         modalEl.classList.remove('tw-modal-hidden');
-        setTimeout(() => modalEl.classList.remove('translate-x-full'), 10);
     }
 }
 
 function hideSimpleModal(modalEl) {
     if(modalEl) {
-        modalEl.classList.add('translate-x-full');
-        setTimeout(() => {
-            modalEl.classList.add('tw-modal-hidden');
-            document.body.style.overflow = '';
-        }, 300);
+        modalEl.classList.add('tw-modal-hidden');
+        document.body.style.overflow = '';
     }
 }
+
+window.openGallery = function(imgUrl) {
+    const imgEl = document.getElementById('gallery-image');
+    if(imgEl) {
+        imgEl.src = imgUrl;
+        openSideModal('gallery-modal', 'gallery-panel');
+    }
+}
+
+// ============================================
+// REELS VİDEO MOTORU & GÖRÜNTÜLENME TAKİBİ
+// ============================================
+window.togglePlay = function(container) {
+    const video = container.querySelector('video');
+    const playBtn = container.querySelector('.reels-play-btn');
+    if(video.paused) {
+        video.play();
+        video.classList.remove('paused', 'manually-paused');
+        playBtn.style.opacity = '0';
+    } else {
+        video.pause();
+        video.classList.add('paused', 'manually-paused');
+        playBtn.style.opacity = '1';
+    }
+};
+
+window.toggleMute = function(e, btn) {
+    e.stopPropagation();
+    const video = btn.previousElementSibling.previousElementSibling;
+    video.muted = !video.muted;
+    btn.innerHTML = video.muted ? '<i class="fa-solid fa-volume-xmark"></i>' : '<i class="fa-solid fa-volume-high"></i>';
+};
+
+// Videoların ekrana girince oynaması, çıkınca durması (IntersectionObserver)
+const reelsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        const video = entry.target;
+        const playBtn = video.nextElementSibling;
+        if(entry.isIntersecting) {
+            if(!video.classList.contains('manually-paused')) {
+                video.play().catch(e => console.log('Auto-play engellendi', e));
+                if(playBtn) playBtn.style.opacity = '0';
+            }
+        } else {
+            video.pause();
+            if(!video.classList.contains('manually-paused') && playBtn) playBtn.style.opacity = '1';
+        }
+    });
+}, { threshold: 0.5 });
 
 // ============================================
 // OTURUM (SESSION) VE YÖNLENDİRME
@@ -82,7 +127,7 @@ async function checkSession() {
     }
 }
 
-const handleLogout = async () => {
+window.handleLogout = async () => {
     if (realtimeChannel) supabase.removeChannel(realtimeChannel);
     if (chatBroadcastChannel) supabase.removeChannel(chatBroadcastChannel);
     await supabase.auth.signOut();
@@ -96,25 +141,7 @@ const bottomHomeBtn = document.getElementById('bottom-home-btn');
 if(bottomHomeBtn) bottomHomeBtn.addEventListener('click', () => { window.scrollTo({top:0, behavior:'smooth'}); });
 
 const bottomSearchBtn = document.getElementById('bottom-search-btn');
-if(bottomSearchBtn) bottomSearchBtn.addEventListener('click', () => { 
-    const searchModal = document.getElementById('search-modal');
-    if(searchModal) {
-        document.body.style.overflow = 'hidden';
-        searchModal.classList.remove('tw-modal-hidden');
-        setTimeout(() => searchModal.classList.remove('translate-x-full'), 10);
-    }
-});
-
-window.closeSearchModal = function() {
-    const searchModal = document.getElementById('search-modal');
-    if(searchModal) {
-        searchModal.classList.add('translate-x-full');
-        setTimeout(() => {
-            searchModal.classList.add('tw-modal-hidden');
-            document.body.style.overflow = '';
-        }, 300);
-    }
-}
+if(bottomSearchBtn) bottomSearchBtn.addEventListener('click', () => { openSideModal('search-modal', 'search-modal'); });
 
 const searchInput = document.getElementById('user-search-input');
 if(searchInput) {
@@ -132,7 +159,7 @@ if(searchInput) {
             users.forEach(u => {
                 const avatar = u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.ad_soyad || 'U')}`;
                 resDiv.insertAdjacentHTML('beforeend', `
-                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors user-profile-trigger" data-user-id="${u.id}" onclick="window.closeSearchModal()">
+                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors user-profile-trigger" data-user-id="${u.id}" onclick="closeSideModal('search-modal', 'search-modal')">
                         <img src="${avatar}" class="w-12 h-12 rounded-full object-cover border border-slate-200 pointer-events-none">
                         <div class="pointer-events-none">
                             <h4 class="font-bold text-slate-800 text-sm">${u.ad_soyad}</h4>
@@ -151,7 +178,16 @@ if(bottomAddBtn) bottomAddBtn.addEventListener('click', () => {
     if(createModal) {
         document.body.style.overflow = 'hidden';
         createModal.classList.remove('tw-modal-hidden');
+        setTimeout(() => document.getElementById('create-post-panel').classList.remove('translate-y-full'), 10);
     }
+});
+
+document.getElementById('close-post-modal')?.addEventListener('click', () => {
+    document.getElementById('create-post-panel').classList.add('translate-y-full');
+    setTimeout(() => {
+        document.getElementById('create-post-modal').classList.add('tw-modal-hidden');
+        document.body.style.overflow = '';
+    }, 300);
 });
 
 const bottomNotifBtn = document.getElementById('bottom-notif-btn');
@@ -166,7 +202,7 @@ if(bottomProfileBtn) bottomProfileBtn.addEventListener('click', () => {
 });
 
 // ============================================
-// DİĞER MODALLAR (Mesajlar / Profil Ayarları)
+// MODALLAR (Mesajlar / Profil Ayarları)
 // ============================================
 const messagesBtn = document.getElementById('messages-btn');
 if(messagesBtn) messagesBtn.addEventListener('click', () => {
@@ -174,27 +210,25 @@ if(messagesBtn) messagesBtn.addEventListener('click', () => {
     loadConversations();
 });
 
-const editProfileBtn = document.getElementById('up-edit-profile-btn');
-const cancelEditBtnTop = document.getElementById('cancel-edit-btn-top');
-const cancelEditBtn = document.getElementById('cancel-edit-btn');
-const editProfileModal = document.getElementById('edit-profile-modal');
-const editNameInput = document.getElementById('edit-name');
-const editBioInput = document.getElementById('edit-bio');
-const editAvatarImg = document.getElementById('edit-avatar-img');
-
-if(editProfileBtn) editProfileBtn.addEventListener('click', () => {
-    if(editProfileModal) showSimpleModal(editProfileModal);
-    if(editNameInput && userDataGlobal) editNameInput.value = userDataGlobal.ad_soyad || '';
-    if(editBioInput && userDataGlobal) editBioInput.value = userDataGlobal.biyografi || '';
-    if(editAvatarImg && userDataGlobal) editAvatarImg.src = userDataGlobal.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userDataGlobal.ad_soyad || 'U')}`;
-    selectedUpdateAvatarFile = null;
+// Profil Menüsü Butonları
+document.addEventListener('click', e => {
+    const editMenuBtn = e.target.closest('#menu-edit-btn');
+    if(editMenuBtn) {
+        const editProfileModal = document.getElementById('edit-profile-modal');
+        if(editProfileModal) showSimpleModal(editProfileModal);
+        if(document.getElementById('edit-name') && userDataGlobal) document.getElementById('edit-name').value = userDataGlobal.ad_soyad || '';
+        if(document.getElementById('edit-bio') && userDataGlobal) document.getElementById('edit-bio').value = userDataGlobal.biyografi || '';
+        if(document.getElementById('edit-avatar-img') && userDataGlobal) document.getElementById('edit-avatar-img').src = userDataGlobal.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userDataGlobal.ad_soyad || 'U')}`;
+        selectedUpdateAvatarFile = null;
+    }
+    const logoutMenuBtn = e.target.closest('#menu-logout-btn');
+    if(logoutMenuBtn) handleLogout();
 });
 
-if(cancelEditBtn) cancelEditBtn.addEventListener('click', () => { if(editProfileModal) hideSimpleModal(editProfileModal); });
-if(cancelEditBtnTop) cancelEditBtnTop.addEventListener('click', () => { if(editProfileModal) hideSimpleModal(editProfileModal); });
-
-const upLogoutBtn = document.getElementById('up-logout-btn');
-if(upLogoutBtn) upLogoutBtn.addEventListener('click', handleLogout);
+const cancelEditBtnTop = document.getElementById('cancel-edit-btn-top');
+const cancelEditBtn = document.getElementById('cancel-edit-btn');
+if(cancelEditBtn) cancelEditBtn.addEventListener('click', () => { hideSimpleModal(document.getElementById('edit-profile-modal')); });
+if(cancelEditBtnTop) cancelEditBtnTop.addEventListener('click', () => { hideSimpleModal(document.getElementById('edit-profile-modal')); });
 
 const editAvatarInput = document.getElementById('edit-avatar');
 if(editAvatarInput) {
@@ -203,7 +237,7 @@ if(editAvatarInput) {
         if (file) {
             selectedUpdateAvatarFile = file;
             const reader = new FileReader();
-            reader.onload = (e) => { if(editAvatarImg) editAvatarImg.src = e.target.result; };
+            reader.onload = (ev) => { document.getElementById('edit-avatar-img').src = ev.target.result; };
             reader.readAsDataURL(file);
         }
     });
@@ -223,11 +257,11 @@ if(editProfileForm) {
                 await supabase.storage.from('avatars').upload(fileName, selectedUpdateAvatarFile);
                 updatedAvatarUrl = supabase.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
             }
-            const updateData = { ad_soyad: editNameInput.value, biyografi: editBioInput.value };
+            const updateData = { ad_soyad: document.getElementById('edit-name').value, biyografi: document.getElementById('edit-bio').value };
             if (updatedAvatarUrl) updateData.avatar_url = updatedAvatarUrl;
             await supabase.from('uyeler').update(updateData).eq('id', currentUserSession.user.id);
             
-            if(editProfileModal) hideSimpleModal(editProfileModal);
+            hideSimpleModal(document.getElementById('edit-profile-modal'));
             window.location.reload(); 
         } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
         finally { btn.innerHTML = 'Kaydet'; btn.disabled = false; }
@@ -245,7 +279,11 @@ function setupRealtime() {
                 const { data: newPost } = await supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).eq('id', payload.new.id).single();
                 if (newPost && (currentFeedFilter === 'all' || currentFeedFilter === newPost.gonderi_tipi)) {
                     const feedList = document.getElementById('feed-list');
-                    if (feedList) feedList.insertAdjacentHTML('afterbegin', generatePostHTML(newPost, false));
+                    if (feedList) {
+                        feedList.insertAdjacentHTML('afterbegin', generatePostHTML(newPost, false));
+                        const newVideo = feedList.querySelector(`video[data-post-id="${newPost.id}"]`);
+                        if(newVideo) reelsObserver.observe(newVideo);
+                    }
                 }
             }
         })
@@ -311,7 +349,6 @@ function setupRealtime() {
     }
 }
 
-// --- Bildirimler ---
 async function checkNotificationsBadge() {
     if (!currentUserSession) return;
     const bottomNotifBadge = document.querySelector('#bottom-notif-btn #notification-badge');
@@ -341,7 +378,7 @@ async function loadNotifications() {
             const senderIdParam = notif.gonderen_id ? `'${notif.gonderen_id}'` : 'null';
 
             notificationList.insertAdjacentHTML('beforeend', `
-                <div class="p-3 rounded-xl flex items-start gap-3 relative cursor-pointer hover:bg-slate-100 bg-white border border-slate-100 ${notif.okundu ? '' : 'bg-blue-50/60'}" onclick="handleNotificationClick(${notif.id}, ${postIdParam}, ${senderIdParam})">
+                <div class="p-3 rounded-xl flex items-start gap-3 relative cursor-pointer hover:bg-slate-50 bg-white border border-slate-100 ${notif.okundu ? '' : 'bg-blue-50/60'}" onclick="handleNotificationClick(${notif.id}, ${postIdParam}, ${senderIdParam})">
                     <span class="absolute top-3 right-3 w-2 h-2 bg-blue-500 rounded-full ${dotClass}"></span>
                     <img src="${avatar}" class="w-10 h-10 rounded-full object-cover flex-shrink-0">
                     <div class="flex-1 text-sm text-slate-800"><span class="font-bold">${sender.ad_soyad}</span> ${notif.mesaj}</div>
@@ -447,7 +484,7 @@ function appendMessageToUI(msg, isMine) {
     if (!dmHistory) return;
 
     const timeStr = new Date(msg.created_at).toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
-    const mediaHtml = msg.medya_url ? `<img src="${msg.medya_url}" class="w-full max-w-[200px] h-auto rounded-lg mb-1 pointer-events-none">` : '';
+    const mediaHtml = msg.medya_url ? `<img src="${msg.medya_url}" class="w-full max-w-[200px] h-auto rounded-lg mb-1 pointer-events-none cursor-pointer" onclick="openGallery('${msg.medya_url}')" style="pointer-events:auto;">` : '';
     const textHtml = (msg.metin && msg.metin !== '📷 Görsel') ? `<div class="whitespace-pre-wrap leading-relaxed">${msg.metin}</div>` : '';
     const readHtml = isMine ? `<i class="msg-read-status fa-solid ${msg.okundu ? 'fa-check-double text-blue-500' : 'fa-check text-slate-400'} ml-1"></i>` : '';
     const heartClass = msg.begendi ? 'scale-100 opacity-100' : 'scale-0 opacity-0';
@@ -532,53 +569,6 @@ if(dmMediaInput) {
     });
 }
 
-const dmHistoryEl = document.getElementById('chat-history');
-if(dmHistoryEl) {
-    let msgPressTimer;
-    const handleMsgPressStart = (e) => {
-        const bubble = e.target.closest('.msg-bubble');
-        if(bubble) {
-            const msgId = bubble.getAttribute('data-msg-id');
-            const isMine = bubble.getAttribute('data-is-mine') === 'true';
-            msgPressTimer = setTimeout(() => {
-                if(isMine) {
-                    Swal.fire({title: 'Mesajı Sil?', icon: 'warning', showCancelButton:true, confirmButtonText:'Sil', cancelButtonText:'İptal', confirmButtonColor: '#d33'}).then(async res => {
-                        if(res.isConfirmed) {
-                            const wrapper = document.getElementById(`msg-wrapper-${msgId}`);
-                            if(wrapper) { wrapper.style.opacity = '0'; setTimeout(() => wrapper.remove(), 200); }
-                            await supabase.from('mesajlar').delete().eq('id', msgId);
-                        }
-                    })
-                }
-            }, 600); 
-        }
-    };
-    const handleMsgPressEnd = () => clearTimeout(msgPressTimer);
-    dmHistoryEl.addEventListener('mousedown', handleMsgPressStart);
-    dmHistoryEl.addEventListener('touchstart', handleMsgPressStart);
-    dmHistoryEl.addEventListener('mouseup', handleMsgPressEnd);
-    dmHistoryEl.addEventListener('mouseleave', handleMsgPressEnd);
-    dmHistoryEl.addEventListener('touchend', handleMsgPressEnd);
-    dmHistoryEl.addEventListener('touchmove', handleMsgPressEnd);
-
-    dmHistoryEl.addEventListener('dblclick', async (e) => {
-        const bubble = e.target.closest('.msg-bubble');
-        if(bubble) {
-            if(window.getSelection) window.getSelection().removeAllRanges();
-            const msgId = bubble.getAttribute('data-msg-id');
-            const isLiked = bubble.getAttribute('data-is-liked') === 'true';
-            bubble.setAttribute('data-is-liked', (!isLiked).toString());
-            const heart = bubble.querySelector('.msg-heart');
-            if(!isLiked) { 
-                if(heart) { heart.classList.remove('scale-0', 'opacity-0'); heart.classList.add('scale-100', 'opacity-100', 'chat-heart-anim'); }
-            } else { 
-                if(heart) { heart.classList.remove('scale-100', 'opacity-100', 'chat-heart-anim'); heart.classList.add('scale-0', 'opacity-0'); }
-            }
-            await supabase.from('mesajlar').update({begendi: !isLiked}).eq('id', msgId);
-        }
-    });
-}
-
 // ============================================
 // GÖNDERİ PAYLAŞIM VE AKIŞ (FEED)
 // ============================================
@@ -588,9 +578,27 @@ if(postTypeRadios) {
         radio.addEventListener('change', (e) => {
             const mediaUploadContainer = document.getElementById('media-upload-container');
             const postMediaInput = document.getElementById('post-media');
+            const previewName = document.getElementById('media-preview-name');
             if(e.target.value === 'medya') { if(mediaUploadContainer) mediaUploadContainer.classList.remove('tw-modal-hidden'); }
-            else { if(mediaUploadContainer) mediaUploadContainer.classList.add('tw-modal-hidden'); if(postMediaInput) postMediaInput.value = ''; }
+            else { 
+                if(mediaUploadContainer) mediaUploadContainer.classList.add('tw-modal-hidden'); 
+                if(postMediaInput) postMediaInput.value = ''; 
+                if(previewName) previewName.classList.add('hidden');
+            }
         });
+    });
+}
+
+const postMediaInput = document.getElementById('post-media');
+const mediaPreviewName = document.getElementById('media-preview-name');
+if(postMediaInput && mediaPreviewName) {
+    postMediaInput.addEventListener('change', e => {
+        if(e.target.files[0]) {
+            mediaPreviewName.textContent = "Seçilen: " + e.target.files[0].name;
+            mediaPreviewName.classList.remove('hidden');
+        } else {
+            mediaPreviewName.classList.add('hidden');
+        }
     });
 }
 
@@ -599,9 +607,8 @@ if(createPostForm) {
     createPostForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const submitPostBtn = document.getElementById('submit-post-btn');
-        const postMediaInput = document.getElementById('post-media');
         const postTextInput = document.getElementById('post-text');
-        submitPostBtn.innerHTML = 'Paylaşılıyor...'; submitPostBtn.disabled = true;
+        submitPostBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Paylaşılıyor...'; submitPostBtn.disabled = true;
         try {
             let finalMediaUrl = null;
             if (document.querySelector('input[name="post_type"]:checked').value === 'medya' && postMediaInput && postMediaInput.files[0]) {
@@ -621,12 +628,17 @@ if(createPostForm) {
                 await supabase.from('bildirimler').insert(notifications);
             }
 
-            const createModal = document.getElementById('create-post-modal');
-            if(createModal) { createModal.classList.add('tw-modal-hidden'); document.body.style.overflow = ''; }
-            createPostForm.reset(); 
-            const mediaUploadContainer = document.getElementById('media-upload-container');
-            if(mediaUploadContainer) mediaUploadContainer.classList.add('tw-modal-hidden');
-            loadFeed(currentFeedFilter);
+            document.getElementById('create-post-panel').classList.add('translate-y-full');
+            setTimeout(() => {
+                document.getElementById('create-post-modal').classList.add('tw-modal-hidden');
+                document.body.style.overflow = '';
+                createPostForm.reset(); 
+                if(mediaPreviewName) mediaPreviewName.classList.add('hidden');
+                const mediaUploadContainer = document.getElementById('media-upload-container');
+                if(mediaUploadContainer) mediaUploadContainer.classList.add('tw-modal-hidden');
+                loadFeed(currentFeedFilter);
+            }, 300);
+
         } catch (error) {} finally { submitPostBtn.innerHTML = 'Paylaş'; submitPostBtn.disabled = false; }
     });
 }
@@ -636,14 +648,14 @@ if(feedFilters) {
     feedFilters.forEach(btn => {
         btn.addEventListener('click', (e) => {
             feedFilters.forEach(f => f.className = "feed-filter px-4 py-1.5 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 text-sm font-semibold shadow-sm outline-none border-none");
-            e.target.className = "feed-filter active px-4 py-1.5 rounded-full bg-slate-800 text-white text-sm font-semibold transition-colors outline-none border-none";
+            e.target.className = "feed-filter active px-4 py-1.5 rounded-full bg-slate-800 text-white text-sm font-semibold transition-colors outline-none border-none shadow-sm";
             currentFeedFilter = e.target.getAttribute('data-filter');
             loadFeed(currentFeedFilter);
         });
     });
 }
 
-// TEMPLATE ÜRETİMİ (CLASS TABANLI, DOM ÇAKIŞMASIZ)
+// TEMPLATE ÜRETİMİ (GELİŞMİŞ MEDYA VE YORUM)
 function generatePostHTML(post, isSingleView = false) {
     const author = post.yazar || {};
     const avatar = author.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(author.ad_soyad || 'U')}&background=1e3a8a&color=fff`;
@@ -655,10 +667,10 @@ function generatePostHTML(post, isSingleView = false) {
         const canEdit = ((new Date() - new Date(post.created_at)) / (1000 * 60)) <= 15;
         postOptionsHTML = `
             <div class="relative group ml-auto">
-                <button class="text-slate-400 p-2 outline-none border-none bg-transparent"><i class="fa-solid fa-ellipsis-vertical pointer-events-none"></i></button>
-                <div class="absolute right-0 mt-1 w-32 bg-white border border-slate-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 overflow-hidden">
-                    ${canEdit ? `<button class="edit-post-btn w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 outline-none border-none bg-transparent" data-post-id="${post.id}" data-text="${encodeURIComponent(post.metin)}">Düzenle</button>` : ''}
-                    <button class="delete-post-btn w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-slate-50 outline-none border-none bg-transparent" data-post-id="${post.id}">Sil</button>
+                <button class="text-slate-400 p-2 outline-none border-none bg-transparent hover:text-slate-700 transition-colors"><i class="fa-solid fa-ellipsis-vertical pointer-events-none"></i></button>
+                <div class="absolute right-0 mt-1 w-32 bg-white border border-slate-200 rounded-xl shadow-[0_10px_25px_rgba(0,0,0,0.1)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 overflow-hidden">
+                    ${canEdit ? `<button class="edit-post-btn w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 outline-none border-none bg-transparent border-b border-slate-50" data-post-id="${post.id}" data-text="${encodeURIComponent(post.metin)}">Düzenle</button>` : ''}
+                    <button class="delete-post-btn w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 outline-none border-none bg-transparent font-bold" data-post-id="${post.id}">Sil</button>
                 </div>
             </div>
         `;
@@ -672,15 +684,15 @@ function generatePostHTML(post, isSingleView = false) {
         let cOptions = (currentUserSession && currentUserSession.user.id === comment.user_id) ? `<button class="delete-comment-btn hover:text-red-500 ml-2 outline-none border-none bg-transparent" data-comment-id="${comment.id}">Sil</button>` : '';
 
         commentsHTML += `
-            <div class="flex gap-2 items-start mt-4">
-                <img src="${cAvatar}" class="w-8 h-8 rounded-full object-cover border border-slate-200 cursor-pointer user-profile-trigger" data-user-id="${comment.user_id}">
+            <div class="flex gap-3 items-start mt-4">
+                <img src="${cAvatar}" class="w-8 h-8 rounded-full object-cover border border-slate-200 cursor-pointer user-profile-trigger shadow-sm" data-user-id="${comment.user_id}">
                 <div class="flex-1">
-                    <div class="bg-slate-100 px-3 py-1.5 rounded-xl inline-block">
+                    <div class="bg-slate-100 px-3 py-2 rounded-2xl rounded-tl-sm inline-block">
                         <span class="font-bold text-[13px] text-slate-800 mr-2 cursor-pointer hover:underline user-profile-trigger" data-user-id="${comment.user_id}">${cAuthor.ad_soyad}</span>
                         <span class="text-sm text-slate-700">${comment.metin}</span>
                     </div>
-                    <div class="flex gap-2 mt-0.5 ml-2 text-[11px] text-slate-400 font-semibold">
-                        <button class="reply-to-comment-btn hover:text-slate-800 outline-none border-none bg-transparent" data-post-id="${post.id}" data-comment-id="${comment.id}" data-author-name="${cAuthor.ad_soyad}">Yanıtla</button>${cOptions}
+                    <div class="flex gap-3 mt-1 ml-2 text-[11px] text-slate-400 font-bold">
+                        <button class="reply-to-comment-btn hover:text-slate-800 outline-none border-none bg-transparent transition-colors" data-post-id="${post.id}" data-comment-id="${comment.id}" data-author-name="${cAuthor.ad_soyad}">Yanıtla</button>${cOptions}
                     </div>
         `;
 
@@ -690,14 +702,14 @@ function generatePostHTML(post, isSingleView = false) {
             let rOptions = (currentUserSession && currentUserSession.user.id === reply.user_id) ? `<button class="delete-comment-btn hover:text-red-500 ml-2 outline-none border-none bg-transparent" data-comment-id="${reply.id}">Sil</button>` : '';
 
             commentsHTML += `
-                <div class="flex gap-2 items-start mt-2 ml-4 border-l-2 pl-2 border-slate-200">
-                    <img src="${rAvatar}" class="w-6 h-6 rounded-full object-cover border border-slate-200 cursor-pointer user-profile-trigger" data-user-id="${reply.user_id}">
+                <div class="flex gap-2 items-start mt-3 ml-4 border-l-2 pl-3 border-slate-200">
+                    <img src="${rAvatar}" class="w-6 h-6 rounded-full object-cover border border-slate-200 cursor-pointer user-profile-trigger shadow-sm" data-user-id="${reply.user_id}">
                     <div class="flex-1">
-                        <div class="bg-slate-100 px-3 py-1.5 rounded-xl inline-block">
+                        <div class="bg-slate-100 px-3 py-1.5 rounded-2xl rounded-tl-sm inline-block">
                             <span class="font-bold text-[12px] text-slate-800 mr-1 cursor-pointer hover:underline user-profile-trigger" data-user-id="${reply.user_id}">${rAuthor.ad_soyad}</span>
                             <span class="text-[13px] text-slate-700">${reply.metin}</span>
                         </div>
-                        <div class="flex gap-2 mt-0.5 ml-2 text-[10px] text-slate-400 font-semibold">${rOptions}</div>
+                        <div class="flex gap-2 mt-1 ml-2 text-[10px] text-slate-400 font-bold">${rOptions}</div>
                     </div>
                 </div>
             `;
@@ -708,55 +720,65 @@ function generatePostHTML(post, isSingleView = false) {
     let mediaHTML = '';
     if (post.gonderi_tipi === 'medya' && post.medya_url) {
         if (post.medya_url.endsWith('.mp4')) {
-            mediaHTML = `<video controls class="w-full h-auto max-h-96 object-cover bg-black mt-3 rounded-xl pointer-events-auto"><source src="${post.medya_url}"></video>`;
+            mediaHTML = `
+                <div class="reels-video-container mt-4 cursor-pointer group shadow-sm" onclick="togglePlay(this)">
+                    <video class="reels-video" loop muted playsinline data-post-id="${post.id}">
+                        <source src="${post.medya_url}" type="video/mp4">
+                    </video>
+                    <div class="reels-play-btn"><i class="fa-solid fa-play"></i></div>
+                    <div class="reels-mute-btn" onclick="toggleMute(event, this)"><i class="fa-solid fa-volume-xmark"></i></div>
+                </div>
+            `;
         } else {
             mediaHTML = `
-                <div class="relative mt-3 rounded-xl overflow-hidden bg-slate-50 border border-slate-100">
-                    <img src="${post.medya_url}" class="post-media-item w-full h-auto max-h-96 object-cover pointer-events-auto cursor-pointer" data-post-id="${post.id}" data-author-id="${post.user_id}">
-                    <i class="fa-solid fa-heart absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-6xl opacity-0 pointer-events-none drop-shadow-md z-10 big-heart"></i>
+                <div class="relative mt-4 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 shadow-sm group">
+                    <img src="${post.medya_url}" class="post-media-item w-full h-auto max-h-[70vh] object-cover pointer-events-auto cursor-pointer" onclick="openGallery('${post.medya_url}')" data-post-id="${post.id}" data-author-id="${post.user_id}">
+                    <i class="fa-solid fa-heart absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-6xl opacity-0 pointer-events-none drop-shadow-2xl z-10 big-heart"></i>
+                    <div class="absolute bottom-3 right-3 bg-black/50 text-white text-[10px] px-2 py-1 rounded backdrop-blur-sm pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-magnifying-glass-plus"></i> Büyüt</div>
                 </div>
             `;
         }
     }
 
     return `
-        <div class="post-card no-select bg-white p-5 rounded-2xl shadow-sm border border-slate-200 transition-all duration-300" data-post-id="${post.id}">
+        <div class="post-card no-select bg-white p-5 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-slate-100 transition-all duration-300" data-post-id="${post.id}">
             <div class="flex justify-between items-start mb-3 pointer-events-auto">
                 <div class="flex items-center gap-3">
-                    <img src="${avatar}" class="w-11 h-11 rounded-full object-cover border border-slate-200 cursor-pointer user-profile-trigger" data-user-id="${post.user_id}">
+                    <img src="${avatar}" class="w-11 h-11 rounded-full object-cover border-2 border-slate-100 cursor-pointer user-profile-trigger shadow-sm" data-user-id="${post.user_id}">
                     <div>
-                        <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2 cursor-pointer hover:underline user-profile-trigger" data-user-id="${post.user_id}">
+                        <h4 class="font-bold text-slate-800 text-[15px] flex items-center gap-2 cursor-pointer hover:underline user-profile-trigger" data-user-id="${post.user_id}">
                             ${author.ad_soyad || 'Bilinmeyen'}
-                            <span class="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] uppercase tracking-wide border border-blue-100">${author.rol || 'Müşteri'}</span>
+                            <span class="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] uppercase tracking-wide font-bold">${author.rol || 'Müşteri'}</span>
                         </h4>
-                        <p class="text-[11px] text-slate-400">${new Date(post.created_at).toLocaleDateString('tr-TR', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}</p>
+                        <p class="text-[11px] text-slate-400 font-medium">${new Date(post.created_at).toLocaleDateString('tr-TR', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}</p>
                     </div>
                 </div>
                 ${postOptionsHTML}
             </div>
             
-            <div class="text-slate-800 text-[15px] whitespace-pre-wrap pointer-events-auto">${post.metin}</div>
+            <div class="text-slate-800 text-[15px] whitespace-pre-wrap pointer-events-auto leading-relaxed">${post.metin}</div>
             ${mediaHTML}
             
             <div class="flex items-center gap-6 mt-4 pt-3 border-t border-slate-100 pointer-events-auto">
-                <button class="action-btn like-btn flex items-center gap-2 text-sm font-semibold transition-colors outline-none border-none bg-transparent ${isLikedByMe ? 'text-red-500' : 'text-slate-500 hover:text-red-500'}" data-post-id="${post.id}" data-author-id="${post.user_id}">
+                <button class="action-btn like-btn flex items-center gap-2 text-[15px] font-bold transition-colors outline-none border-none bg-transparent ${isLikedByMe ? 'text-red-500' : 'text-slate-700 hover:text-red-500'}" data-post-id="${post.id}" data-author-id="${post.user_id}">
                     <i class="${isLikedByMe ? 'fa-solid fa-heart' : 'fa-regular fa-heart'} like-icon" style="pointer-events:none;"></i> <span class="like-count" style="pointer-events:none;">${likesCount > 0 ? likesCount : 'Beğen'}</span>
                 </button>
-                <button class="action-btn comment-toggle-btn flex items-center gap-2 text-slate-500 hover:text-blue-500 transition-colors text-sm font-semibold outline-none border-none bg-transparent" data-post-id="${post.id}">
+                <button class="action-btn comment-toggle-btn flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors text-[15px] font-bold outline-none border-none bg-transparent" data-post-id="${post.id}">
                     <i class="fa-regular fa-comment pointer-events-none"></i> <span class="pointer-events-none">${allComments.length > 0 ? allComments.length : 'Yorum Yap'}</span>
                 </button>
             </div>
 
             <div class="comment-section ${isSingleView ? '' : 'hidden'} mt-4 pt-4 border-t border-slate-100 pointer-events-auto">
                 <div class="mb-4 space-y-1">${commentsHTML}</div>
-                <div class="reply-indicator hidden items-center justify-between bg-blue-50 text-blue-700 px-3 py-1.5 rounded-t-lg text-xs font-bold border border-blue-100 border-b-0">
+                <div class="reply-indicator hidden items-center justify-between bg-blue-50 text-blue-700 px-4 py-2 rounded-t-xl text-xs font-bold border border-blue-100 border-b-0">
                     <span><i class="fa-solid fa-reply mr-1"></i> <span class="reply-name"></span> kullanıcısına yanıt veriliyor</span>
-                    <button class="cancel-reply-btn hover:text-red-500 outline-none border-none bg-transparent" data-post-id="${post.id}"><i class="fa-solid fa-xmark"></i></button>
+                    <button class="cancel-reply-btn hover:text-red-500 outline-none border-none bg-transparent"><i class="fa-solid fa-xmark text-lg"></i></button>
                 </div>
-                <div class="flex gap-2">
-                    <input type="text" class="comment-input flex-1 px-4 py-2 bg-slate-100 border border-slate-200 rounded-full text-sm focus:outline-none focus:border-blue-400 focus:bg-white transition-colors" placeholder="Yorum ekle..." style="outline:none;">
-                    <button class="submit-comment-btn w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center shadow-sm transition-colors outline-none border-none" data-post-id="${post.id}" data-author-id="${post.user_id}">
-                        <i class="fa-solid fa-paper-plane pointer-events-none text-sm"></i>
+                <div class="flex gap-2 relative">
+                    <img src="${userDataGlobal ? userDataGlobal.avatar_url : 'https://via.placeholder.com/150'}" class="w-10 h-10 rounded-full object-cover border border-slate-200 absolute left-0 top-0">
+                    <input type="text" class="comment-input flex-1 pl-12 pr-12 py-2.5 bg-slate-50 border border-slate-200 rounded-full text-sm focus:outline-none focus:border-slate-300 focus:bg-white transition-colors shadow-inner" placeholder="Yorum ekle..." style="outline:none;">
+                    <button class="submit-comment-btn absolute right-1 top-1 w-8 h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center shadow-sm transition-colors outline-none border-none" data-post-id="${post.id}" data-author-id="${post.user_id}">
+                        <i class="fa-solid fa-paper-plane pointer-events-none text-xs"></i>
                     </button>
                 </div>
             </div>
@@ -768,18 +790,21 @@ async function loadFeed(filterType) {
     if (!currentUserSession) return;
     const feedList = document.getElementById('feed-list');
     if (!feedList) return;
-    feedList.innerHTML = '<div class="p-8 text-center text-slate-400 bg-white rounded-xl border border-slate-200"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><p>Yükleniyor...</p></div>';
+    feedList.innerHTML = '<div class="p-10 text-center text-slate-400 bg-white rounded-2xl border border-slate-100 shadow-sm"><i class="fa-solid fa-spinner fa-spin text-3xl mb-3 text-blue-500"></i><p class="font-semibold">Akış Yükleniyor...</p></div>';
     try {
         let query = supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).order('created_at', { ascending: false });
         if (filterType !== 'all') query = query.eq('gonderi_tipi', filterType);
         const { data: posts } = await query;
-        if (!posts || posts.length === 0) { feedList.innerHTML = '<div class="bg-white p-8 border border-slate-200 rounded-xl text-center text-slate-500"><i class="fa-regular fa-folder-open text-3xl mb-2"></i><p>Henüz paylaşım yok.</p></div>'; return; }
+        if (!posts || posts.length === 0) { feedList.innerHTML = '<div class="bg-white p-10 border border-slate-100 rounded-2xl text-center text-slate-400 shadow-sm"><i class="fa-regular fa-folder-open text-4xl mb-3 text-slate-300"></i><p class="font-semibold">Henüz paylaşım yok.</p></div>'; return; }
         feedList.innerHTML = '';
         posts.forEach(p => feedList.insertAdjacentHTML('beforeend', generatePostHTML(p, false)));
+        
+        // Yüklenen videolara gözlemci ekle
+        document.querySelectorAll('.reels-video').forEach(v => reelsObserver.observe(v));
     } catch (e) {}
 }
 
-// EVENT DELEGATION (DOM ÇAKIŞMASI KORUMALI)
+// EVENT DELEGATION
 document.addEventListener('click', async (e) => {
     if (!currentUserSession) return;
     const target = e.target;
@@ -796,12 +821,12 @@ document.addEventListener('click', async (e) => {
         let currentCount = parseInt(countSpan.innerText) || 0;
 
         if (isLiked) {
-            icon.className = "fa-regular fa-heart like-icon text-slate-500"; 
-            likeBtn.classList.replace('text-red-500', 'text-slate-500');
+            icon.className = "fa-regular fa-heart like-icon text-slate-700"; 
+            likeBtn.classList.replace('text-red-500', 'text-slate-700');
             countSpan.innerText = currentCount > 1 ? currentCount - 1 : 'Beğen';
         } else {
             icon.className = "fa-solid fa-heart like-icon text-red-500"; 
-            likeBtn.classList.replace('text-slate-500', 'text-red-500');
+            likeBtn.classList.replace('text-slate-700', 'text-red-500');
             countSpan.innerText = isNaN(currentCount) || currentCount === 0 ? 1 : currentCount + 1;
         }
 
@@ -833,7 +858,9 @@ document.addEventListener('click', async (e) => {
             
             const { data: post } = await supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).eq('id', postId).single();
             postCard.outerHTML = generatePostHTML(post, true);
-        } catch(err) {} finally { submitCommentBtn.disabled = false; submitCommentBtn.innerHTML = '<i class="fa-solid fa-paper-plane text-sm"></i>'; }
+            const newVideo = document.querySelector(`.post-card[data-post-id="${postId}"] .reels-video`);
+            if(newVideo) reelsObserver.observe(newVideo);
+        } catch(err) {} finally { submitCommentBtn.disabled = false; submitCommentBtn.innerHTML = '<i class="fa-solid fa-paper-plane text-xs"></i>'; }
         return;
     }
 
@@ -862,64 +889,40 @@ document.addEventListener('click', async (e) => {
     const cancelReplyBtn = target.closest('.cancel-reply-btn');
     if (cancelReplyBtn) {
         const postCard = cancelReplyBtn.closest('.post-card');
-        const pId = cancelReplyBtn.getAttribute('data-post-id');
+        const pId = cancelReplyBtn.closest('.reply-indicator').nextElementSibling.querySelector('.submit-comment-btn').getAttribute('data-post-id');
         delete activeReplyData[pId]; 
         postCard.querySelector('.reply-indicator').classList.replace('flex', 'hidden');
         return;
     }
 
-    // GÖNDERİ SİL BUTONU (PROFİL GÜNCELLEMESİYLE BİRLİKTE)
+    // GÖNDERİ/YORUM SİL VE DÜZENLE
     const deletePostBtn = target.closest('.delete-post-btn');
     if (deletePostBtn) {
         const postId = deletePostBtn.getAttribute('data-post-id');
-        Swal.fire({
-            title: 'Emin misin?', text: "Bu gönderiyi kalıcı olarak sileceksin!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Evet, Sil!', cancelButtonText: 'İptal'
-        }).then(async (result) => {
-            if (result.isConfirmed) { 
+        Swal.fire({ title: 'Emin misin?', text: "Bu gönderi kalıcı olarak silinecek!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Sil', cancelButtonText: 'İptal' }).then(async (res) => {
+            if (res.isConfirmed) { 
                 await supabase.from('gonderiler').delete().eq('id', postId); 
                 loadFeed(currentFeedFilter); 
-                
-                // Profil ekranındaysa profili yenile (Silinen anında kaybolur)
-                const upModal = document.getElementById('user-profile-modal');
-                if(currentlyViewingProfileId && upModal && !upModal.classList.contains('tw-modal-hidden')) {
-                    openUserProfile(currentlyViewingProfileId);
-                }
-                // Tekil gönderi ekranındaysa o ekranı kapat
-                const singleModal = document.getElementById('single-post-modal');
-                if(singleModal && !singleModal.classList.contains('tw-modal-hidden')) {
-                    closeSideModal('single-post-modal', 'single-post-panel');
-                }
+                if(currentlyViewingProfileId && !document.getElementById('user-profile-modal').classList.contains('tw-modal-hidden')) openUserProfile(currentlyViewingProfileId);
+                if(!document.getElementById('single-post-modal').classList.contains('tw-modal-hidden')) closeSideModal('single-post-modal', 'single-post-panel');
             }
-        });
-        return;
+        }); return;
     }
 
-    // YORUM SİL BUTONU
     const deleteCommentBtn = target.closest('.delete-comment-btn');
     if (deleteCommentBtn) {
         const postCard = deleteCommentBtn.closest('.post-card');
         const commentId = deleteCommentBtn.getAttribute('data-comment-id');
-        Swal.fire({
-            title: 'Yorumu Sil?', text: "Bu yorumu kalıcı olarak sileceksin!", icon: 'question', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Sil', cancelButtonText: 'İptal'
-        }).then(async (result) => {
-            if (result.isConfirmed) { 
+        Swal.fire({ title: 'Yorumu Sil?', text: "Kalıcı olarak silinecek!", icon: 'question', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Sil', cancelButtonText: 'İptal' }).then(async (res) => {
+            if (res.isConfirmed) { 
                 await supabase.from('gonderi_yorumlari').delete().eq('id', commentId); 
                 loadFeed(currentFeedFilter); 
-                
-                const upModal = document.getElementById('user-profile-modal');
-                if(currentlyViewingProfileId && upModal && !upModal.classList.contains('tw-modal-hidden')) {
-                    openUserProfile(currentlyViewingProfileId);
-                }
-                const singleModal = document.getElementById('single-post-modal');
-                if(singleModal && !singleModal.classList.contains('tw-modal-hidden')) {
-                    openSinglePost(postCard.getAttribute('data-post-id')); 
-                }
+                if(currentlyViewingProfileId && !document.getElementById('user-profile-modal').classList.contains('tw-modal-hidden')) openUserProfile(currentlyViewingProfileId);
+                if(!document.getElementById('single-post-modal').classList.contains('tw-modal-hidden')) openSinglePost(postCard.getAttribute('data-post-id')); 
             }
-        });
-        return;
+        }); return;
     }
 
-    // GÖNDERİ/YORUM DÜZENLEME BUTONLARI
     const editPostBtn = target.closest('.edit-post-btn');
     if (editPostBtn) {
         const postId = editPostBtn.getAttribute('data-post-id');
@@ -928,32 +931,23 @@ document.addEventListener('click', async (e) => {
         if (newText && newText !== oldText) { 
             await supabase.from('gonderiler').update({ metin: newText }).eq('id', postId); 
             loadFeed(currentFeedFilter); 
-            const upModal = document.getElementById('user-profile-modal');
-            if(currentlyViewingProfileId && upModal && !upModal.classList.contains('tw-modal-hidden')) openUserProfile(currentlyViewingProfileId);
-            const singleModal = document.getElementById('single-post-modal');
-            if(singleModal && !singleModal.classList.contains('tw-modal-hidden')) openSinglePost(postId);
-        }
-        return;
+        } return;
     }
-
-    const editCommentBtn = target.closest('.edit-comment-btn');
-    if (editCommentBtn) {
-        const commentId = editCommentBtn.getAttribute('data-comment-id');
-        const oldText = decodeURIComponent(editCommentBtn.getAttribute('data-text'));
-        const { value: newText } = await Swal.fire({ input: 'text', inputValue: oldText, showCancelButton: true, confirmButtonText: 'Kaydet', cancelButtonText: 'İptal' });
-        if (newText && newText !== oldText) { await supabase.from('gonderi_yorumlari').update({ metin: newText }).eq('id', commentId); loadFeed(currentFeedFilter); }
-        return;
-    }
+    
+    // TAKİP LİSTESİ MODAL AÇILIŞLARI
+    const fTrigger = target.closest('#follower-trigger');
+    if(fTrigger && currentlyViewingProfileId) { openFollowList('followers', currentlyViewingProfileId); return; }
+    
+    const fingTrigger = target.closest('#following-trigger');
+    if(fingTrigger && currentlyViewingProfileId) { openFollowList('following', currentlyViewingProfileId); return; }
 });
 
-// ÇİFT TIKLA BEĞENME (CLASS SEÇİMİYLE ÇAKIŞMA ÖNLENDİ)
+// ÇİFT TIKLA BEĞENME (KALP ANİMASYONU)
 document.addEventListener('dblclick', async (e) => {
     if (!currentUserSession) return;
     const target = e.target;
-    
     if (target.classList.contains('post-media-item')) {
         if (window.getSelection) { window.getSelection().removeAllRanges(); }
-        
         const postCard = target.closest('.post-card');
         const postId = target.getAttribute('data-post-id');
         const authorId = target.getAttribute('data-author-id');
@@ -972,21 +966,63 @@ document.addEventListener('dblclick', async (e) => {
         if (!isLiked) {
             let currentCount = parseInt(countSpan.innerText) || 0;
             icon.className = "fa-solid fa-heart like-icon text-red-500";
-            postCard.querySelector('.like-btn').classList.replace('text-slate-500', 'text-red-500');
+            postCard.querySelector('.like-btn').classList.replace('text-slate-700', 'text-red-500');
             countSpan.innerText = isNaN(currentCount) || currentCount === 0 ? 1 : currentCount + 1;
 
             try {
                 await supabase.from('etkilesimler').insert([{ gonderi_id: postId, user_id: currentUserSession.user.id, etkilesim_tipi: 'like' }]);
-                if (authorId !== currentUserSession.user.id) {
-                    await supabase.from('bildirimler').insert([{ alici_id: authorId, gonderen_id: currentUserSession.user.id, mesaj: 'Gönderini beğendi.', gonderi_id: postId }]);
-                }
+                if (authorId !== currentUserSession.user.id) await supabase.from('bildirimler').insert([{ alici_id: authorId, gonderen_id: currentUserSession.user.id, mesaj: 'Gönderini beğendi.', gonderi_id: postId }]);
             } catch (err) {}
         }
     }
 });
 
 // ============================================
-// PROFİL SAYFASI VE KULLANICI İŞLEMLERİ
+// TAKİP / TAKİPÇİ LİSTESİ MANTIĞI
+// ============================================
+window.openFollowList = async function(type, userId) {
+    openSideModal('follow-list-modal', 'follow-list-panel');
+    const title = document.getElementById('follow-list-title');
+    const content = document.getElementById('follow-list-content');
+    
+    title.innerText = type === 'followers' ? 'Takipçiler' : 'Takip Edilenler';
+    content.innerHTML = '<div class="text-center p-10"><i class="fa-solid fa-spinner fa-spin text-blue-500 text-3xl"></i></div>';
+    
+    try {
+        let query = supabase.from('takipler').select('takip_eden_id').eq('takip_edilen_id', userId);
+        if(type === 'following') query = supabase.from('takipler').select('takip_edilen_id').eq('takip_eden_id', userId);
+        
+        const {data, error} = await query;
+        if(error) throw error;
+        
+        if(!data || data.length === 0) {
+            content.innerHTML = '<div class="text-center text-slate-400 mt-10 font-medium">Bu liste henüz boş.</div>';
+            return;
+        }
+        
+        const userIds = data.map(d => type === 'followers' ? d.takip_eden_id : d.takip_edilen_id);
+        const {data: users} = await supabase.from('uyeler').select('id, ad_soyad, avatar_url, rol').in('id', userIds);
+        
+        content.innerHTML = '';
+        users.forEach(u => {
+            const avatar = u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.ad_soyad)}&background=1e3a8a&color=fff`;
+            content.insertAdjacentHTML('beforeend', `
+                <div class="flex items-center gap-3 p-3 bg-white rounded-xl cursor-pointer hover:bg-slate-50 transition-colors border border-slate-100 shadow-sm mb-2 user-profile-trigger" data-user-id="${u.id}" onclick="closeSideModal('follow-list-modal', 'follow-list-panel')">
+                    <img src="${avatar}" class="w-11 h-11 rounded-full object-cover border border-slate-200 pointer-events-none">
+                    <div class="pointer-events-none flex-1">
+                        <h4 class="font-bold text-slate-800 text-[14px]">${u.ad_soyad}</h4>
+                        <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase border border-blue-100">${u.rol}</span>
+                    </div>
+                </div>
+            `);
+        });
+    } catch(e) {
+        content.innerHTML = '<div class="text-center text-red-500 mt-10 font-medium">Liste yüklenemedi.</div>';
+    }
+};
+
+// ============================================
+// PROFİL SAYFASI
 // ============================================
 const tabGridBtn = document.getElementById('tab-grid');
 const tabQuestionsBtn = document.getElementById('tab-questions');
@@ -1022,8 +1058,8 @@ window.openUserProfile = async (uId) => {
 
     const upGrid = document.getElementById('up-grid');
     const upQuestionsList = document.getElementById('up-questions-list');
-    if(upGrid) upGrid.innerHTML = '<div class="col-span-3 text-center p-10"><i class="fa-solid fa-spinner fa-spin text-2xl text-slate-400"></i></div>';
-    if(upQuestionsList) upQuestionsList.innerHTML = '<div class="text-center p-10"><i class="fa-solid fa-spinner fa-spin text-2xl text-slate-400"></i></div>';
+    if(upGrid) upGrid.innerHTML = '<div class="col-span-3 text-center p-10"><i class="fa-solid fa-spinner fa-spin text-3xl text-blue-500"></i></div>';
+    if(upQuestionsList) upQuestionsList.innerHTML = '<div class="text-center p-10"><i class="fa-solid fa-spinner fa-spin text-3xl text-blue-500"></i></div>';
 
     try {
         const { data: user, error } = await supabase.from('uyeler').select('*').eq('id', uId).single();
@@ -1045,18 +1081,18 @@ window.openUserProfile = async (uId) => {
         const followBtn = document.getElementById('follow-btn');
         const unfollowBtn = document.getElementById('unfollow-btn');
         const messageUserBtn = document.getElementById('message-user-btn');
-        const upEditProfileBtn = document.getElementById('up-edit-profile-btn');
-        const upLogoutBtn = document.getElementById('up-logout-btn');
+        const menuContainer = document.getElementById('my-profile-menu-container');
+        const actionsContainer = document.getElementById('up-action-buttons');
 
         if (currentUserSession && uId === currentUserSession.user.id) { 
-            if(followBtn) followBtn.classList.add('tw-modal-hidden'); 
-            if(unfollowBtn) unfollowBtn.classList.add('tw-modal-hidden'); 
-            if(messageUserBtn) messageUserBtn.classList.add('tw-modal-hidden');
-            if(upEditProfileBtn) upEditProfileBtn.classList.remove('tw-modal-hidden');
-            if(upLogoutBtn) upLogoutBtn.classList.remove('tw-modal-hidden');
+            // KENDİ PROFİLİ: Aksiyon butonlarını gizle, sağ üst menüyü aç
+            if(menuContainer) menuContainer.style.display = 'block';
+            if(actionsContainer) actionsContainer.classList.add('tw-modal-hidden');
         } else if (currentUserSession) {
-            if(upEditProfileBtn) upEditProfileBtn.classList.add('tw-modal-hidden');
-            if(upLogoutBtn) upLogoutBtn.classList.add('tw-modal-hidden');
+            // BAŞKASININ PROFİLİ: Sağ üst menüyü gizle, aksiyon butonlarını aç
+            if(menuContainer) menuContainer.style.display = 'none';
+            if(actionsContainer) actionsContainer.classList.remove('tw-modal-hidden');
+            
             if(messageUserBtn) {
                 messageUserBtn.classList.remove('tw-modal-hidden');
                 messageUserBtn.onclick = () => {
@@ -1090,14 +1126,14 @@ window.openUserProfile = async (uId) => {
         if(posts) {
             posts.forEach(p => {
                 if (p.gonderi_tipi === 'medya') {
-                    let content = p.medya_url.endsWith('.mp4') ? '<div class="absolute inset-0 bg-black flex items-center justify-center text-white"><i class="fa-solid fa-play"></i></div>' : `<img src="${p.medya_url}" class="w-full h-full object-cover">`;
+                    let content = p.medya_url.endsWith('.mp4') ? '<div class="absolute inset-0 bg-black flex items-center justify-center text-white"><i class="fa-solid fa-play text-2xl"></i><span class="absolute bottom-1 left-1 text-[10px] bg-black/50 px-1 rounded">Reels</span></div>' : `<img src="${p.medya_url}" class="w-full h-full object-cover">`;
                     if(upGrid) upGrid.insertAdjacentHTML('beforeend', `<div class="aspect-square relative cursor-pointer border border-white" onclick="openSinglePost(${p.id})">${content}</div>`);
                 } else { 
                     if(upQuestionsList) upQuestionsList.insertAdjacentHTML('beforeend', generatePostHTML(p, false)); 
                 }
             });
-            if(upGrid && upGrid.innerHTML === '') upGrid.innerHTML = '<div class="col-span-3 text-center p-10 text-sm text-slate-400">Medya gönderisi yok.</div>';
-            if(upQuestionsList && upQuestionsList.innerHTML === '') upQuestionsList.innerHTML = '<p class="text-center text-sm text-slate-400 p-10">Soru gönderisi yok.</p>';
+            if(upGrid && upGrid.innerHTML === '') upGrid.innerHTML = '<div class="col-span-3 text-center p-10 text-sm text-slate-400 font-medium">Medya gönderisi yok.</div>';
+            if(upQuestionsList && upQuestionsList.innerHTML === '') upQuestionsList.innerHTML = '<p class="text-center text-sm text-slate-400 p-10 font-medium">Soru gönderisi yok.</p>';
         }
     } catch(e) { console.error('Profil yüklenirken hata:', e); }
 };
@@ -1108,9 +1144,6 @@ document.addEventListener('click', async (e) => {
     const uId = trig.getAttribute('data-user-id');
     if (uId) openUserProfile(uId);
 });
-
-const closeUserProfileBtn = document.getElementById('close-user-profile');
-if(closeUserProfileBtn) closeUserProfileBtn.addEventListener('click', () => closeSideModal('user-profile-modal', 'user-profile-panel'));
 
 const followBtnEl = document.getElementById('follow-btn');
 if(followBtnEl) {
@@ -1139,16 +1172,16 @@ if(unfollowBtnEl) {
 window.openSinglePost = async (postId) => {
     openSideModal('single-post-modal', 'single-post-panel');
     const singlePostContainer = document.getElementById('single-post-container');
-    if(singlePostContainer) singlePostContainer.innerHTML = '<p class="text-center mt-20 text-slate-400"><i class="fa-solid fa-spinner fa-spin text-3xl mb-2"></i><br>Yükleniyor...</p>';
+    if(singlePostContainer) singlePostContainer.innerHTML = '<div class="text-center mt-20 text-slate-400"><i class="fa-solid fa-spinner fa-spin text-4xl mb-3 text-blue-500"></i><p class="font-bold">Yükleniyor...</p></div>';
     try {
         const { data: post } = await supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).eq('id', postId).single();
-        if(singlePostContainer) singlePostContainer.innerHTML = generatePostHTML(post, true);
+        if(singlePostContainer) {
+            singlePostContainer.innerHTML = generatePostHTML(post, true);
+            const newVideo = singlePostContainer.querySelector('video');
+            if(newVideo) reelsObserver.observe(newVideo);
+        }
     } catch (e) {}
 };
-const closeSinglePostBtn = document.getElementById('close-single-post');
-if(closeSinglePostBtn) closeSinglePostBtn.addEventListener('click', () => closeSideModal('single-post-modal', 'single-post-panel'));
 
-// Başlangıç Yüklemeleri (Sadece varsa çalıştır)
-if(typeof fetchApprovedReviews === "function") fetchApprovedReviews();
+// Başlangıç Yüklemeleri
 checkSession();
-
