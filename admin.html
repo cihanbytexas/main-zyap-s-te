@@ -2,533 +2,503 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Öz Yapı Market | Yönetim Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        textarea:focus { outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); border-color: #3b82f6; }
-        
-        .no-select {
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
+        textarea:focus, input:focus { outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); border-color: #3b82f6; }
+        .no-select { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
     </style>
 </head>
-<body class="bg-slate-50 h-[100dvh] overflow-hidden text-slate-800 flex flex-col">
+<body class="bg-slate-50 h-[100dvh] overflow-hidden text-slate-800 flex flex-col w-full">
 
     <input type="file" id="file-import-input" class="hidden" accept=".txt" onchange="handleImport(event)">
 
     <div id="login-screen" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50 transition-opacity duration-500 p-4">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 transform transition-all">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-8 transform transition-all">
             <div class="text-center mb-8">
-                <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-blue-100">
-                    <i class="fa-solid fa-lock text-3xl text-blue-600"></i>
+                <div class="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-100 shadow-sm transform rotate-3">
+                    <img src="https://i.hizliresim.com/kekxdej.png" alt="Logo" class="w-12 h-12 object-contain -rotate-3">
                 </div>
-                <h2 class="text-2xl font-bold text-slate-800 tracking-tight">ÖZ YAPI MARKET</h2>
-                <p class="text-slate-500 mt-2 text-sm">Yönetim Paneline erişmek için şifrenizi girin.</p>
+                <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">ÖZ YAPI MARKET</h2>
+                <p class="text-slate-500 mt-2 text-sm font-medium">Yönetim Paneline erişmek için şifrenizi girin.</p>
             </div>
             
             <div class="space-y-5">
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Yönetici Şifresi</label>
                     <div class="relative">
                         <i class="fa-solid fa-key absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
-                        <input type="password" id="login-password" class="w-full pl-11 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-slate-700" placeholder="••••••••" onkeypress="if(event.key === 'Enter') enterPanel()">
-                        <i id="toggle-password" class="fa-solid fa-eye absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 cursor-pointer hover:text-slate-600 transition-colors text-lg no-select"></i>
+                        <input type="password" id="login-password" class="w-full pl-11 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white transition-all text-slate-900 font-bold" placeholder="Yönetici Şifresi" onkeypress="if(event.key === 'Enter') enterPanel()">
+                        <i id="toggle-password" class="fa-solid fa-eye absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 cursor-pointer hover:text-slate-700 transition-colors text-lg no-select"></i>
                     </div>
                 </div>
-                <button onclick="enterPanel()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-all shadow-lg shadow-blue-200 flex justify-center items-center gap-2">
+                <button onclick="enterPanel()" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-4 px-4 rounded-xl transition-transform active:scale-95 shadow-lg flex justify-center items-center gap-2">
                     Giriş Yap <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
         </div>
     </div>
 
-    <div id="admin-dashboard" class="flex h-full hidden opacity-0 transition-opacity duration-500">
+    <div id="admin-dashboard" class="flex h-full w-full hidden opacity-0 transition-opacity duration-500">
         
-        <aside class="w-72 bg-slate-900 text-white flex flex-col shadow-xl z-10 hidden md:flex">
+        <aside class="w-72 bg-slate-900 text-white flex flex-col shadow-2xl z-20 hidden md:flex flex-shrink-0">
             <div class="p-6 flex items-center gap-4 border-b border-slate-800">
-                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg">
-                    <i class="fa-solid fa-robot text-white text-xl"></i>
-                </div>
+                <img src="https://i.hizliresim.com/kekxdej.png" alt="Logo" class="w-10 h-10 object-contain bg-white rounded-lg p-1">
                 <div>
-                    <h2 class="text-lg font-bold tracking-wider">ÖZ YAPI</h2>
-                    <p class="text-xs text-slate-400 uppercase tracking-widest">Asistan Yönetimi</p>
+                    <h2 class="text-lg font-extrabold tracking-wider">ÖZ YAPI</h2>
+                    <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Admin Panel</p>
                 </div>
             </div>
-            <nav class="flex-1 p-4 space-y-2">
-                <button id="menu-bot" onclick="switchTab('bot')" class="flex items-center gap-3 p-3 w-full text-left bg-blue-600 text-white rounded-xl font-medium transition">
-                    <i class="fa-solid fa-sliders w-5 text-center"></i> Bot Konfigürasyonu
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+                <button id="menu-bot" onclick="switchTab('bot')" class="flex items-center gap-3 p-3.5 w-full text-left bg-blue-600 text-white rounded-xl font-bold transition-all shadow-md">
+                    <i class="fa-solid fa-robot w-5 text-center text-lg"></i> Asistan Verisi
                 </button>
-                <button id="menu-reviews" onclick="switchTab('reviews')" class="flex items-center gap-3 p-3 w-full text-left text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl font-medium transition justify-between">
+                <button id="menu-gallery" onclick="switchTab('gallery')" class="flex items-center gap-3 p-3.5 w-full text-left text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl font-bold transition-all">
+                    <i class="fa-solid fa-images w-5 text-center text-lg"></i> Galeri Yönetimi
+                </button>
+                <button id="menu-reviews" onclick="switchTab('reviews')" class="flex items-center gap-3 p-3.5 w-full text-left text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl font-bold transition-all justify-between">
                     <span class="flex items-center gap-3">
-                        <i class="fa-solid fa-comments w-5 text-center"></i> Yorum Yönetimi
+                        <i class="fa-solid fa-comments w-5 text-center text-lg"></i> Yorum Onay
                     </span>
-                    <span id="pending-badge" class="bg-red-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-full hidden">0</span>
+                    <span id="pending-badge" class="bg-red-500 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full hidden">0</span>
                 </button>
             </nav>
             <div class="p-4 border-t border-slate-800">
-                <button onclick="logout()" class="flex items-center gap-3 p-3 w-full hover:bg-red-500/10 hover:text-red-400 rounded-xl text-slate-400 font-medium transition group">
-                    <i class="fa-solid fa-power-off w-5 text-center group-hover:text-red-400"></i> Güvenli Çıkış
+                <button onclick="logout()" class="flex items-center gap-3 p-3.5 w-full bg-red-500/10 hover:bg-red-500 hover:text-white text-red-400 rounded-xl font-bold transition-all group">
+                    <i class="fa-solid fa-power-off w-5 text-center"></i> Güvenli Çıkış
                 </button>
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col min-w-0 bg-slate-50 h-full">
-            <header class="h-20 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between z-0 shadow-sm flex-shrink-0">
-                <h1 id="page-title" class="text-lg sm:text-2xl font-bold text-slate-800 truncate pr-2">Kurallar ve Fiyat Listesi</h1>
+        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-slate-900 flex justify-around p-3 z-50 pb-safe shadow-[0_-10px_20px_rgba(0,0,0,0.2)] border-t border-slate-800">
+            <button id="mob-menu-bot" onclick="switchTab('bot')" class="text-blue-500 flex flex-col items-center gap-1 transition-colors"><i class="fa-solid fa-robot text-xl"></i><span class="text-[10px] font-bold">Asistan</span></button>
+            <button id="mob-menu-gallery" onclick="switchTab('gallery')" class="text-slate-400 hover:text-white flex flex-col items-center gap-1 transition-colors"><i class="fa-solid fa-images text-xl"></i><span class="text-[10px] font-bold">Galeri</span></button>
+            <button id="mob-menu-reviews" onclick="switchTab('reviews')" class="relative text-slate-400 hover:text-white flex flex-col items-center gap-1 transition-colors">
+                <i class="fa-solid fa-comments text-xl"></i><span class="text-[10px] font-bold">Yorumlar</span>
+                <span id="mob-pending-badge" class="absolute -top-1 -right-2 bg-red-500 text-white text-[9px] font-bold px-1.5 rounded-full hidden">0</span>
+            </button>
+            <button onclick="logout()" class="text-red-400 flex flex-col items-center gap-1"><i class="fa-solid fa-power-off text-xl"></i><span class="text-[10px] font-bold">Çıkış</span></button>
+        </nav>
+
+        <main class="flex-1 flex flex-col min-w-0 bg-slate-50 h-full pb-16 md:pb-0 relative">
+            <header class="h-20 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between z-10 shadow-sm flex-shrink-0 w-full">
+                <h1 id="page-title" class="text-lg sm:text-2xl font-extrabold text-slate-900 truncate pr-2">Asistan Yönetimi</h1>
                 
                 <div class="flex items-center gap-3 flex-shrink-0">
                     <div class="text-right hidden sm:block">
-                        <p class="text-sm font-bold text-slate-800">Mehmet Öz</p>
-                        <p class="text-xs text-emerald-500 font-medium"><i class="fa-solid fa-circle text-[8px] mr-1"></i>Yönetici</p>
+                        <p class="text-sm font-extrabold text-slate-900">Mehmet Öz</p>
+                        <p class="text-[11px] text-emerald-500 font-bold uppercase tracking-widest"><i class="fa-solid fa-circle text-[8px] mr-1"></i>Yönetici</p>
                     </div>
-                    <div class="flex flex-col items-center sm:block">
-                        <img src="https://i.hizliresim.com/jofsx6m.png" alt="Mehmet Öz" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-blue-500 shadow-md">
-                        <span class="text-[10px] font-bold text-slate-700 mt-1 sm:hidden">Mehmet Öz</span>
-                    </div>
+                    <img src="https://i.hizliresim.com/jofsx6m.png" alt="Admin" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-slate-100 shadow-sm">
                 </div>
             </header>
 
-            <div class="flex-1 p-4 sm:p-8 flex flex-col overflow-hidden">
-                <div class="max-w-5xl mx-auto w-full flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    
-                    <div id="section-bot" class="flex-1 flex flex-col overflow-hidden">
-                        <div class="bg-slate-50 px-4 sm:px-6 py-4 border-b border-slate-200 flex flex-wrap gap-4 justify-between items-center flex-shrink-0">
-                            <div class="hidden sm:flex items-center gap-2 text-slate-600 font-medium">
-                                <i class="fa-solid fa-code text-blue-500"></i> Bot Verisi
+            <div class="flex-1 p-4 sm:p-6 lg:p-8 flex flex-col overflow-hidden w-full relative">
+                
+                <div id="section-bot" class="w-full flex-1 flex flex-col bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-50 px-4 sm:px-6 py-4 border-b border-slate-200 flex flex-wrap gap-4 justify-between items-center flex-shrink-0">
+                        <div class="hidden sm:flex items-center gap-2 text-slate-700 font-bold">
+                            <i class="fa-solid fa-code text-blue-600"></i> Bot Ayarları
+                        </div>
+                        
+                        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                            <div class="flex bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                                <button id="undo-btn" onclick="undo()" class="px-4 py-2.5 hover:bg-slate-50 text-slate-700 border-r border-slate-200 disabled:opacity-30 disabled:hover:bg-white transition" disabled><i class="fa-solid fa-rotate-left"></i></button>
+                                <button id="redo-btn" onclick="redo()" class="px-4 py-2.5 hover:bg-slate-50 text-slate-700 disabled:opacity-30 disabled:hover:bg-white transition" disabled><i class="fa-solid fa-rotate-right"></i></button>
                             </div>
                             
-                            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                                <div class="flex bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex-shrink-0">
-                                    <button id="undo-btn" onclick="undo()" class="px-3 py-2 hover:bg-slate-50 text-slate-600 border-r border-slate-200 disabled:opacity-30 disabled:hover:bg-white transition" title="Geri Al" disabled>
-                                        <i class="fa-solid fa-rotate-left"></i>
-                                    </button>
-                                    <button id="redo-btn" onclick="redo()" class="px-3 py-2 hover:bg-slate-50 text-slate-600 disabled:opacity-30 disabled:hover:bg-white transition" title="İleri Al" disabled>
-                                        <i class="fa-solid fa-rotate-right"></i>
-                                    </button>
-                                </div>
-                                
-                                <div class="flex bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex-shrink-0">
-                                    <button onclick="triggerImport()" class="px-3 sm:px-4 py-2 hover:bg-slate-50 text-slate-700 border-r border-slate-200 transition text-xs font-semibold flex items-center gap-1.5" title="İçe Aktar">
-                                        <i class="fa-solid fa-file-import text-blue-500"></i> <span class="hidden sm:inline">İçe Aktar</span>
-                                    </button>
-                                    <button onclick="exportText()" class="px-3 sm:px-4 py-2 hover:bg-slate-50 text-slate-700 transition text-xs font-semibold flex items-center gap-1.5" title="Dışa Aktar">
-                                        <i class="fa-solid fa-file-export text-emerald-500"></i> <span class="hidden sm:inline">Dışa Aktar</span>
-                                    </button>
-                                </div>
+                            <div class="flex bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                                <button onclick="triggerImport()" class="px-4 py-2.5 hover:bg-slate-50 text-slate-700 border-r border-slate-200 transition text-xs font-bold flex items-center gap-2"><i class="fa-solid fa-file-import text-blue-600"></i> <span class="hidden sm:inline">İçe Aktar</span></button>
+                                <button onclick="exportText()" class="px-4 py-2.5 hover:bg-slate-50 text-slate-700 transition text-xs font-bold flex items-center gap-2"><i class="fa-solid fa-file-export text-emerald-600"></i> <span class="hidden sm:inline">Dışa Aktar</span></button>
+                            </div>
 
-                                <button id="save-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg font-semibold transition shadow-md shadow-blue-200 flex items-center gap-2 text-xs flex-shrink-0">
-                                    <i class="fa-solid fa-cloud-arrow-up"></i> Kaydet
+                            <button id="save-btn" class="bg-slate-900 hover:bg-black text-white px-5 py-2.5 rounded-xl font-bold transition-transform active:scale-95 shadow-md flex items-center gap-2 text-sm">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Kaydet
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 relative bg-white">
+                        <textarea id="bot-text" class="absolute inset-0 w-full h-full p-6 bg-transparent border-0 resize-none font-mono text-[14px] text-slate-800 leading-relaxed overflow-y-auto" placeholder="Veri çekiliyor..."></textarea>
+                    </div>
+                </div>
+
+                <div id="section-gallery" class="w-full flex-1 flex flex-col hidden overflow-hidden">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 mb-6 flex-shrink-0">
+                        <h3 class="font-extrabold text-slate-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-plus-circle text-blue-600"></i> Yeni Kare Ekle</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                            <div class="md:col-span-1">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="border-2 border-slate-200 rounded-2xl p-4 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-colors active:scale-95 bg-slate-50" onclick="document.getElementById('gal-media-camera').click()">
+                                        <i class="fa-solid fa-camera text-2xl text-slate-600 mb-2"></i>
+                                        <p class="text-xs font-bold text-slate-800">Çek</p>
+                                        <input type="file" id="gal-media-camera" accept="image/*" capture="environment" class="hidden" onchange="previewGalleryImage(this)">
+                                    </div>
+                                    <div class="border-2 border-slate-200 rounded-2xl p-4 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-colors active:scale-95 bg-slate-50" onclick="document.getElementById('gal-media-gallery').click()">
+                                        <i class="fa-solid fa-images text-2xl text-slate-600 mb-2"></i>
+                                        <p class="text-xs font-bold text-slate-800">Seç</p>
+                                        <input type="file" id="gal-media-gallery" accept="image/*" class="hidden" onchange="previewGalleryImage(this)">
+                                    </div>
+                                </div>
+                                <div id="gal-preview-name" class="text-[11px] font-bold text-blue-600 mt-2 text-center hidden">Dosya Seçildi</div>
+                            </div>
+                            <div class="md:col-span-2 flex flex-col sm:flex-row gap-4">
+                                <div class="flex-1">
+                                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Açıklama (Opsiyonel)</label>
+                                    <input type="text" id="gal-desc" class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white text-sm font-medium transition-colors" placeholder="Fotoğraf hakkında kısa bir yazı...">
+                                </div>
+                                <button onclick="uploadGalleryItem()" id="gal-upload-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-transform active:scale-95 whitespace-nowrap h-fit">
+                                    Sisteme Yükle
                                 </button>
                             </div>
                         </div>
-                        
-                        <div class="flex-1 relative bg-slate-50">
-                            <textarea id="bot-text" class="absolute inset-0 w-full h-full p-5 pb-16 bg-white border-0 resize-none font-mono text-sm text-slate-700 leading-relaxed overflow-y-auto" placeholder="Veri sunucudan çekiliyor..."></textarea>
+                    </div>
+                    
+                    <div class="bg-white flex-1 rounded-3xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                        <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 font-extrabold text-slate-900 flex items-center gap-2 flex-shrink-0">
+                            <i class="fa-solid fa-grip text-amber-500"></i> Yayındaki Kareler
+                        </div>
+                        <div class="flex-1 overflow-y-auto p-6 hide-scrollbar">
+                            <div id="gallery-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 w-full">
+                                </div>
                         </div>
                     </div>
-
-                    <div id="section-reviews" class="flex-1 flex flex-col overflow-y-auto hidden p-4 sm:p-6 space-y-6 bg-slate-50">
-                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                            <div class="bg-white px-5 py-4 border-b border-slate-100 flex items-center gap-2 font-bold text-slate-700">
-                                <i class="fa-solid fa-clock text-amber-500"></i> Onay Bekleyen Müşteri Yorumları
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                                            <th class="p-4">Müşteri / Rol</th>
-                                            <th class="p-4">Değerlendirme</th>
-                                            <th class="p-4">Yorum Metni</th>
-                                            <th class="p-4 text-right">İşlemler</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="pending-reviews-list" class="text-sm divide-y divide-slate-100">
-                                        <tr><td colspan="4" class="p-4 text-center text-slate-400">Yorumlar yükleniyor...</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                            <div class="bg-white px-5 py-4 border-b border-slate-100 flex items-center gap-2 font-bold text-slate-700">
-                                <i class="fa-solid fa-circle-check text-emerald-500"></i> Sitede Yayınlanan Aktif Yorumlar
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                                            <th class="p-4">Müşteri / Rol</th>
-                                            <th class="p-4">Değerlendirme</th>
-                                            <th class="p-4">Yorum Metni</th>
-                                            <th class="p-4 text-right">İşlemler</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="approved-reviews-list" class="text-sm divide-y divide-slate-100">
-                                        <tr><td colspan="4" class="p-4 text-center text-slate-400">Yorumlar yükleniyor...</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
+
+                <div id="section-reviews" class="w-full flex-1 flex flex-col hidden overflow-y-auto hide-scrollbar space-y-6">
+                    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden w-full">
+                        <div class="bg-slate-50 px-5 py-4 border-b border-slate-200 flex items-center gap-2 font-extrabold text-slate-900">
+                            <i class="fa-solid fa-clock text-amber-500 text-lg"></i> Onay Bekleyen Yorumlar
+                        </div>
+                        <div class="overflow-x-auto w-full">
+                            <table class="w-full text-left border-collapse min-w-[600px]">
+                                <thead>
+                                    <tr class="bg-white border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                                        <th class="p-4 pl-6">Müşteri</th>
+                                        <th class="p-4">Puan</th>
+                                        <th class="p-4 w-1/2">Yorum</th>
+                                        <th class="p-4 text-right pr-6">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pending-reviews-list" class="text-[14px] divide-y divide-slate-50 bg-white">
+                                    <tr><td colspan="4" class="p-6 text-center text-slate-400 font-bold">Yükleniyor...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden w-full">
+                        <div class="bg-slate-50 px-5 py-4 border-b border-slate-200 flex items-center gap-2 font-extrabold text-slate-900">
+                            <i class="fa-solid fa-circle-check text-emerald-500 text-lg"></i> Yayındaki Yorumlar
+                        </div>
+                        <div class="overflow-x-auto w-full">
+                            <table class="w-full text-left border-collapse min-w-[600px]">
+                                <thead>
+                                    <tr class="bg-white border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                                        <th class="p-4 pl-6">Müşteri</th>
+                                        <th class="p-4">Puan</th>
+                                        <th class="p-4 w-1/2">Yorum</th>
+                                        <th class="p-4 text-right pr-6">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="approved-reviews-list" class="text-[14px] divide-y divide-slate-50 bg-white">
+                                    <tr><td colspan="4" class="p-6 text-center text-slate-400 font-bold">Yükleniyor...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
 
     <script>
+        const supabaseUrl = "https://ppdwtpjglkphayfxexhv.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwZHd0cGpnbGtwaGF5ZnhleGh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNTc5ODEsImV4cCI6MjA5NjgzMzk4MX0.fJIyyxfU15EgrNARWkISFHJvU7-o-QpZbIKbRc3q_-s";
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
         let sessionPassword = "";
         let originalText = ""; 
-
         let historyStack = [];
         let historyIndex = -1;
         let isUndoingOrRedoing = false;
+        let selectedGalleryFile = null;
 
         const passwordInput = document.getElementById('login-password');
         const togglePasswordBtn = document.getElementById('toggle-password');
         const botTextArea = document.getElementById('bot-text');
         const saveBtn = document.getElementById('save-btn');
 
-        // GÖZ İKONU MANTIĞI
-        function showPassword() {
-            passwordInput.type = 'text';
-            togglePasswordBtn.classList.remove('fa-eye');
-            togglePasswordBtn.classList.add('fa-eye-slash');
-        }
-        function hidePassword() {
-            passwordInput.type = 'password';
-            togglePasswordBtn.classList.remove('fa-eye-slash');
-            togglePasswordBtn.classList.add('fa-eye');
-        }
-
+        // GÖZ İKONU
+        function showPassword() { passwordInput.type = 'text'; togglePasswordBtn.classList.replace('fa-eye', 'fa-eye-slash'); }
+        function hidePassword() { passwordInput.type = 'password'; togglePasswordBtn.classList.replace('fa-eye-slash', 'fa-eye'); }
         togglePasswordBtn.addEventListener('mousedown', showPassword);
         togglePasswordBtn.addEventListener('mouseup', hidePassword);
         togglePasswordBtn.addEventListener('mouseleave', hidePassword);
         togglePasswordBtn.addEventListener('touchstart', (e) => { e.preventDefault(); showPassword(); });
         togglePasswordBtn.addEventListener('touchend', hidePassword);
 
-        // KRİPTOGRAFİK ŞİFRELEME YARDIMCISI (SHA-256)
+        // HASH
         async function sha256(message) {
             const msgBuffer = new TextEncoder().encode(message);
             const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // SEKMELER ARASI GEÇİŞ MANTIĞI
+        // TAB MANTIĞI
         function switchTab(tabName) {
             const btnBot = document.getElementById('menu-bot');
+            const btnGal = document.getElementById('menu-gallery');
             const btnRev = document.getElementById('menu-reviews');
+            const mBtnBot = document.getElementById('mob-menu-bot');
+            const mBtnGal = document.getElementById('mob-menu-gallery');
+            const mBtnRev = document.getElementById('mob-menu-reviews');
             const secBot = document.getElementById('section-bot');
+            const secGal = document.getElementById('section-gallery');
             const secRev = document.getElementById('section-reviews');
             const title = document.getElementById('page-title');
 
+            // Reset Desktop
+            [btnBot, btnGal, btnRev].forEach(b => b.className = "flex items-center gap-3 p-3.5 w-full text-left text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl font-bold transition-all justify-between");
+            // Reset Mobile
+            [mBtnBot, mBtnGal, mBtnRev].forEach(b => b.className = "text-slate-400 hover:text-white flex flex-col items-center gap-1 transition-colors relative");
+
+            secBot.classList.add('hidden'); secGal.classList.add('hidden'); secRev.classList.add('hidden');
+
             if(tabName === 'bot') {
-                btnBot.className = "flex items-center gap-3 p-3 w-full text-left bg-blue-600 text-white rounded-xl font-medium transition";
-                btnRev.className = "flex items-center gap-3 p-3 w-full text-left text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl font-medium transition justify-between";
+                btnBot.className = "flex items-center gap-3 p-3.5 w-full text-left bg-blue-600 text-white rounded-xl font-bold transition-all shadow-md";
+                mBtnBot.classList.replace('text-slate-400', 'text-blue-500');
                 secBot.classList.remove('hidden');
-                secRev.classList.add('hidden');
-                title.innerText = "Kurallar ve Fiyat Listesi";
+                title.innerText = "Asistan Yönetimi";
+            } else if(tabName === 'gallery') {
+                btnGal.className = "flex items-center gap-3 p-3.5 w-full text-left bg-blue-600 text-white rounded-xl font-bold transition-all shadow-md";
+                mBtnGal.classList.replace('text-slate-400', 'text-blue-500');
+                secGal.classList.remove('hidden');
+                title.innerText = "Galeri Yönetimi";
+                loadGalleryAdmin();
             } else {
-                btnRev.className = "flex items-center gap-3 p-3 w-full text-left bg-blue-600 text-white rounded-xl font-medium transition justify-between";
-                btnBot.className = "flex items-center gap-3 p-3 w-full text-left text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl font-medium transition";
-                secBot.classList.add('hidden');
+                btnRev.className = "flex items-center gap-3 p-3.5 w-full text-left bg-blue-600 text-white rounded-xl font-bold transition-all shadow-md justify-between";
+                mBtnRev.classList.replace('text-slate-400', 'text-blue-500');
                 secRev.classList.remove('hidden');
-                title.innerText = "Müşteri Yorum Yönetimi";
+                title.innerText = "Yorum Onay";
                 loadReviews();
             }
         }
 
-        // GERI AL / ILERI AL MANTIĞI
+        // TEXT AREA GEÇMİŞİ
         function saveHistoryState(text) {
             if (isUndoingOrRedoing) return;
-            if (historyIndex < historyStack.length - 1) {
-                historyStack = historyStack.slice(0, historyIndex + 1);
-            }
+            if (historyIndex < historyStack.length - 1) historyStack = historyStack.slice(0, historyIndex + 1);
             if (historyStack.length > 0 && historyStack[historyIndex] === text) return;
-            historyStack.push(text);
-            historyIndex++;
-            updateHistoryButtons();
+            historyStack.push(text); historyIndex++; updateHistoryButtons();
         }
-
-        function undo() {
-            if (historyIndex > 0) {
-                isUndoingOrRedoing = true;
-                historyIndex--;
-                botTextArea.value = historyStack[historyIndex];
-                updateHistoryButtons();
-                isUndoingOrRedoing = false;
-            }
-        }
-
-        function redo() {
-            if (historyIndex < historyStack.length - 1) {
-                isUndoingOrRedoing = true;
-                historyIndex++;
-                botTextArea.value = historyStack[historyIndex];
-                updateHistoryButtons();
-                isUndoingOrRedoing = false;
-            }
-        }
-
-        function updateHistoryButtons() {
-            document.getElementById('undo-btn').disabled = (historyIndex <= 0);
-            document.getElementById('redo-btn').disabled = (historyIndex >= historyStack.length - 1);
-        }
+        function undo() { if (historyIndex > 0) { isUndoingOrRedoing = true; historyIndex--; botTextArea.value = historyStack[historyIndex]; updateHistoryButtons(); isUndoingOrRedoing = false; } }
+        function redo() { if (historyIndex < historyStack.length - 1) { isUndoingOrRedoing = true; historyIndex++; botTextArea.value = historyStack[historyIndex]; updateHistoryButtons(); isUndoingOrRedoing = false; } }
+        function updateHistoryButtons() { document.getElementById('undo-btn').disabled = (historyIndex <= 0); document.getElementById('redo-btn').disabled = (historyIndex >= historyStack.length - 1); }
 
         let historyTimeout;
-        botTextArea.addEventListener('input', () => {
-            clearTimeout(historyTimeout);
-            historyTimeout = setTimeout(() => { saveHistoryState(botTextArea.value); }, 400);
-        });
+        botTextArea.addEventListener('input', () => { clearTimeout(historyTimeout); historyTimeout = setTimeout(() => { saveHistoryState(botTextArea.value); }, 400); });
 
-        // IÇE / DIŞA AKTAR MANTIĞI
         function exportText() {
-            const text = botTextArea.value;
-            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const blob = new Blob([botTextArea.value], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
-            const dateStr = new Date().toISOString().slice(0,10);
-            link.href = URL.createObjectURL(blob);
-            link.download = `ozyapi_bot_ayarlari_${dateStr}.txt`;
-            link.click();
-            URL.revokeObjectURL(link.href);
-            Swal.fire({ icon: 'success', title: 'Dışa Aktarıldı', text: 'Mevcut veriler başarıyla indirildi.', timer: 2000, showConfirmButton: false });
+            link.href = URL.createObjectURL(blob); link.download = `ozyapi_ayarlar_${new Date().toISOString().slice(0,10)}.txt`; link.click(); URL.revokeObjectURL(link.href);
+            Swal.fire({ icon: 'success', title: 'Dışa Aktarıldı', timer: 2000, showConfirmButton: false });
         }
-
         function triggerImport() { document.getElementById('file-import-input').click(); }
-
         function handleImport(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+            const file = event.target.files[0]; if (!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
-                botTextArea.value = e.target.result;
-                saveHistoryState(botTextArea.value);
-                Swal.fire({ icon: 'success', title: 'İçe Aktarıldı', text: 'Veriler başarıyla yüklendi.', confirmButtonColor: '#3b82f6' });
-            };
-            reader.readAsText(file);
-            event.target.value = ''; 
+            reader.onload = function(e) { botTextArea.value = e.target.result; saveHistoryState(botTextArea.value); Swal.fire({ icon: 'success', title: 'İçe Aktarıldı' }); };
+            reader.readAsText(file); event.target.value = ''; 
         }
 
-        // GİRİŞ KONTROLÜ (GÜVENLİ HASH KONTROLÜ VE HATA YAKALAMA)
+        // GİRİŞ
         async function enterPanel() {
             const pass = passwordInput.value;
-            
-            if (!pass) {
-                Swal.fire({ icon: 'warning', title: 'Uyarı', text: 'Lütfen şifrenizi girin.', confirmButtonColor: '#3b82f6' });
-                return;
-            }
-
+            if (!pass) { Swal.fire({ icon: 'warning', text: 'Şifrenizi girin.' }); return; }
             try {
                 const hashedInput = await sha256(pass);
-                const targetHash = "fdea70019333a581d1c41f760fbb83e8578d2a1ab98732c24bdcd8e70357d7f7";
-
-                if (hashedInput !== targetHash) {
-                    Swal.fire({ icon: 'error', title: 'Hata', text: 'Hatalı şifre girdiniz!', confirmButtonColor: '#ef4444' });
-                    return;
-                }
-            } catch (error) {
-                // HTTPS olmadan test ediliyorsa crypto.subtle çöker, bu blok hatayı yakalar.
-                console.error("Şifreleme hatası (HTTPS gerekli olabilir):", error);
-                Swal.fire({ icon: 'error', title: 'Sistem Hatası', text: 'Tarayıcı güvenlik ayarları nedeniyle şifre kontrol edilemedi. Projeyi localhost veya HTTPS üzerinden çalıştırdığınıza emin olun.', confirmButtonColor: '#ef4444' });
-                return;
-            }
+                if (hashedInput !== "fdea70019333a581d1c41f760fbb83e8578d2a1ab98732c24bdcd8e70357d7f7") { Swal.fire({ icon: 'error', text: 'Hatalı şifre!' }); return; }
+            } catch (error) { Swal.fire({ icon: 'error', text: 'Tarayıcı güvenlik ayarları engelledi.' }); return; }
 
             sessionPassword = pass;
             const loginScreen = document.getElementById('login-screen');
             const dashboard = document.getElementById('admin-dashboard');
             
             loginScreen.style.opacity = '0';
-            setTimeout(() => {
-                loginScreen.style.display = 'none';
-                dashboard.classList.remove('hidden');
-                setTimeout(() => dashboard.style.opacity = '1', 50);
-                loadData();
-                loadReviews();
-            }, 500);
+            setTimeout(() => { loginScreen.style.display = 'none'; dashboard.classList.remove('hidden'); setTimeout(() => dashboard.style.opacity = '1', 50); loadData(); loadReviews(); }, 500);
         }
 
-        function logout() {
-            Swal.fire({
-                title: 'Çıkış yapmak istiyor musunuz?', icon: 'question', showCancelButton: true,
-                confirmButtonColor: '#ef4444', cancelButtonColor: '#64748b', confirmButtonText: 'Evet', cancelButtonText: 'İptal'
-            }).then((result) => { if (result.isConfirmed) { location.reload(); } });
-        }
+        function logout() { Swal.fire({ title: 'Çıkış?', showCancelButton: true, confirmButtonText: 'Evet' }).then((result) => { if (result.isConfirmed) location.reload(); }); }
 
-        // BOT AYARLARINI SUNUCUDAN ÇEKME (TAMAMLANAN KISIM)
+        // ASİSTAN VERİ
         async function loadData() {
             botTextArea.value = "Yükleniyor...";
             try {
-                const res = await fetch('/api/settings');
-                const data = await res.json();
-                
-                const serverText = data.text || "";
-                botTextArea.value = serverText;
-                originalText = serverText;
-
-                // Geri alma (undo) geçmişini ilk veriyle başlat
-                historyStack = [serverText];
-                historyIndex = 0;
-                updateHistoryButtons();
-
-            } catch (err) {
-                botTextArea.value = "Sunucudan veri çekilirken hata oluştu. Bağlantınızı kontrol edin.";
-                console.error("Supabase Bağlantı Hatası:", err);
-            }
+                const res = await fetch('/api/settings'); const data = await res.json();
+                botTextArea.value = data.text || ""; originalText = data.text || "";
+                historyStack = [originalText]; historyIndex = 0; updateHistoryButtons();
+            } catch (err) { botTextArea.value = "Hata oluştu."; }
         }
 
-        // BOT AYARLARINI KAYDETME İŞLEMİ (EKLENEN KISIM)
         saveBtn.addEventListener('click', async () => {
             const newText = botTextArea.value;
-            
-            // Yükleniyor durumu
-            const originalBtnContent = saveBtn.innerHTML;
-            saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...';
-            saveBtn.disabled = true;
-
+            const btnContent = saveBtn.innerHTML; saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; saveBtn.disabled = true;
             try {
-                const res = await fetch('/api/settings', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password: sessionPassword, newText: newText })
-                });
-                
+                const res = await fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: sessionPassword, newText: newText }) });
                 const data = await res.json();
-                
-                if (data.success) {
-                    Swal.fire({ icon: 'success', title: 'Başarılı', text: data.message, confirmButtonColor: '#3b82f6' });
-                    originalText = newText; // Değişiklik kaydedildiği için orijinal metni güncelle
-                } else {
-                    Swal.fire({ icon: 'error', title: 'Yetki Hatası', text: data.error, confirmButtonColor: '#ef4444' });
-                }
-            } catch (err) {
-                Swal.fire({ icon: 'error', title: 'Bağlantı Hatası', text: 'Sunucuya ulaşılamıyor, internet bağlantınızı kontrol edin.', confirmButtonColor: '#ef4444' });
-                console.error(err);
-            } finally {
-                // Butonu eski haline getir
-                saveBtn.innerHTML = originalBtnContent;
-                saveBtn.disabled = false;
-            }
+                if (data.success) { Swal.fire({ icon: 'success', title: 'Başarılı', text: data.message }); originalText = newText; } 
+                else { Swal.fire({ icon: 'error', title: 'Hata', text: data.error }); }
+            } catch (err) {} finally { saveBtn.innerHTML = btnContent; saveBtn.disabled = false; }
         });
 
-        // YORUMLARI SUNUCUDAN ÇEKME (EKLENEN KISIM)
+        // YORUMLAR
         async function loadReviews() {
             if (!sessionPassword) return;
-
             const pendingList = document.getElementById('pending-reviews-list');
             const approvedList = document.getElementById('approved-reviews-list');
             const badge = document.getElementById('pending-badge');
+            const mBadge = document.getElementById('mob-pending-badge');
 
             try {
                 const res = await fetch(`/api/reviews?action=admin_list&password=${sessionPassword}`);
                 const data = await res.json();
+                if (data.error) return;
 
-                if (data.error) {
-                    console.error("Yorum Hatası:", data.error);
-                    return;
-                }
-
-                // Bekleyen Yorumları Bas
                 if (data.pending && data.pending.length > 0) {
-                    badge.innerText = data.pending.length;
-                    badge.classList.remove('hidden');
-                    
+                    badge.innerText = data.pending.length; mBadge.innerText = data.pending.length;
+                    badge.classList.remove('hidden'); mBadge.classList.remove('hidden');
                     pendingList.innerHTML = data.pending.map(r => `
-                        <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-                            <td class="p-4">
-                                <div class="font-semibold text-slate-800">${r.ad_soyad}</div>
-                                <div class="text-xs text-slate-500">${r.kategori}</div>
-                            </td>
-                            <td class="p-4 text-amber-500 text-xs">
-                                ${'<i class="fa-solid fa-star"></i>'.repeat(r.puan)}${'<i class="fa-regular fa-star text-slate-300"></i>'.repeat(5 - r.puan)}
-                            </td>
-                            <td class="p-4 text-slate-600 max-w-md truncate" title="${r.yorum_metni}">${r.yorum_metni}</td>
-                            <td class="p-4 text-right space-x-2">
-                                <button onclick="handleReviewAction(${r.id}, 'approve')" class="px-3 py-1.5 bg-emerald-100 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded-lg transition text-xs font-bold shadow-sm"><i class="fa-solid fa-check"></i> Onayla</button>
-                                <button onclick="handleReviewAction(${r.id}, 'delete')" class="px-3 py-1.5 bg-red-100 text-red-600 hover:bg-red-500 hover:text-white rounded-lg transition text-xs font-bold shadow-sm"><i class="fa-solid fa-xmark"></i> Reddet</button>
+                        <tr class="hover:bg-slate-50 transition border-b border-slate-50">
+                            <td class="p-4 pl-6"><div class="font-bold text-slate-800">${r.ad_soyad}</div><div class="text-[10px] uppercase font-bold text-slate-400">${r.kategori}</div></td>
+                            <td class="p-4 text-amber-500 text-xs">${'<i class="fa-solid fa-star"></i>'.repeat(r.puan)}${'<i class="fa-regular fa-star text-slate-200"></i>'.repeat(5 - r.puan)}</td>
+                            <td class="p-4 text-slate-600 font-medium">${r.yorum_metni}</td>
+                            <td class="p-4 text-right pr-6 space-x-1">
+                                <button onclick="handleReviewAction(${r.id}, 'approve')" class="px-3 py-2 bg-emerald-500 text-white hover:bg-emerald-600 rounded-lg font-bold shadow-sm transition active:scale-95"><i class="fa-solid fa-check"></i></button>
+                                <button onclick="handleReviewAction(${r.id}, 'delete')" class="px-3 py-2 bg-red-500 text-white hover:bg-red-600 rounded-lg font-bold shadow-sm transition active:scale-95"><i class="fa-solid fa-xmark"></i></button>
                             </td>
                         </tr>
                     `).join('');
                 } else {
-                    badge.classList.add('hidden');
-                    pendingList.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-400 font-medium bg-slate-50">Onay bekleyen yorum bulunmuyor.</td></tr>';
+                    badge.classList.add('hidden'); mBadge.classList.add('hidden');
+                    pendingList.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-slate-400 font-bold bg-white">Bekleyen yorum yok.</td></tr>';
                 }
 
-                // Onaylanan Yorumları Bas
                 if (data.approved && data.approved.length > 0) {
                     approvedList.innerHTML = data.approved.map(r => `
-                        <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-                            <td class="p-4">
-                                <div class="font-semibold text-slate-800">${r.ad_soyad}</div>
-                                <div class="text-xs text-slate-500">${r.kategori}</div>
-                            </td>
-                            <td class="p-4 text-amber-500 text-xs">
-                                ${'<i class="fa-solid fa-star"></i>'.repeat(r.puan)}${'<i class="fa-regular fa-star text-slate-300"></i>'.repeat(5 - r.puan)}
-                            </td>
-                            <td class="p-4 text-slate-600 max-w-md truncate" title="${r.yorum_metni}">${r.yorum_metni}</td>
-                            <td class="p-4 text-right">
-                                <button onclick="handleReviewAction(${r.id}, 'delete')" class="px-3 py-1.5 bg-slate-100 text-slate-600 hover:bg-red-500 hover:text-white rounded-lg transition text-xs font-bold shadow-sm"><i class="fa-solid fa-trash-can"></i> Yayından Kaldır</button>
+                        <tr class="hover:bg-slate-50 transition border-b border-slate-50">
+                            <td class="p-4 pl-6"><div class="font-bold text-slate-800">${r.ad_soyad}</div><div class="text-[10px] uppercase font-bold text-slate-400">${r.kategori}</div></td>
+                            <td class="p-4 text-amber-500 text-xs">${'<i class="fa-solid fa-star"></i>'.repeat(r.puan)}${'<i class="fa-regular fa-star text-slate-200"></i>'.repeat(5 - r.puan)}</td>
+                            <td class="p-4 text-slate-600 font-medium">${r.yorum_metni}</td>
+                            <td class="p-4 text-right pr-6">
+                                <button onclick="handleReviewAction(${r.id}, 'delete')" class="px-3 py-2 bg-slate-100 text-slate-600 hover:bg-red-500 hover:text-white rounded-lg font-bold shadow-sm transition active:scale-95"><i class="fa-solid fa-trash-can"></i> Sil</button>
                             </td>
                         </tr>
                     `).join('');
-                } else {
-                    approvedList.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-400 font-medium bg-slate-50">Henüz yayınlanmış yorum yok.</td></tr>';
-                }
+                } else { approvedList.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-slate-400 font-bold bg-white">Yayınlanmış yorum yok.</td></tr>'; }
+            } catch (err) {}
+        }
 
-            } catch (err) {
-                console.error("Yorumlar yüklenirken bağlantı koptu:", err);
+        async function handleReviewAction(id, action) {
+            const isDelete = action === 'delete';
+            const result = await Swal.fire({ title: 'Emin misiniz?', icon: isDelete ? 'warning' : 'question', showCancelButton: true, confirmButtonColor: isDelete ? '#ef4444' : '#10b981', cancelButtonColor: '#64748b', confirmButtonText: isDelete ? 'Sil' : 'Onayla', cancelButtonText: 'İptal' });
+            if (result.isConfirmed) {
+                try {
+                    const res = await fetch('/api/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, password: sessionPassword, id }) });
+                    const data = await res.json();
+                    if (data.success) { Swal.fire({ icon: 'success', title: 'Başarılı', timer: 1500, showConfirmButton: false }); loadReviews(); } 
+                    else { Swal.fire({ icon: 'error', text: data.error }); }
+                } catch (err) {}
             }
         }
 
-        // YORUM ONAYLAMA VE SİLME İŞLEMİ (EKLENEN KISIM)
-        async function handleReviewAction(id, action) {
-            const isDelete = action === 'delete';
-            const actionText = isDelete ? "Bu yorumu silmek/kaldırmak istediğinize emin misiniz?" : "Bu yorumu sitede yayınlamak için onaylıyor musunuz?";
-            
-            const result = await Swal.fire({
-                title: 'Emin misiniz?',
-                text: actionText,
-                icon: isDelete ? 'warning' : 'question',
-                showCancelButton: true,
-                confirmButtonColor: isDelete ? '#ef4444' : '#10b981',
-                cancelButtonColor: '#64748b',
-                confirmButtonText: isDelete ? 'Evet, Sil' : 'Evet, Onayla',
-                cancelButtonText: 'İptal'
-            });
-
-            if (result.isConfirmed) {
-                try {
-                    const res = await fetch('/api/reviews', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action, password: sessionPassword, id })
-                    });
-                    const data = await res.json();
-
-                    if (data.success) {
-                        Swal.fire({ icon: 'success', title: 'İşlem Başarılı', text: data.message, timer: 1500, showConfirmButton: false });
-                        loadReviews(); // Başarılıysa listeyi anında güncelle
-                    } else {
-                        Swal.fire({ icon: 'error', title: 'Hata', text: data.error });
-                    }
-                } catch (err) {
-                    Swal.fire({ icon: 'error', title: 'Sistem Hatası', text: 'İşlem sunucuya iletilemedi.' });
-                }
+        // ============================================
+        // GALERİ SİSTEMİ (V4 - YENİ)
+        // ============================================
+        function previewGalleryImage(input) {
+            const file = input.files[0];
+            const nameDiv = document.getElementById('gal-preview-name');
+            if(file && nameDiv) {
+                selectedGalleryFile = file;
+                nameDiv.innerText = "Seçilen: " + file.name;
+                nameDiv.classList.remove('hidden');
             }
+        }
+
+        async function uploadGalleryItem() {
+            if(!selectedGalleryFile) { Swal.fire({icon:'warning', text:'Lütfen bir fotoğraf seçin/çekin!'}); return; }
+            const btn = document.getElementById('gal-upload-btn');
+            const desc = document.getElementById('gal-desc').value;
+            
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Yükleniyor...'; btn.disabled = true;
+            try {
+                const ext = selectedGalleryFile.name.split('.').pop();
+                const fileName = `galeri-${Date.now()}.${ext}`;
+                
+                // Storage'a yükle (medya bucket)
+                const { error: uploadErr } = await supabase.storage.from('medya').upload(fileName, selectedGalleryFile);
+                if(uploadErr) throw uploadErr;
+                
+                const fileUrl = supabase.storage.from('medya').getPublicUrl(fileName).data.publicUrl;
+                
+                // galeri tablosuna kaydet
+                const { error: dbErr } = await supabase.from('galeri').insert([{ gorsel_url: fileUrl, aciklama: desc }]);
+                if(dbErr) throw dbErr;
+
+                Swal.fire({icon:'success', title:'Kare Eklendi!', timer:1500, showConfirmButton:false});
+                document.getElementById('gal-media-camera').value = '';
+                document.getElementById('gal-media-gallery').value = '';
+                document.getElementById('gal-desc').value = '';
+                document.getElementById('gal-preview-name').classList.add('hidden');
+                selectedGalleryFile = null;
+                
+                loadGalleryAdmin(); // Listeyi yenile
+            } catch(e) { Swal.fire({icon:'error', text:'Yükleme Başarısız!'}); console.error(e); }
+            finally { btn.innerHTML = 'Sisteme Yükle'; btn.disabled = false; }
+        }
+
+        async function loadGalleryAdmin() {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = '<div class="col-span-full text-center py-10"><i class="fa-solid fa-spinner fa-spin text-blue-500 text-3xl"></i></div>';
+            try {
+                const { data, error } = await supabase.from('galeri').select('*').order('created_at', { ascending: false });
+                if(error) throw error;
+                if(!data || data.length === 0) { grid.innerHTML = '<div class="col-span-full text-center font-bold text-slate-400 py-10">Galeri şu an boş.</div>'; return; }
+                
+                grid.innerHTML = '';
+                data.forEach(item => {
+                    grid.insertAdjacentHTML('beforeend', `
+                        <div class="relative group rounded-xl overflow-hidden shadow-sm border border-slate-200 aspect-square">
+                            <img src="${item.gorsel_url}" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2">
+                                <p class="text-white text-[10px] text-center font-bold mb-3 line-clamp-2">${item.aciklama || 'Açıklama Yok'}</p>
+                                <button onclick="deleteGalleryItem(${item.id})" class="bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full shadow-lg transition-transform active:scale-95"><i class="fa-solid fa-trash-can text-sm"></i></button>
+                            </div>
+                        </div>
+                    `);
+                });
+            } catch(e) { grid.innerHTML = '<div class="col-span-full text-center text-red-500 font-bold py-10">Yüklenemedi!</div>'; }
+        }
+
+        async function deleteGalleryItem(id) {
+            Swal.fire({title: 'Silinsin mi?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sil', cancelButtonText:'İptal', confirmButtonColor: '#d33'}).then(async res => {
+                if(res.isConfirmed) {
+                    await supabase.from('galeri').delete().eq('id', id);
+                    loadGalleryAdmin();
+                }
+            });
         }
     </script>
 </body>
