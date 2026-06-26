@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Öz Social | V4 Ultra</title>
+    <title>Öz Social | Müşterilerin Ustaların Sosyal Medyası</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -23,71 +23,43 @@
             --accent: #2563eb;
         }
 
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--bg-color); 
-            -webkit-tap-highlight-color: transparent; 
-            color: var(--primary);
-        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); -webkit-tap-highlight-color: transparent; color: var(--primary); }
 
-        /* LIQUID GLASS EFEKTİ (iOS Style) */
-        .liquid-glass {
-            background: var(--glass-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border-bottom: 1px solid var(--glass-border);
-        }
-        
-        .liquid-glass-bottom {
-            background: var(--glass-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border-top: 1px solid rgba(0, 0, 0, 0.04);
-            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.03);
-        }
+        .liquid-glass { background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-bottom: 1px solid var(--glass-border); }
+        .liquid-glass-bottom { background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-top: 1px solid rgba(0, 0, 0, 0.04); box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.03); }
 
-        /* Scrollbar Gizleme */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
         .no-select { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
         .no-scroll { overflow: hidden !important; height: 100vh !important; touch-action: none; }
-        
         button { border: none; background: transparent; outline: none; cursor: pointer; font-family: inherit; }
         .tw-modal-hidden { display: none !important; }
 
-        /* Premium Post Kart Gölgeleri */
-        .post-card {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0,0,0,0.02);
-            border: 1px solid rgba(0,0,0,0.03);
-        }
+        .post-card { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.03); transform: translateZ(0); will-change: transform; }
 
-        /* Animasyonlar */
         @keyframes pop { 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; } 50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 0; } }
         .heart-pop { animation: pop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        
         @keyframes chatHeartBounce { 0% { transform: scale(0); } 50% { transform: scale(1.4); } 100% { transform: scale(1); } }
         .chat-heart-anim { animation: chatHeartBounce 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        
         @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .gallery-content { animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
-        /* Reels Video Konteyner */
         .reels-video-container { position: relative; width: 100%; max-height: 80vh; background: #000; border-radius: 16px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         .reels-video { width: 100%; max-height: 80vh; object-fit: contain; cursor: pointer; }
         .reels-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 64px; height: 64px; background: rgba(0,0,0,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem; backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
         .reels-mute-btn { position: absolute; bottom: 15px; right: 15px; width: 36px; height: 36px; background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; backdrop-filter: blur(4px); cursor: pointer; transition: all 0.2s; z-index: 10; }
         .reels-video.paused ~ .reels-play-btn { opacity: 1; }
-
         .avatar-upload:hover .avatar-overlay { opacity: 1; }
     </style>
 </head>
 <body class="pb-24 selection:bg-blue-100 selection:text-blue-900">
 
+    <!-- ÜST NAVBAR (LOGO DÜZELTİLDİ) -->
     <header class="liquid-glass sticky top-0 z-40">
         <div class="max-w-xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-2 cursor-pointer transition-transform active:scale-95" onclick="window.location.href='index.html'">
-                <img src="https://i.hizliresim.com/7os9wuu.png" alt="Öz Social Logo" class="h-8 w-auto object-contain drop-shadow-sm">
+            <div class="flex items-center gap-3 cursor-pointer transition-transform active:scale-95" onclick="window.location.href='index.html'">
+                <img src="https://i.hizliresim.com/7os9wuu.png" alt="Öz Social Logo" class="h-9 w-auto object-contain drop-shadow-sm">
+                <span class="text-xl font-extrabold tracking-tight text-slate-900">Öz Social</span>
             </div>
             
             <div class="flex items-center gap-4">
@@ -99,6 +71,7 @@
         </div>
     </header>
 
+    <!-- ANA İÇERİK (FEED) -->
     <main class="max-w-xl mx-auto p-4 space-y-6">
         <div class="flex gap-2 mb-2 overflow-x-auto hide-scrollbar pb-2">
             <button class="feed-filter active px-5 py-2.5 rounded-2xl bg-slate-900 text-white text-[13px] font-bold transition-all shadow-md border-none outline-none" data-filter="all">Tümü</button>
@@ -109,6 +82,7 @@
         <div id="feed-list" class="space-y-6"></div>
     </main>
 
+    <!-- ALT NAVİGASYON BARI -->
     <nav class="liquid-glass-bottom fixed bottom-0 left-0 w-full z-50 pb-safe">
         <div class="max-w-xl mx-auto flex justify-around items-center px-4 py-3">
             <button id="bottom-home-btn" class="text-slate-900 text-[26px] transition-transform active:scale-90 p-2" onclick="window.scrollTo({top:0, behavior:'smooth'})"><i class="fa-solid fa-house"></i></button>
@@ -124,6 +98,7 @@
         </div>
     </nav>
 
+    <!-- GALERİ MODALI -->
     <div id="gallery-modal" class="fixed inset-0 bg-black/95 z-[3000] tw-modal-hidden flex items-center justify-center backdrop-blur-md transition-opacity" onclick="if(event.target === this) closeSideModal('gallery-modal', 'gallery-panel')">
         <button onclick="closeSideModal('gallery-modal', 'gallery-panel')" class="absolute top-5 right-5 text-white text-3xl hover:text-red-500 transition-colors z-50"><i class="fa-solid fa-xmark"></i></button>
         <div id="gallery-panel" class="w-full h-full p-2 flex items-center justify-center transform transition-transform duration-300 scale-95 gallery-content">
@@ -131,6 +106,7 @@
         </div>
     </div>
 
+    <!-- ARAMA MODALI -->
     <div id="search-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-50 z-[2000] tw-modal-hidden flex-col">
         <div id="search-modal-panel" class="max-w-xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="flex items-center px-4 py-3 border-b border-slate-100 bg-white sticky top-0 z-10">
@@ -149,6 +125,7 @@
         </div>
     </div>
 
+    <!-- GÖNDERİ OLUŞTURMA MODALI -->
     <div id="create-post-modal" class="fixed inset-0 bg-slate-900/80 z-[2000] tw-modal-hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-md transition-opacity" onclick="if(event.target === this) { this.classList.add('tw-modal-hidden'); document.getElementById('create-post-form').reset(); document.getElementById('media-upload-container').classList.add('tw-modal-hidden'); document.body.classList.remove('no-scroll'); }">
         <div class="bg-white rounded-t-[32px] sm:rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl transform transition-transform translate-y-full sm:translate-y-0 relative z-10" id="create-post-panel" style="transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);">
             <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-20">
@@ -202,6 +179,7 @@
         </div>
     </div>
 
+    <!-- PROFİLİ DÜZENLE MODALI -->
     <div id="edit-profile-modal" class="fixed inset-0 bg-slate-900/80 z-[2500] tw-modal-hidden flex items-center justify-center p-4 backdrop-blur-md transition-opacity" onclick="if(event.target === this) { this.classList.add('tw-modal-hidden'); document.body.classList.remove('no-scroll'); }">
         <div class="bg-white rounded-[32px] w-full max-w-md overflow-hidden shadow-2xl transform transition-transform scale-100 relative z-10">
             <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
@@ -252,6 +230,7 @@
         </div>
     </div>
 
+    <!-- ZENGİN BİLDİRİMLER MODALI Z-[1020] -->
     <div id="notification-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-50 z-[2020] tw-modal-hidden flex-col">
         <div id="notification-panel" class="max-w-xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-20">
@@ -262,6 +241,7 @@
         </div>
     </div>
 
+    <!-- MESAJLAR LİSTESİ MODALI -->
     <div id="messages-list-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-50 z-[2030] tw-modal-hidden flex-col">
         <div id="messages-list-panel" class="max-w-xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-20">
@@ -272,6 +252,7 @@
         </div>
     </div>
 
+    <!-- PROFİL MODALI -->
     <div id="user-profile-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-50 z-[2040] tw-modal-hidden flex-col">
         <div id="user-profile-panel" class="max-w-xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="flex items-center px-4 py-3 border-b border-slate-100 bg-white sticky top-0 z-20">
@@ -330,10 +311,11 @@
         </div>
     </div>
 
+    <!-- HAREKETLERİN (ACTIVITY) MODALI -->
     <div id="activity-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-50 z-[2050] tw-modal-hidden flex-col">
         <div id="activity-panel" class="max-w-xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
-            <div class="flex items-center px-4 py-3 border-b border-slate-100 bg-white sticky top-0 z-20">
-                <button onclick="closeSideModal('activity-modal', 'activity-panel')" class="text-slate-900 text-[24px] mr-4 active:scale-95"><i class="fa-solid fa-arrow-left"></i></button>
+            <div class="flex items-center px-4 py-3 border-b border-slate-100 bg-white sticky top-0 z-20 shadow-sm">
+                <button onclick="closeSideModal('activity-modal', 'activity-panel')" class="text-slate-800 text-[24px] mr-4 active:scale-95"><i class="fa-solid fa-arrow-left"></i></button>
                 <h2 class="text-lg font-extrabold text-slate-900 flex-1">Hareketlerin</h2>
             </div>
             
@@ -346,6 +328,7 @@
         </div>
     </div>
 
+    <!-- TAKİP LİSTESİ MODALI -->
     <div id="follow-list-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-50 z-[2050] tw-modal-hidden flex-col">
         <div id="follow-list-panel" class="max-w-xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="px-5 py-4 border-b border-slate-100 flex items-center bg-white sticky top-0 z-10">
@@ -356,6 +339,7 @@
         </div>
     </div>
 
+    <!-- DM MODALI -->
     <div id="dm-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-50 z-[2060] tw-modal-hidden flex-col">
         <div id="dm-panel" class="max-w-xl mx-auto w-full h-full bg-slate-50 shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-20">
@@ -384,6 +368,7 @@
         </div>
     </div>
 
+    <!-- TEKİL GÖNDERİ MODALI -->
     <div id="single-post-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-50 z-[2070] tw-modal-hidden flex-col">
         <div id="single-post-panel" class="max-w-xl mx-auto w-full h-full bg-slate-50 shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-10">
