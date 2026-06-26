@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Öz Social | Müşterilerin Ustaların Sosyal Medyası</title>
+    <title>Öz Social | V4 Ultra</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -54,7 +54,6 @@
 </head>
 <body class="pb-24 selection:bg-blue-100 selection:text-blue-900">
 
-    <!-- ÜST NAVBAR (LOGO DÜZELTİLDİ) -->
     <header class="liquid-glass sticky top-0 z-40">
         <div class="max-w-xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-3 cursor-pointer transition-transform active:scale-95" onclick="window.location.href='index.html'">
@@ -71,18 +70,15 @@
         </div>
     </header>
 
-    <!-- ANA İÇERİK (FEED) -->
     <main class="max-w-xl mx-auto p-4 space-y-6">
         <div class="flex gap-2 mb-2 overflow-x-auto hide-scrollbar pb-2">
             <button class="feed-filter active px-5 py-2.5 rounded-2xl bg-slate-900 text-white text-[13px] font-bold transition-all shadow-md border-none outline-none" data-filter="all">Tümü</button>
             <button class="feed-filter px-5 py-2.5 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-[13px] font-bold transition-all shadow-sm outline-none" data-filter="soru">Sorular</button>
             <button class="feed-filter px-5 py-2.5 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-[13px] font-bold transition-all shadow-sm outline-none" data-filter="medya">Medya & Reels</button>
         </div>
-
         <div id="feed-list" class="space-y-6"></div>
     </main>
 
-    <!-- ALT NAVİGASYON BARI -->
     <nav class="liquid-glass-bottom fixed bottom-0 left-0 w-full z-50 pb-safe">
         <div class="max-w-xl mx-auto flex justify-around items-center px-4 py-3">
             <button id="bottom-home-btn" class="text-slate-900 text-[26px] transition-transform active:scale-90 p-2" onclick="window.scrollTo({top:0, behavior:'smooth'})"><i class="fa-solid fa-house"></i></button>
@@ -98,7 +94,6 @@
         </div>
     </nav>
 
-    <!-- GALERİ MODALI -->
     <div id="gallery-modal" class="fixed inset-0 bg-black/95 z-[3000] tw-modal-hidden flex items-center justify-center backdrop-blur-md transition-opacity" onclick="if(event.target === this) closeSideModal('gallery-modal', 'gallery-panel')">
         <button onclick="closeSideModal('gallery-modal', 'gallery-panel')" class="absolute top-5 right-5 text-white text-3xl hover:text-red-500 transition-colors z-50"><i class="fa-solid fa-xmark"></i></button>
         <div id="gallery-panel" class="w-full h-full p-2 flex items-center justify-center transform transition-transform duration-300 scale-95 gallery-content">
@@ -106,7 +101,6 @@
         </div>
     </div>
 
-    <!-- ARAMA MODALI -->
     <div id="search-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-50 z-[2000] tw-modal-hidden flex-col">
         <div id="search-modal-panel" class="max-w-xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="flex items-center px-4 py-3 border-b border-slate-100 bg-white sticky top-0 z-10">
@@ -125,7 +119,6 @@
         </div>
     </div>
 
-    <!-- GÖNDERİ OLUŞTURMA MODALI -->
     <div id="create-post-modal" class="fixed inset-0 bg-slate-900/80 z-[2000] tw-modal-hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-md transition-opacity" onclick="if(event.target === this) { this.classList.add('tw-modal-hidden'); document.getElementById('create-post-form').reset(); document.getElementById('media-upload-container').classList.add('tw-modal-hidden'); document.body.classList.remove('no-scroll'); }">
         <div class="bg-white rounded-t-[32px] sm:rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl transform transition-transform translate-y-full sm:translate-y-0 relative z-10" id="create-post-panel" style="transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);">
             <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-20">
@@ -148,10 +141,11 @@
                 <div id="media-upload-container" class="tw-modal-hidden animate-fade-in space-y-3">
                     <label class="block text-[12px] font-bold text-slate-500 uppercase tracking-widest">İçerik Seç</label>
                     <div class="grid grid-cols-2 gap-4">
+                        <!-- SADECE RESİM İSTEYEREK ANDROID'İ KAMERAYA ZORLAMA EKLENDİ -->
                         <div class="border-2 border-slate-100 rounded-3xl p-5 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all active:scale-95" onclick="document.getElementById('post-media-camera').click()">
                             <div class="w-14 h-14 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm"><i class="fa-solid fa-camera text-2xl text-slate-700"></i></div>
                             <div class="text-[14px] font-extrabold text-slate-900">Kamerayı Aç</div>
-                            <input type="file" id="post-media-camera" accept="image/*,video/*" capture="environment" class="hidden">
+                            <input type="file" id="post-media-camera" accept="image/*" capture="environment" class="hidden">
                         </div>
                         <div class="border-2 border-slate-100 rounded-3xl p-5 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all active:scale-95" onclick="document.getElementById('post-media-gallery').click()">
                             <div class="w-14 h-14 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm"><i class="fa-solid fa-images text-2xl text-slate-700"></i></div>
@@ -179,7 +173,6 @@
         </div>
     </div>
 
-    <!-- PROFİLİ DÜZENLE MODALI -->
     <div id="edit-profile-modal" class="fixed inset-0 bg-slate-900/80 z-[2500] tw-modal-hidden flex items-center justify-center p-4 backdrop-blur-md transition-opacity" onclick="if(event.target === this) { this.classList.add('tw-modal-hidden'); document.body.classList.remove('no-scroll'); }">
         <div class="bg-white rounded-[32px] w-full max-w-md overflow-hidden shadow-2xl transform transition-transform scale-100 relative z-10">
             <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
@@ -230,7 +223,6 @@
         </div>
     </div>
 
-    <!-- ZENGİN BİLDİRİMLER MODALI Z-[1020] -->
     <div id="notification-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-50 z-[2020] tw-modal-hidden flex-col">
         <div id="notification-panel" class="max-w-xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-20">
@@ -241,7 +233,6 @@
         </div>
     </div>
 
-    <!-- MESAJLAR LİSTESİ MODALI -->
     <div id="messages-list-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-50 z-[2030] tw-modal-hidden flex-col">
         <div id="messages-list-panel" class="max-w-xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-20">
@@ -252,7 +243,6 @@
         </div>
     </div>
 
-    <!-- PROFİL MODALI -->
     <div id="user-profile-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-50 z-[2040] tw-modal-hidden flex-col">
         <div id="user-profile-panel" class="max-w-xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="flex items-center px-4 py-3 border-b border-slate-100 bg-white sticky top-0 z-20">
@@ -311,7 +301,6 @@
         </div>
     </div>
 
-    <!-- HAREKETLERİN (ACTIVITY) MODALI -->
     <div id="activity-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-50 z-[2050] tw-modal-hidden flex-col">
         <div id="activity-panel" class="max-w-xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="flex items-center px-4 py-3 border-b border-slate-100 bg-white sticky top-0 z-20 shadow-sm">
@@ -328,7 +317,6 @@
         </div>
     </div>
 
-    <!-- TAKİP LİSTESİ MODALI -->
     <div id="follow-list-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-50 z-[2050] tw-modal-hidden flex-col">
         <div id="follow-list-panel" class="max-w-xl mx-auto w-full h-full bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="px-5 py-4 border-b border-slate-100 flex items-center bg-white sticky top-0 z-10">
@@ -339,7 +327,6 @@
         </div>
     </div>
 
-    <!-- DM MODALI -->
     <div id="dm-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-50 z-[2060] tw-modal-hidden flex-col">
         <div id="dm-panel" class="max-w-xl mx-auto w-full h-full bg-slate-50 shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-20">
@@ -368,7 +355,6 @@
         </div>
     </div>
 
-    <!-- TEKİL GÖNDERİ MODALI -->
     <div id="single-post-modal" class="fixed inset-0 w-full h-[100dvh] bg-slate-50 z-[2070] tw-modal-hidden flex-col">
         <div id="single-post-panel" class="max-w-xl mx-auto w-full h-full bg-slate-50 shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full relative">
             <div class="flex items-center px-4 py-3 border-b border-slate-200 bg-white sticky top-0 z-10">
@@ -383,3 +369,4 @@
     <script type="module" src="ozsocial.js"></script>
 </body>
 </html>
+
