@@ -1,15 +1,9 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
-// ============================================
-// SUPABASE BAĞLANTISI
-// ============================================
 const supabaseUrl = "https://ppdwtpjglkphayfxexhv.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwZHd0cGpnbGtwaGF5ZnhleGh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNTc5ODEsImV4cCI6MjA5NjgzMzk4MX0.fJIyyxfU15EgrNARWkISFHJvU7-o-QpZbIKbRc3q_-s";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// ============================================
-// GLOBAL STATE (DURUM) DEĞİŞKENLERİ
-// ============================================
 let currentUserSession = null;
 let temporaryRegistrationData = null; 
 let currentLang = 'tr';
@@ -17,22 +11,18 @@ let userDataGlobal = null;
 let selectedAvatarFile = null;
 
 // ============================================
-// YARDIMCI FONKSİYONLAR (UI & AUTH)
+// YARDIMCI FONKSİYONLAR VE UI MANTIĞI
 // ============================================
 function toggleAuthForms(activeForm) {
     const forms = [
         document.getElementById('login-form'), 
         document.getElementById('register-form'), 
-        document.getElementById('forgot-password-form'), 
-        document.getElementById('reset-password-form'), 
-        document.getElementById('otp-verify-form'), 
-        document.getElementById('reset-otp-form')
+        document.getElementById('forgot-password-form')
     ];
     forms.forEach(f => { if(f) f.classList.add('tw-modal-hidden'); });
     if(activeForm) activeForm.classList.remove('tw-modal-hidden');
 }
 
-// 2. Kural İsteği: Yorum kısmında giriş yapan kişinin ismi kilitlensin ve sönük olsun
 function lockReviewNameIfLoggedIn() {
     const revNameInput = document.getElementById('rev-name');
     if(revNameInput) {
@@ -45,6 +35,16 @@ function lockReviewNameIfLoggedIn() {
             revNameInput.removeAttribute('readonly');
             revNameInput.classList.remove('bg-slate-200', 'cursor-not-allowed', 'opacity-70');
         }
+    }
+}
+
+window.openGallery = function(imgUrl) {
+    const imgEl = document.getElementById('gallery-image');
+    const modal = document.getElementById('gallery-modal');
+    if(imgEl && modal) {
+        imgEl.src = imgUrl;
+        document.body.style.overflow = 'hidden';
+        modal.classList.remove('tw-modal-hidden');
     }
 }
 
@@ -117,14 +117,14 @@ if(openChatBtn) {
     openChatBtn.onclick = () => {
         if(botChatModal) {
             botChatModal.style.display = 'flex';
-            document.body.classList.add('no-scroll'); // Arka sayfa kayması (bleed) engellendi
+            document.body.classList.add('no-scroll');
         }
         if (!botChatInitialized) {
             botChatInitialized = true;
             const typingEl = showTypingIndicator();
             setTimeout(() => {
                 if(typingEl) typingEl.remove();
-                addMessage(currentLang === 'tr' ? 'Merhaba! Ben Öz Yapı Market asistanı. Boya, tesisat veya bataryalarımız hakkında size nasıl yardımcı olabilirim?' : 'Hello! I am the Öz Yapı Market assistant. How can I help you about our paints, plumbing or batteries?', 'bot');
+                addMessage(currentLang === 'tr' ? 'Merhaba! Ben Öz Yapı Market asistanı. Boya, tesisat veya bataryalarımız hakkında size nasıl yardımcı olabilirim?' : 'Hello! I am the Öz Yapı Market assistant. How can I help you?', 'bot');
             }, 1500);
         }
     };
@@ -205,7 +205,7 @@ if(colorSearch) colorSearch.addEventListener('input', (e) => { searchTerm = e.ta
 if(filterBtns.length > 0) {
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            filterBtns.forEach(b => { b.classList.remove('active'); b.style.background = 'rgba(255,255,255,0.05)'; });
+            filterBtns.forEach(b => { b.classList.remove('active'); b.style.background = 'transparent'; });
             btn.classList.add('active'); activeFilter = btn.getAttribute('data-type');
             if(typeof renderColors === "function") renderColors();
         });
@@ -256,10 +256,10 @@ window.fetchApprovedReviews = async function() {
                 <div class="testimonial-card">
                     <i class="fa-solid fa-quote-right quote-icon"></i>
                     <div class="stars">${'<i class="fa-solid fa-star"></i>'.repeat(r.puan)}${`<i class="fa-regular fa-star" style="color:#cbd5e1"></i>`.repeat(5 - r.puan)}</div>
-                    <p>"${r.yorum_metni}"</p>
+                    <p class="font-medium">"${r.yorum_metni}"</p>
                     <div class="client-info">
-                        <div class="client-avatar" style="background: var(--primary-color); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${firstLetter}</div>
-                        <div><h4>${r.ad_soyad}</h4><span style="font-size: 0.8rem; color: var(--text-light);">${r.kategori}</span></div>
+                        <div class="client-avatar bg-blue-600 text-white">${firstLetter}</div>
+                        <div><h4 class="font-extrabold text-slate-900">${r.ad_soyad}</h4><span style="font-size: 0.8rem; color: var(--text-light); font-weight:bold;">${r.kategori}</span></div>
                     </div>
                 </div>`;
         });
@@ -292,24 +292,57 @@ if(reviewForm) {
 }
 
 // ============================================
+// DİNAMİK GALERİ YÜKLEME (YENİ - V4)
+// ============================================
+async function loadGallery() {
+    const galleryList = document.getElementById('dynamic-gallery-list');
+    if(!galleryList) return;
+    
+    galleryList.innerHTML = '<div class="col-span-full text-center text-slate-400 py-10"><i class="fa-solid fa-spinner fa-spin text-3xl text-blue-500"></i></div>';
+    try {
+        const { data: items, error } = await supabase.from('galeri').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        if (!items || items.length === 0) {
+            galleryList.innerHTML = '<div class="col-span-full text-center text-slate-400 py-10 font-bold">Henüz görsel eklenmemiş.</div>';
+            return;
+        }
+        galleryList.innerHTML = '';
+        items.forEach(item => {
+            const descHtml = item.aciklama ? `<div class="absolute bottom-0 left-0 w-full p-4 transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300"><p class="text-white font-extrabold text-xs drop-shadow-md leading-tight line-clamp-2">${item.aciklama}</p></div>` : '';
+            const gradientHtml = item.aciklama ? `<div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>` : '';
+            
+            galleryList.insertAdjacentHTML('beforeend', `
+                <div class="group relative rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer h-48 sm:h-56 md:h-64 bg-slate-100 border border-slate-200" onclick="openGallery('${item.gorsel_url}')">
+                    <img src="${item.gorsel_url}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
+                    ${gradientHtml}
+                    ${descHtml}
+                </div>
+            `);
+        });
+    } catch(e) {
+        galleryList.innerHTML = '<div class="col-span-full text-center text-red-500 py-10 font-bold">Yüklenemedi.</div>';
+    }
+}
+
+// ============================================
 // GENEL SİTE ETKİLEŞİMLERİ (Navigasyon vs.)
 // ============================================
 const mobileMenuBtn = document.getElementById('mobile-menu-btn');
 const navLinks = document.getElementById('nav-links');
-const navLinksItems = document.querySelectorAll('.nav-links a');
+const navLinksItems = document.querySelectorAll('.nav-links a.nav-item');
 
 if(mobileMenuBtn) {
     mobileMenuBtn.addEventListener('click', () => {
         if(navLinks) navLinks.classList.toggle('active');
         const icon = mobileMenuBtn.querySelector('i');
-        if(icon) { icon.classList.toggle('fa-bars'); icon.classList.toggle('fa-xmark'); }
+        if(icon) { icon.classList.toggle('fa-bars-staggered'); icon.classList.toggle('fa-xmark'); }
     });
 }
 
 navLinksItems.forEach(item => {
     item.addEventListener('click', () => {
         if(navLinks) navLinks.classList.remove('active');
-        if(mobileMenuBtn) mobileMenuBtn.querySelector('i').className = 'fa-solid fa-bars';
+        if(mobileMenuBtn) mobileMenuBtn.querySelector('i').className = 'fa-solid fa-bars-staggered';
     });
 });
 
@@ -319,7 +352,7 @@ const sections = document.querySelectorAll('section');
 window.addEventListener('scroll', () => {
     if(navbar) navbar.classList.toggle('scrolled', window.scrollY > 50);
     let current = '';
-    sections.forEach(section => { if (pageYOffset >= (section.offsetTop - 200)) current = section.getAttribute('id'); });
+    sections.forEach(section => { if (pageYOffset >= (section.offsetTop - 250)) current = section.getAttribute('id'); });
     navLinksItems.forEach(a => {
         a.classList.remove('active');
         if (a.getAttribute('href')?.includes(current)) a.classList.add('active');
@@ -327,27 +360,11 @@ window.addEventListener('scroll', () => {
 });
 
 const reveals = document.querySelectorAll('.reveal');
-const revealOnScroll = () => { reveals.forEach(reveal => { if (reveal.getBoundingClientRect().top < window.innerHeight - 150) reveal.classList.add('active'); }); }
+const revealOnScroll = () => { reveals.forEach(reveal => { if (reveal.getBoundingClientRect().top < window.innerHeight - 100) reveal.classList.add('active'); }); }
 window.addEventListener('scroll', revealOnScroll); revealOnScroll();
 
-const swatches = document.querySelectorAll('.color-swatch');
-const displayBox = document.getElementById('selected-color-box');
-const displayName = document.getElementById('selected-color-name');
-const displayHex = document.getElementById('selected-color-hex');
-
-swatches.forEach(swatch => {
-    swatch.addEventListener('click', () => {
-        swatches.forEach(s => s.classList.remove('selected'));
-        swatch.classList.add('selected');
-        const hexColor = swatch.getAttribute('data-hex');
-        if(displayBox) displayBox.style.backgroundColor = hexColor;
-        if(displayName) displayName.textContent = swatch.getAttribute('data-name');
-        if(displayHex) displayHex.textContent = hexColor;
-    });
-});
-
 // ============================================
-// AUTH & OTP & GOOGLE SİSTEMİ MANTIĞI
+// AUTH & GOOGLE SİSTEMİ MANTIĞI
 // ============================================
 const authModalWrapper = document.getElementById('auth-modal-wrapper');
 const navAuthMainBtn = document.getElementById('nav-main-auth-btn');
@@ -375,38 +392,23 @@ if(closeAuthModalBtn) {
     });
 }
 
-// GOOGLE İLE GİRİŞ / KAYIT İŞLEMLERİ
 const handleGoogleAuth = async (e) => {
     e.preventDefault();
     try {
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: window.location.origin + window.location.pathname
-            }
-        });
+        const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + window.location.pathname } });
         if (error) throw error;
-    } catch (error) {
-        Swal.fire({ icon: 'error', title: 'Hata', text: 'Google ile bağlantı kurulamadı.' });
-    }
+    } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: 'Google ile bağlantı kurulamadı.' }); }
 };
 
-const googleLoginBtn = document.getElementById('google-login-btn');
-if(googleLoginBtn) googleLoginBtn.addEventListener('click', handleGoogleAuth);
+document.getElementById('google-login-btn')?.addEventListener('click', handleGoogleAuth);
+document.getElementById('google-register-btn')?.addEventListener('click', handleGoogleAuth);
 
-const googleRegisterBtn = document.getElementById('google-register-btn');
-if(googleRegisterBtn) googleRegisterBtn.addEventListener('click', handleGoogleAuth);
-
-
-// Girişli kullanıcı doğrudan Öz Social'a fırlatılır
 if(profileFabBtn) profileFabBtn.addEventListener('click', () => { window.location.href = 'ozsocial.html'; });
 
 const showRegisterBtn = document.getElementById('show-register');
 const showLoginBtn = document.getElementById('show-login');
 const showForgotPasswordBtn = document.getElementById('show-forgot-password');
 const backToLoginBtn = document.getElementById('back-to-login');
-const backToRegFromOtpBtn = document.getElementById('back-to-reg-from-otp');
-const backToForgotFromResetBtn = document.getElementById('back-to-forgot-from-reset');
 const avatarInput = document.getElementById('reg-avatar');
 const avatarPreview = document.getElementById('avatar-preview');
 
@@ -426,8 +428,6 @@ if(showRegisterBtn) showRegisterBtn.addEventListener('click', (e) => { e.prevent
 if(showLoginBtn) showLoginBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(document.getElementById('login-form')); });
 if(showForgotPasswordBtn) showForgotPasswordBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(document.getElementById('forgot-password-form')); });
 if(backToLoginBtn) backToLoginBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(document.getElementById('login-form')); });
-if(backToRegFromOtpBtn) backToRegFromOtpBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(document.getElementById('register-form')); });
-if(backToForgotFromResetBtn) backToForgotFromResetBtn.addEventListener('click', (e) => { e.preventDefault(); toggleAuthForms(document.getElementById('forgot-password-form')); });
 
 const regFormEl = document.getElementById('register-form');
 if(regFormEl) {
@@ -439,54 +439,30 @@ if(regFormEl) {
         const password = document.getElementById('reg-password').value;
         const btn = document.getElementById('register-btn');
         
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kod Gönderiliyor...'; btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kayıt Olunuyor...'; btn.disabled = true;
         try {
-            const { error: authError } = await supabase.auth.signUp({ email, password });
+            const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
             if (authError) throw authError;
 
-            temporaryRegistrationData = { name, role, email, password, file: selectedAvatarFile };
-            Swal.fire({ icon: 'success', title: 'Kod Gönderildi', text: 'E-postanıza gelen 6 haneli doğrulama kodunu giriniz.' });
-            toggleAuthForms(document.getElementById('otp-verify-form'));
-        } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
-        finally { btn.innerHTML = 'Kayıt Ol'; btn.disabled = false; }
-    });
-}
-
-const otpVerifyForm = document.getElementById('otp-verify-form');
-if(otpVerifyForm) {
-    otpVerifyForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const otpCode = document.getElementById('reg-otp').value.trim();
-        const btn = document.getElementById('verify-otp-btn');
-        if(!temporaryRegistrationData) return;
-
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Doğrulanıyor...'; btn.disabled = true;
-        try {
-            const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({ email: temporaryRegistrationData.email, token: otpCode, type: 'signup' });
-            if (verifyError) throw verifyError;
-
-            if (verifyData.user) {
+            if (authData.user) {
                 let finalAvatarUrl = null;
-                if (temporaryRegistrationData.file) {
-                    const ext = temporaryRegistrationData.file.name.split('.').pop();
-                    const fileName = `${verifyData.user.id}-${Math.random()}.${ext}`;
-                    const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, temporaryRegistrationData.file);
+                if (selectedAvatarFile) {
+                    const ext = selectedAvatarFile.name.split('.').pop();
+                    const fileName = `${authData.user.id}-${Math.random()}.${ext}`;
+                    const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, selectedAvatarFile);
                     if (!uploadError) finalAvatarUrl = supabase.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
                 }
-                await supabase.from('uyeler').insert([{ id: verifyData.user.id, ad_soyad: temporaryRegistrationData.name, rol: temporaryRegistrationData.role, avatar_url: finalAvatarUrl, biyografi: "" }]);
+                await supabase.from('uyeler').insert([{ id: authData.user.id, ad_soyad: name, rol: role, avatar_url: finalAvatarUrl, biyografi: "" }]);
                 
                 Swal.fire({ icon: 'success', title: 'Hesabınız Açıldı!', timer: 1500, showConfirmButton: false });
-                regFormEl.reset(); otpVerifyForm.reset(); temporaryRegistrationData = null; selectedAvatarFile = null;
-                if(avatarPreview) avatarPreview.innerHTML = '<i class="fa-solid fa-camera text-2xl text-slate-400 group-hover:text-blue-500 transition-colors"></i>';
+                regFormEl.reset(); selectedAvatarFile = null;
+                if(avatarPreview) avatarPreview.innerHTML = '<i class="fa-solid fa-camera text-2xl text-slate-400"></i>';
                 
-                if(authModalWrapper) {
-                    authModalWrapper.classList.add('tw-modal-hidden');
-                    document.body.classList.remove('no-scroll');
-                }
+                if(authModalWrapper) { authModalWrapper.classList.add('tw-modal-hidden'); document.body.classList.remove('no-scroll'); }
                 checkSession();
             }
-        } catch (error) { Swal.fire({ icon: 'error', title: 'Geçersiz Kod', text: 'Girdiğiniz kod hatalı veya süresi dolmuş.' }); }
-        finally { btn.innerHTML = 'Doğrula & Hesabı Aç'; btn.disabled = false; }
+        } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
+        finally { btn.innerHTML = 'Kayıt Ol'; btn.disabled = false; }
     });
 }
 
@@ -503,60 +479,15 @@ if(loginFormEl) {
             if (error) throw error;
             loginFormEl.reset();
             
-            if(authModalWrapper) {
-                authModalWrapper.classList.add('tw-modal-hidden');
-                document.body.classList.remove('no-scroll');
-            }
+            if(authModalWrapper) { authModalWrapper.classList.add('tw-modal-hidden'); document.body.classList.remove('no-scroll'); }
             checkSession();
         } catch (error) { Swal.fire({ icon: 'error', title: 'Başarısız', text: "E-posta veya şifre hatalı!" }); }
         finally { btn.innerHTML = 'Giriş Yap'; btn.disabled = false; }
     });
 }
 
-const forgotPasswordForm = document.getElementById('forgot-password-form');
-if(forgotPasswordForm) {
-    forgotPasswordForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('forgot-email').value;
-        const btn = document.getElementById('forgot-btn');
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...'; btn.disabled = true;
-        try {
-            const { error } = await supabase.auth.resetPasswordForEmail(email);
-            if (error) throw error;
-            Swal.fire({ icon: 'success', title: 'Kod Gönderildi', text: 'Lütfen mailinize gelen 6 haneli kodu kontrol edin.' });
-            toggleAuthForms(document.getElementById('reset-otp-form'));
-        } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: error.message }); }
-        finally { btn.innerHTML = 'Kod Gönder'; btn.disabled = false; }
-    });
-}
-
-const resetOtpForm = document.getElementById('reset-otp-form');
-if(resetOtpForm) {
-    resetOtpForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('forgot-email').value;
-        const token = document.getElementById('reset-otp-code').value.trim();
-        const newPassword = document.getElementById('reset-new-password').value;
-        const btn = document.getElementById('reset-otp-btn');
-        
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Güncelleniyor...'; btn.disabled = true;
-        try {
-            const { error: verifyError } = await supabase.auth.verifyOtp({ email, token, type: 'recovery' });
-            if (verifyError) throw verifyError;
-            
-            const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
-            if (updateError) throw updateError;
-
-            Swal.fire({ icon: 'success', title: 'Başarılı', text: 'Şifreniz başarıyla güncellendi.', timer: 1500, showConfirmButton: false });
-            resetOtpForm.reset(); if(forgotPasswordForm) forgotPasswordForm.reset();
-            toggleAuthForms(loginFormEl);
-        } catch (error) { Swal.fire({ icon: 'error', title: 'Hata', text: 'Geçersiz kod veya güncelleme hatası.' }); }
-        finally { btn.innerHTML = 'Şifremi Güncelle'; btn.disabled = false; }
-    });
-}
-
 // ============================================
-// OTURUM (SESSION) KONTROLÜ (Giriş yapan direk atılmaz, sadece FAB butonu çıkar)
+// OTURUM (SESSION) KONTROLÜ
 // ============================================
 async function checkSession() {
     const { data: { session } } = await supabase.auth.getSession();
@@ -577,29 +508,19 @@ async function checkSession() {
                 const fabAvatar = document.getElementById('fab-avatar');
                 if(fabAvatar) fabAvatar.src = avatarUrl;
             } else {
-                // Google vb. ile ilk giriş yapanlar için tabloyu otomatik doldur
                 const fullName = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
                 const gAvatarUrl = session.user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=1e3a8a&color=fff`;
                 
-                await supabase.from('uyeler').insert([{ 
-                    id: session.user.id, 
-                    ad_soyad: fullName, 
-                    rol: 'Müşteri', 
-                    avatar_url: session.user.user_metadata?.avatar_url || null, 
-                    biyografi: "" 
-                }]);
+                await supabase.from('uyeler').insert([{ id: session.user.id, ad_soyad: fullName, rol: 'Müşteri', avatar_url: session.user.user_metadata?.avatar_url || null, biyografi: "" }]);
                 
                 userDataGlobal = { ad_soyad: fullName, avatar_url: session.user.user_metadata?.avatar_url || null };
                 const fabAvatar = document.getElementById('fab-avatar');
                 if(fabAvatar) fabAvatar.src = gAvatarUrl;
             }
         } catch (e) {}
-        
         lockReviewNameIfLoggedIn(); 
     } else {
-        currentUserSession = null;
-        userDataGlobal = null;
-        lockReviewNameIfLoggedIn(); 
+        currentUserSession = null; userDataGlobal = null; lockReviewNameIfLoggedIn(); 
         
         const navAuthBtnsContainer = document.getElementById('nav-auth-buttons');
         const profileFabContainer = document.getElementById('profile-fab-container');
@@ -610,5 +531,5 @@ async function checkSession() {
 
 // Başlangıç Yüklemeleri
 if(typeof fetchApprovedReviews === "function") fetchApprovedReviews();
+loadGallery(); // Galeri Fotoğraflarını Çek
 checkSession();
-
