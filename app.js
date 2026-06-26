@@ -292,7 +292,7 @@ if(reviewForm) {
 }
 
 // ============================================
-// DİNAMİK GALERİ YÜKLEME (YENİ - V4)
+// DİNAMİK GALERİ YÜKLEME (V4 - DİKEY TASARIM)
 // ============================================
 async function loadGallery() {
     const galleryList = document.getElementById('dynamic-gallery-list');
@@ -308,14 +308,15 @@ async function loadGallery() {
         }
         galleryList.innerHTML = '';
         items.forEach(item => {
-            const descHtml = item.aciklama ? `<div class="absolute bottom-0 left-0 w-full p-4 transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300"><p class="text-white font-extrabold text-xs drop-shadow-md leading-tight line-clamp-2">${item.aciklama}</p></div>` : '';
-            const gradientHtml = item.aciklama ? `<div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>` : '';
+            const desc = item.aciklama || 'İş yerimizden bir kare :)';
             
             galleryList.insertAdjacentHTML('beforeend', `
-                <div class="group relative rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer h-48 sm:h-56 md:h-64 bg-slate-100 border border-slate-200" onclick="openGallery('${item.gorsel_url}')">
-                    <img src="${item.gorsel_url}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
-                    ${gradientHtml}
-                    ${descHtml}
+                <div class="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer aspect-[3/4] bg-slate-100 border border-slate-200" onclick="openGallery('${item.gorsel_url}')">
+                    <img src="${item.gorsel_url}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                    <div class="absolute bottom-0 left-0 w-full p-3 sm:p-4 pointer-events-none">
+                        <p class="text-white font-extrabold text-xs sm:text-sm drop-shadow-md leading-tight line-clamp-2">${desc}</p>
+                    </div>
                 </div>
             `);
         });
@@ -531,5 +532,5 @@ async function checkSession() {
 
 // Başlangıç Yüklemeleri
 if(typeof fetchApprovedReviews === "function") fetchApprovedReviews();
-loadGallery(); // Galeri Fotoğraflarını Çek
+loadGallery();
 checkSession();
