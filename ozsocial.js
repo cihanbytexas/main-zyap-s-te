@@ -23,7 +23,7 @@ window.showToast = function(type, message) {
     const icon = type === 'success' ? 'fa-circle-check' : (type === 'error' ? 'fa-circle-xmark' : 'fa-circle-info');
     
     const toast = document.createElement('div');
-    toast.className = `fixed top-5 left-1/2 transform -translate-x-1/2 z-[9999] flex items-center gap-3 px-5 py-3.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.12)] transition-all duration-400 -translate-y-24 opacity-0 ${colors}`;
+    toast.className = `fixed top-5 left-1/2 transform -translate-x-1/2 z-[999999] flex items-center gap-3 px-5 py-3.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.12)] transition-all duration-400 -translate-y-24 opacity-0 ${colors}`;
     toast.innerHTML = `<i class="fa-solid ${icon} text-lg"></i><span class="text-[14px] font-bold tracking-wide">${message}</span>`;
     
     document.body.appendChild(toast);
@@ -121,7 +121,7 @@ const reelsObserver = new IntersectionObserver((entries) => {
         const playBtn = video.nextElementSibling;
         if(entry.isIntersecting) {
             if(!video.classList.contains('manually-paused')) {
-                video.play().catch(e => {});
+                video.play().catch(e => console.log('Auto-play engellendi', e));
                 if(playBtn) playBtn.style.opacity = '0';
             }
         } else {
@@ -274,7 +274,6 @@ document.addEventListener('click', e => {
         if(document.getElementById('edit-avatar-img') && userDataGlobal) document.getElementById('edit-avatar-img').src = userDataGlobal.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userDataGlobal.ad_soyad || 'U')}`;
         
         const pToggle = document.getElementById('privacy-toggle');
-        // Eğer DB'den true gelmişse toggle'ı aç
         if(pToggle) pToggle.checked = !!userDataGlobal.gizli_hesap;
         
         selectedUpdateAvatarFile = null;
@@ -344,7 +343,7 @@ if(editProfileForm) {
             if(currentlyViewingProfileId === currentUserSession.user.id) {
                 openUserProfile(currentUserSession.user.id);
             }
-        } catch (error) { showToast('error', 'Güncellenemedi. Eksik tablo/sütun hatası olabilir.'); console.error(error); }
+        } catch (error) { showToast('error', 'Hata: Profil güncellenemedi.'); console.error(error); }
         finally { btn.innerHTML = 'Kaydet'; btn.disabled = false; }
     });
 }
@@ -419,7 +418,6 @@ function setupRealtime() {
             if (payload.new.user_id !== currentUserSession?.user?.id) {
                 const { data: newPost } = await supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol, gizli_hesap), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).eq('id', payload.new.id).single();
                 
-                // Gizli Hesap Realtime Engellemesi
                 let showPost = true;
                 if(newPost && newPost.yazar && newPost.yazar.gizli_hesap) {
                     const { data: follow } = await supabase.from('takipler').select('id').eq('takip_eden_id', currentUserSession.user.id).eq('takip_edilen_id', newPost.user_id).maybeSingle();
@@ -528,7 +526,7 @@ async function loadNotifications() {
             let richText = notif.mesaj;
             let actionButtons = '';
             
-            // Yorum Bildirimi Düzeltmesi (Sütun olmadan direkt mesaj içerisinden alınır)
+            // BİLDİRİM DÜZELTMESİ: "ek_metin" yerine ana mesaj üzerinden çekiliyor
             if(notif.mesaj.includes('gönderine yorum yaptı:')) {
                 const parts = notif.mesaj.split('gönderine yorum yaptı:');
                 richText = `<span class="text-slate-500 font-normal">gönderine yorum yaptı:</span> <span class="text-slate-700 italic">"${parts[1] ? parts[1].trim() : '...'}"</span>`;
@@ -604,13 +602,13 @@ window.answerFollowRequest = async (e, notifId, senderId, action) => {
         await supabase.from('takip_istekleri').delete().eq('gonderen_id', senderId).eq('alici_id', currentUserSession.user.id);
         loadNotifications();
     } catch (error) {
-        showToast('error', 'Veritabanı engelledi. SQL komutunu girdiğinizden emin olun.');
+        showToast('error', 'İşlem başarısız oldu.');
         btn.innerHTML = originalText;
         btn.disabled = false;
     }
 };
 
-// --- Mesajlaşma (DM) ---
+// --- Mesajlaşma (DM) VE OPTİMİSTİC UI EKLENTİSİ ---
 async function checkMessagesBadge() {
     if (!currentUserSession) return;
     const messagesBadge = document.querySelector('#messages-btn #messages-badge');
@@ -697,6 +695,9 @@ function appendMessageToUI(msg, isMine) {
     const dmHistory = document.getElementById('chat-history');
     if (!dmHistory) return;
 
+    // GECİKME ÇÖZÜMÜ İÇİN DUPLICATE ENGELLEYİCİ
+    if (document.getElementById(`msg-wrapper-${msg.id}`)) return; 
+
     const timeStr = new Date(msg.created_at).toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
     const mediaHtml = msg.medya_url ? `<img src="${msg.medya_url}" class="w-full max-w-[220px] h-auto rounded-xl mb-1 pointer-events-auto cursor-pointer border border-slate-100 shadow-sm" onclick="openGallery('${msg.medya_url}')">` : '';
     const textHtml = (msg.metin && msg.metin !== '📷 Görsel') ? `<div class="whitespace-pre-wrap break-words leading-relaxed">${msg.metin}</div>` : '';
@@ -746,6 +747,7 @@ if(dmInput) {
     });
 }
 
+// DM GECİKME ÇÖZÜMÜ: OPTİMİSTİC UI
 const dmForm = document.getElementById('dm-form');
 if(dmForm) {
     dmForm.addEventListener('submit', async (e) => {
@@ -753,12 +755,37 @@ if(dmForm) {
         const text = dmInput.value.trim();
         if (!currentChatUserId || !text) return;
         dmInput.value = ''; 
+        
+        // Ekrana anında yazdır
+        const tempId = 'temp-' + Date.now();
+        appendMessageToUI({
+            id: tempId,
+            created_at: new Date().toISOString(),
+            metin: text,
+            okundu: false,
+            begendi: false,
+            gonderen_id: currentUserSession.user.id
+        }, true);
+
         try {
-            const { error } = await supabase.from('mesajlar').insert([{ gonderen_id: currentUserSession.user.id, alici_id: currentChatUserId, metin: text }]);
+            const { data, error } = await supabase.from('mesajlar').insert([{ gonderen_id: currentUserSession.user.id, alici_id: currentChatUserId, metin: text }]).select().single();
             if (error) throw error;
+            
+            // Arka planda DB id'si ile kendi tempID'mizi değiştir
+            const tempWrapper = document.getElementById(`msg-wrapper-${tempId}`);
+            if (tempWrapper) {
+                tempWrapper.id = `msg-wrapper-${data.id}`;
+                const bubble = tempWrapper.querySelector('.msg-bubble');
+                if (bubble) bubble.setAttribute('data-msg-id', data.id);
+            }
+            
             const messagesListModal = document.getElementById('messages-list-modal');
             if(messagesListModal && !messagesListModal.classList.contains('tw-modal-hidden')) loadConversations();
-        } catch (err) { showToast('error', 'Mesaj iletilemedi.'); }
+        } catch (err) { 
+            showToast('error', 'Mesaj iletilemedi.'); 
+            const tempWrapper = document.getElementById(`msg-wrapper-${tempId}`);
+            if (tempWrapper) tempWrapper.remove();
+        }
     });
 }
 
@@ -769,17 +796,29 @@ if(dmMediaInput) {
         const dmHistory = document.getElementById('chat-history');
         if(!file || !currentChatUserId || !dmHistory) return;
         e.target.value = ''; 
-        dmHistory.insertAdjacentHTML('beforeend', `<div class="text-center font-bold text-[13px] text-blue-500 my-2" id="img-upload-loading"><i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...</div>`);
+        
+        const tempId = 'temp-' + Date.now();
+        dmHistory.insertAdjacentHTML('beforeend', `<div class="text-center font-bold text-[13px] text-blue-500 my-2" id="msg-wrapper-${tempId}"><i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...</div>`);
         scrollToChatBottom();
+        
         try {
             const ext = file.name.split('.').pop();
             const fileName = `dm-${Date.now()}.${ext}`;
             const { error: uploadError } = await supabase.storage.from('medya').upload(fileName, file);
             if(uploadError) throw uploadError;
             const finalMediaUrl = supabase.storage.from('medya').getPublicUrl(fileName).data.publicUrl;
-            await supabase.from('mesajlar').insert([{ gonderen_id: currentUserSession.user.id, alici_id: currentChatUserId, metin: '📷 Görsel', medya_url: finalMediaUrl }]);
-        } catch(err) { showToast('error', 'Görsel gönderilemedi'); } 
-        finally { const loader = document.getElementById('img-upload-loading'); if(loader) loader.remove(); }
+            
+            const { data, error } = await supabase.from('mesajlar').insert([{ gonderen_id: currentUserSession.user.id, alici_id: currentChatUserId, metin: '📷 Görsel', medya_url: finalMediaUrl }]).select().single();
+            if(error) throw error;
+            
+            const tempWrapper = document.getElementById(`msg-wrapper-${tempId}`);
+            if (tempWrapper) tempWrapper.remove();
+            appendMessageToUI(data, true);
+        } catch(err) { 
+            showToast('error', 'Görsel gönderilemedi'); 
+            const tempWrapper = document.getElementById(`msg-wrapper-${tempId}`);
+            if (tempWrapper) tempWrapper.remove();
+        } 
     });
 }
 
@@ -1118,6 +1157,7 @@ document.addEventListener('click', async (e) => {
             
             await supabase.from('gonderi_yorumlari').insert([{ gonderi_id: postId, user_id: currentUserSession.user.id, metin: commentText, ust_yorum_id: parentId }]);
             
+            // Bildirim Hatası Çözümü (Veritabanında ek_metin olmadan)
             if (authorId !== currentUserSession.user.id) {
                 const notifMsg = `gönderine yorum yaptı: ${commentText}`;
                 await supabase.from('bildirimler').insert([{ alici_id: authorId, gonderen_id: currentUserSession.user.id, mesaj: notifMsg, gonderi_id: postId }]);
@@ -1169,30 +1209,51 @@ document.addEventListener('click', async (e) => {
     const deletePostBtn = target.closest('.delete-post-btn');
     if (deletePostBtn) {
         const postId = deletePostBtn.getAttribute('data-post-id');
-        Swal.fire({ title: 'Emin misin?', text: "Bu gönderi kalıcı olarak silinecek!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#0f172a', cancelButtonColor: '#64748b', confirmButtonText: 'Sil', cancelButtonText: 'İptal' }).then(async (res) => {
-            if (res.isConfirmed) { 
-                await supabase.from('gonderiler').delete().eq('id', postId); 
-                showToast('success', 'Gönderi silindi.');
-                loadFeed(currentFeedFilter); 
-                if(currentlyViewingProfileId && !document.getElementById('user-profile-modal').classList.contains('tw-modal-hidden')) openUserProfile(currentlyViewingProfileId);
-                if(!document.getElementById('single-post-modal').classList.contains('tw-modal-hidden')) closeSideModal('single-post-modal', 'single-post-panel');
-            }
-        }); return;
+        // Kaba Swal Pop-up kaldırıldı, direkt işlem başlatılır
+        deletePostBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin w-4 text-slate-400"></i> Siliniyor...';
+        
+        await supabase.from('gonderiler').delete().eq('id', postId); 
+        showToast('success', 'Gönderi silindi.');
+        loadFeed(currentFeedFilter); 
+        
+        if(currentlyViewingProfileId && !document.getElementById('user-profile-modal').classList.contains('tw-modal-hidden')) {
+            openUserProfile(currentlyViewingProfileId);
+        }
+        if(!document.getElementById('single-post-modal').classList.contains('tw-modal-hidden')) {
+            closeSideModal('single-post-modal', 'single-post-panel');
+        }
+        return;
     }
 
     const deleteCommentBtn = target.closest('.delete-comment-btn');
     if (deleteCommentBtn) {
         const postCard = deleteCommentBtn.closest('.post-card');
         const commentId = deleteCommentBtn.getAttribute('data-comment-id');
-        Swal.fire({ title: 'Yorumu Sil?', text: "Kalıcı olarak silinecek!", icon: 'question', showCancelButton: true, confirmButtonColor: '#0f172a', confirmButtonText: 'Sil', cancelButtonText: 'İptal' }).then(async (res) => {
-            if (res.isConfirmed) { 
-                await supabase.from('gonderi_yorumlari').delete().eq('id', commentId); 
-                showToast('success', 'Yorum silindi.');
-                loadFeed(currentFeedFilter); 
-                if(currentlyViewingProfileId && !document.getElementById('user-profile-modal').classList.contains('tw-modal-hidden')) openUserProfile(currentlyViewingProfileId);
-                if(!document.getElementById('single-post-modal').classList.contains('tw-modal-hidden')) openSinglePost(postCard.getAttribute('data-post-id')); 
-            }
-        }); return;
+        
+        deleteCommentBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        await supabase.from('gonderi_yorumlari').delete().eq('id', commentId); 
+        showToast('success', 'Yorum silindi.');
+        
+        loadFeed(currentFeedFilter); 
+        if(currentlyViewingProfileId && !document.getElementById('user-profile-modal').classList.contains('tw-modal-hidden')) {
+            openUserProfile(currentlyViewingProfileId);
+        }
+        if(!document.getElementById('single-post-modal').classList.contains('tw-modal-hidden')) {
+            openSinglePost(postCard.getAttribute('data-post-id')); 
+        }
+        return;
+    }
+
+    const editPostBtn = target.closest('.edit-post-btn');
+    if (editPostBtn) {
+        const postId = editPostBtn.getAttribute('data-post-id');
+        const oldText = decodeURIComponent(editPostBtn.getAttribute('data-text'));
+        const { value: newText } = await Swal.fire({ input: 'textarea', inputValue: oldText, showCancelButton: true, confirmButtonText: 'Kaydet', cancelButtonText: 'İptal' });
+        if (newText && newText !== oldText) { 
+            await supabase.from('gonderiler').update({ metin: newText }).eq('id', postId); 
+            showToast('success', 'Gönderi düzenlendi.');
+            loadFeed(currentFeedFilter); 
+        } return;
     }
     
     const fTrigger = target.closest('#follower-trigger');
@@ -1388,7 +1449,6 @@ window.openUserProfile = async (uId) => {
         const fTrigger = document.getElementById('follower-trigger');
         const fingTrigger = document.getElementById('following-trigger');
 
-        // GİZLİ HESAP ENGELLEMESİ
         if(user.gizli_hesap && !isFollowing && uId !== currentUserSession?.user?.id) {
             if(tabsContainer) tabsContainer.style.display = 'none';
             if(upGrid) upGrid.innerHTML = '<div class="col-span-3 flex flex-col items-center justify-center p-16 text-slate-500"><div class="w-20 h-20 bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center mb-5"><i class="fa-solid fa-lock text-4xl text-slate-300"></i></div><h3 class="font-extrabold text-slate-900 text-lg">Bu Hesap Gizli</h3><p class="text-sm mt-1 text-center font-medium">Fotoğraflarını ve videolarını görmek için takip et.</p></div>';
@@ -1472,7 +1532,7 @@ if(followBtnEl) {
     });
 }
 
-// TAKİPTEN ÇIKMA (KABA UYARI KALDIRILDI)
+// TAKİPTEN ÇIKMA (POP-UP YOK, ANINDA İŞLEM)
 const unfollowBtnEl = document.getElementById('unfollow-btn');
 if(unfollowBtnEl) {
     unfollowBtnEl.addEventListener('click', async () => {
@@ -1498,25 +1558,10 @@ if(unfollowBtnEl) {
         }
         
         openUserProfile(currentlyViewingProfileId); 
-        loadFeed(currentFeedFilter); // Ana akışı temizle
+        loadFeed(currentFeedFilter); 
         showToast('info', 'Takipten çıkıldı.');
     });
 }
 
-window.openSinglePost = async (postId) => {
-    openSideModal('single-post-modal', 'single-post-panel');
-    const singlePostContainer = document.getElementById('single-post-container');
-    if(singlePostContainer) singlePostContainer.innerHTML = '<div class="text-center mt-20 text-slate-400"><i class="fa-solid fa-spinner fa-spin text-5xl mb-4 text-blue-500"></i><p class="font-bold text-[15px]">Yükleniyor...</p></div>';
-    try {
-        const { data: post } = await supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).eq('id', postId).single();
-        if(singlePostContainer) {
-            singlePostContainer.innerHTML = generatePostHTML(post, true);
-            const newVideo = singlePostContainer.querySelector('video');
-            if(newVideo) reelsObserver.observe(newVideo);
-            const newCard = singlePostContainer.querySelector('.post-card');
-            if(newCard) postViewObserver.observe(newCard);
-        }
-    } catch (e) {}
-};
-
 checkSession();
+
