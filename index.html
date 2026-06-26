@@ -25,10 +25,8 @@
     
     <link rel="stylesheet" href="style.css">
 </head>
-<!-- HATA ÇÖZÜMÜ: flex-col tutuldu fakat items-center silinerek tam ekran yayılımı (w-full) sağlandı -->
 <body class="bg-slate-50 min-h-screen flex flex-col antialiased selection:bg-blue-200 selection:text-blue-900 w-full overflow-x-hidden">
 
-    <!-- ÖZ YAPI ASİSTAN (CHATBOT) MODALI -->
     <div class="chat-modal" id="chat-modal">
         <div class="modal-content glass-dark">
             <div class="modal-header">
@@ -50,7 +48,6 @@
         </div>
     </div>
 
-    <!-- PDF MODALI -->
     <div class="pdf-modal" id="pdf-modal">
         <div class="modal-content pdf-modal-content glass-dark">
             <div class="modal-header">
@@ -68,7 +65,6 @@
         </div>
     </div>
 
-    <!-- KARTELA MODALI -->
     <div class="kartela-modal" id="kartela-modal">
         <div class="modal-content glass-dark">
             <div class="modal-header">
@@ -93,7 +89,6 @@
         </div>
     </div>
 
-    <!-- YORUM YAPMA MODALI -->
     <div class="kartela-modal" id="review-modal" style="display: none; z-index: 3000;">
         <div class="modal-content glass-panel" style="max-width: 500px;">
             <div class="modal-header border-b border-slate-100">
@@ -135,7 +130,13 @@
         </div>
     </div>
 
-    <!-- V4 PERFORMANCE NAVBAR (Logo Güncellendi) -->
+    <div id="gallery-modal" class="fixed inset-0 bg-black/95 z-[5000] tw-modal-hidden flex items-center justify-center backdrop-blur-md transition-opacity" onclick="if(event.target === this) { this.classList.add('tw-modal-hidden'); document.body.style.overflow=''; }">
+        <button onclick="document.getElementById('gallery-modal').classList.add('tw-modal-hidden'); document.body.style.overflow='';" class="absolute top-5 right-5 text-white text-3xl hover:text-red-500 transition-colors z-50 border-none bg-transparent outline-none"><i class="fa-solid fa-xmark"></i></button>
+        <div id="gallery-panel" class="w-full h-full p-2 flex items-center justify-center transform transition-transform duration-300 gallery-content">
+            <img id="gallery-image" src="" class="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl select-none" style="touch-action: pan-y pinch-zoom;">
+        </div>
+    </div>
+
     <nav class="navbar glass-nav w-full" id="navbar">
         <div class="nav-container w-full">
             <a href="#" class="logo group flex items-center gap-3">
@@ -159,8 +160,8 @@
                 <li><a href="#hero" class="nav-item active" data-tr="Ana Sayfa">Ana Sayfa</a></li>
                 <li><a href="#about" class="nav-item" data-tr="Hakkımızda">Hakkımızda</a></li>
                 <li><a id="open-kartela-btn" class="nav-item cursor-pointer" data-tr="Kartelalar">Kartelalar</a></li> 
-                <li><a href="#services" class="nav-item" data-tr="Hizmetler">Hizmetler</a></li>
                 <li><a href="#products" class="nav-item" data-tr="Ürünler">Ürünler</a></li>
+                <li><a href="#gallery" class="nav-item" data-tr="Galeri">Galeri</a></li>
                 <li><a href="#contact" class="nav-item" data-tr="İletişim">İletişim</a></li>
                 
                 <li style="margin-top: auto; display: flex; justify-content: center; padding-bottom: 20px;" class="sm:mt-0 sm:pb-0">
@@ -173,7 +174,6 @@
         </div>
     </nav>
 
-    <!-- V4 PREMIUM HERO SECTION -->
     <section id="hero" class="w-full">
         <div class="hero-overlay w-full"></div>
         <div class="container hero-content w-full relative z-10">
@@ -189,7 +189,6 @@
         </div>
     </section>
 
-    <!-- BAYİLİKLER BÖLÜMÜ -->
     <section id="brands" class="py-12 bg-white border-b border-slate-100 z-10 relative w-full">
         <div class="container">
             <div class="brands-container flex justify-center items-center flex-wrap gap-8 sm:gap-16 opacity-70">
@@ -202,7 +201,6 @@
         </div>
     </section>
 
-    <!-- ABOUT SECTION -->
     <section id="about" class="reveal bg-slate-50 relative w-full py-16 md:py-24">
         <div class="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl -z-10"></div>
         <div class="absolute bottom-0 left-0 w-64 h-64 bg-amber-400/10 rounded-full blur-3xl -z-10"></div>
@@ -247,54 +245,16 @@
         </div>
     </section>
 
-    <!-- SERVICES -->
-    <section id="services" class="reveal bg-white w-full py-16 md:py-24">
-        <div class="container w-full">
-            <div class="text-center max-w-2xl mx-auto mb-14">
-                <span class="text-blue-600 font-extrabold text-[11px] uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full border border-blue-100">Ne Yapıyoruz?</span>
-                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mt-4 tracking-tight" data-tr="Profesyonel Çözümler">Profesyonel Çözümler</h2>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full">
-                <!-- Service 1 -->
-                <div class="glass-panel p-8 rounded-3xl group hover:-translate-y-2 transition-all duration-300 w-full">
-                    <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-600 transition-colors duration-300">
-                        <i class="fa-solid fa-fill-drip text-2xl text-blue-600 group-hover:text-white transition-colors duration-300"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-900 mb-3" data-tr="Bilgisayarlı Renk">Bilgisayarlı Renk</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed font-medium" data-tr="İstediğiniz rengi optik okuyucular ve hassas makinelerimizle milimetrik olarak üretiyoruz. Sıfır ton farkı.">İstediğiniz rengi optik okuyucular ve hassas makinelerimizle milimetrik olarak üretiyoruz. Sıfır ton farkı.</p>
-                </div>
-                <!-- Service 2 -->
-                <div class="glass-panel p-8 rounded-3xl group hover:-translate-y-2 transition-all duration-300 w-full">
-                    <div class="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-amber-500 transition-colors duration-300">
-                        <i class="fa-solid fa-faucet-drip text-2xl text-amber-500 group-hover:text-white transition-colors duration-300"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-900 mb-3" data-tr="Premium Armatür">Premium Armatür</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed font-medium" data-tr="Banyo ve mutfaklarınız için uzun ömürlü, paslanmaz, modern tasarımlı Kare ve Güven batarya serileri.">Banyo ve mutfaklarınız için uzun ömürlü, paslanmaz, modern tasarımlı Kare ve Güven batarya serileri.</p>
-                </div>
-                <!-- Service 3 -->
-                <div class="glass-panel p-8 rounded-3xl group hover:-translate-y-2 transition-all duration-300 w-full">
-                    <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-slate-900 transition-colors duration-300">
-                        <i class="fa-solid fa-wrench text-2xl text-slate-700 group-hover:text-white transition-colors duration-300"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-900 mb-3" data-tr="Tesisat Mühendisliği">Tesisat Mühendisliği</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed font-medium" data-tr="Fırat Boru kalitesiyle binalarınızın altyapısını güvence altına alan, basınca dayanıklı boru ve ek parçalar.">Fırat Boru kalitesiyle binalarınızın altyapısını güvence altına alan, basınca dayanıklı boru ve ek parçalar.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- PRODUCTS -->
-    <section id="products" class="reveal bg-slate-50 relative border-y border-slate-200/60 w-full py-16 md:py-24">
+    <section id="products" class="reveal bg-white relative border-y border-slate-200/60 w-full py-16 md:py-24">
         <div class="container w-full">
             <div class="flex flex-col items-center sm:items-start sm:flex-row sm:justify-between sm:items-end mb-10 w-full text-center sm:text-left">
                 <div>
-                    <span class="text-blue-600 font-extrabold text-[11px] uppercase tracking-widest bg-blue-100/50 px-3 py-1 rounded-full border border-blue-200">Katalog</span>
+                    <span class="text-blue-600 font-extrabold text-[11px] uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full border border-blue-100">Katalog</span>
                     <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mt-4 tracking-tight" data-tr="Ana Kategoriler">Ana Kategoriler</h2>
                 </div>
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full">
-                <!-- Prod 1 -->
                 <div class="group relative rounded-3xl overflow-hidden cursor-pointer shadow-lg w-full">
                     <div class="absolute inset-0 bg-slate-900/20 group-hover:bg-transparent transition-colors z-10"></div>
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent z-10"></div>
@@ -305,7 +265,6 @@
                         <p class="text-slate-200 text-sm font-medium transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">Silikonlu, tam silinebilir nano teknoloji boyalar.</p>
                     </div>
                 </div>
-                <!-- Prod 2 -->
                 <div class="group relative rounded-3xl overflow-hidden cursor-pointer shadow-lg w-full">
                     <div class="absolute inset-0 bg-slate-900/20 group-hover:bg-transparent transition-colors z-10"></div>
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent z-10"></div>
@@ -316,7 +275,6 @@
                         <p class="text-slate-200 text-sm font-medium transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">Pirinç döküm, seramik kartuşlu modern armatürler.</p>
                     </div>
                 </div>
-                <!-- Prod 3 -->
                 <div class="group relative rounded-3xl overflow-hidden cursor-pointer shadow-lg w-full">
                     <div class="absolute inset-0 bg-slate-900/20 group-hover:bg-transparent transition-colors z-10"></div>
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent z-10"></div>
@@ -331,16 +289,26 @@
         </div>
     </section>
 
-    <!-- TESTIMONIALS -->
+    <section id="gallery" class="reveal bg-slate-50 w-full py-16 md:py-24 border-b border-slate-200/60">
+        <div class="container w-full">
+            <div class="text-center max-w-2xl mx-auto mb-14">
+                <span class="text-blue-600 font-extrabold text-[11px] uppercase tracking-widest bg-blue-100/50 px-3 py-1 rounded-full border border-blue-200">Galeri</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mt-4 tracking-tight" data-tr="İş Yerimizden Kareler">İş Yerimizden Kareler</h2>
+                <p class="text-slate-500 mt-3 font-medium">Bizi yakından tanıyın, mağazamızdan anlık kareler.</p>
+            </div>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 w-full" id="dynamic-gallery-list">
+                </div>
+        </div>
+    </section>
+
     <section id="testimonials" class="bg-white reveal w-full py-16 md:py-24">
         <div class="container w-full">
             <div class="text-center max-w-2xl mx-auto mb-12">
                 <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight" data-tr="Müşteri Deneyimi">Müşteri Deneyimi</h2>
                 <p class="text-slate-500 mt-3 font-medium">Bizi tercih eden ustalarımızın ve müşterilerimizin yorumları.</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full" id="dynamic-testimonials-list">
-                <!-- App.js renders here -->
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full" id="dynamic-testimonials-list"></div>
             <div class="text-center mt-10">
                 <button id="open-review-modal" class="btn bg-slate-900 text-white hover:bg-slate-800 shadow-xl px-8 py-3.5 rounded-full font-bold transition-all flex items-center justify-center gap-2 mx-auto w-full sm:w-auto">
                     <i class="fa-solid fa-pen-nib"></i> <span data-tr="Deneyiminizi Paylaşın">Deneyiminizi Paylaşın</span>
@@ -349,7 +317,6 @@
         </div>
     </section>
 
-    <!-- CONTACT -->
     <section id="contact" class="reveal bg-slate-50 border-t border-slate-200/60 w-full py-16 md:py-24">
         <div class="container w-full">
             <div class="glass-panel p-2 rounded-3xl overflow-hidden shadow-xl border border-white w-full">
@@ -393,7 +360,6 @@
         </div>
     </section>
 
-    <!-- PREMIUM FOOTER -->
     <footer class="bg-slate-900 pt-16 pb-8 border-t-4 border-blue-600 w-full">
         <div class="container w-full">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 md:gap-12 mb-12">
@@ -404,9 +370,7 @@
                     </a>
                     <p class="text-slate-400 text-sm leading-relaxed font-medium max-w-xs" data-tr="Teknolojik altyapı, premium markalar ve uzman kadromuzla yapı sektöründe kalite standartlarını yeniden belirliyoruz.">Teknolojik altyapı, premium markalar ve uzman kadromuzla yapı sektöründe kalite standartlarını yeniden belirliyoruz.</p>
                     <div class="flex gap-3 mt-6">
-                        <!-- Facebook Linki Güncellendi -->
                         <a href="https://www.facebook.com/share/1J9BveFYvS/" target="_blank" class="w-10 h-10 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all"><i class="fa-brands fa-facebook-f"></i></a>
-                        <!-- Instagram Linki Güncellendi -->
                         <a href="https://www.instagram.com/mehmet_oz_03444?igsh=MWdzNTRvYWphem05NA==" target="_blank" class="w-10 h-10 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center hover:bg-gradient-to-tr hover:from-orange-500 hover:via-pink-500 hover:to-purple-600 hover:text-white transition-all"><i class="fa-brands fa-instagram"></i></a>
                     </div>
                 </div>
@@ -416,6 +380,7 @@
                         <li><a href="#hero" class="text-slate-400 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-2 w-fit"><i class="fa-solid fa-angle-right text-[10px]"></i> Ana Sayfa</a></li>
                         <li><a href="#about" class="text-slate-400 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-2 w-fit"><i class="fa-solid fa-angle-right text-[10px]"></i> Hakkımızda</a></li>
                         <li><a href="#products" class="text-slate-400 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-2 w-fit"><i class="fa-solid fa-angle-right text-[10px]"></i> Kataloğumuz</a></li>
+                        <li><a href="#gallery" class="text-slate-400 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-2 w-fit"><i class="fa-solid fa-angle-right text-[10px]"></i> Galeri</a></li>
                         <li><a href="#contact" class="text-slate-400 hover:text-blue-400 text-sm font-medium transition-colors flex items-center gap-2 w-fit"><i class="fa-solid fa-angle-right text-[10px]"></i> İletişim</a></li>
                     </ul>
                 </div>
@@ -439,7 +404,6 @@
         </div>
     </footer>
 
-    <!-- FLOAT BUTTONS (Responsive Stacking) -->
     <button class="chatbot-btn" id="open-chatbot" aria-label="Asistan">
         <svg viewBox="0 0 100 100" width="35" height="35" xmlns="http://www.w3.org/2000/svg">
             <path d="M 25 40 C 25 10, 75 10, 75 40" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
@@ -455,7 +419,6 @@
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
-    <!-- ÖZ SOCIAL FAB -->
     <div id="profile-fab-container" class="tw-modal-hidden fixed bottom-[170px] right-[30px] z-[90] flex-col items-center gap-2">
         <div class="bg-slate-900 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg shadow-lg relative animate-bounce tracking-wide" style="white-space: nowrap;">
             Öz Social'e Katıl
@@ -466,19 +429,16 @@
         </button>
     </div>
 
-    <!-- ÖZ SOCIAL: PREMIUM AUTH MODAL -->
     <div id="auth-modal-wrapper" class="fixed inset-0 bg-slate-900/80 z-[4000] tw-modal-hidden flex items-center justify-center p-4 backdrop-blur-md transition-opacity w-full h-full">
         <div class="relative w-full max-w-md mx-auto">
             <button id="close-auth-modal" class="absolute -top-12 right-0 text-white text-3xl hover:text-slate-300 transition-colors border-none bg-transparent outline-none"><i class="fa-solid fa-xmark"></i></button>
             <div id="auth-container" class="bg-white p-6 sm:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] w-full transition-all duration-300 border border-slate-100 relative overflow-hidden">
-                
                 <div class="absolute top-0 left-0 w-full h-1 bg-blue-600"></div>
-
                 <div class="text-center mb-8">
                     <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Öz Social</h2>
                     <p class="text-sm text-slate-500 mt-2 font-medium" id="auth-subtitle">Sisteme devam etmek için giriş yapın</p>
                 </div>
-
+                
                 <form id="login-form" class="space-y-4 w-full">
                     <button type="button" id="google-login-btn" class="w-full bg-white border border-slate-200 text-slate-700 font-bold py-3.5 px-4 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-center gap-3 shadow-sm mb-2 group outline-none">
                         <svg class="w-5 h-5 transition-transform group-hover:scale-110" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
@@ -486,35 +446,20 @@
                     </button>
                     <div class="flex items-center gap-3 mb-2 py-2">
                         <div class="flex-1 h-px bg-slate-100"></div>
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">veya e-posta</span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">veya</span>
                         <div class="flex-1 h-px bg-slate-100"></div>
                     </div>
                     <div class="w-full">
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">E-posta</label>
-                        <input type="email" id="login-email" required class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800 text-sm font-medium transition-colors" placeholder="ornek@mail.com">
+                        <input type="email" id="login-email" required class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800 text-sm font-medium transition-colors" placeholder="E-posta Adresi">
                     </div>
                     <div class="w-full">
-                        <div class="flex justify-between items-center mb-1.5 w-full">
-                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest">Şifre</label>
-                            <a href="#" id="show-forgot-password" class="text-xs text-blue-600 font-bold hover:text-blue-800 transition-colors">Şifremi Unuttum?</a>
-                        </div>
-                        <input type="password" id="login-password" required class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800 text-sm font-medium transition-colors" placeholder="••••••••">
+                        <input type="password" id="login-password" required class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800 text-sm font-medium transition-colors" placeholder="Şifre">
                     </div>
                     <button type="submit" id="login-btn" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-4 px-4 rounded-xl transition-all border-none outline-none shadow-lg mt-4 active:scale-95">Giriş Yap</button>
                     <p class="text-center text-sm text-slate-500 mt-6 font-medium">Hesabın yok mu? <a href="#" id="show-register" class="text-slate-900 font-extrabold hover:underline">Kayıt Ol</a></p>
                 </form>
 
-                <!-- REGISTER FORM -->
                 <form id="register-form" class="space-y-4 tw-modal-hidden w-full">
-                    <button type="button" id="google-register-btn" class="w-full bg-white border border-slate-200 text-slate-700 font-bold py-3.5 px-4 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-center gap-3 shadow-sm mb-2 group outline-none">
-                        <svg class="w-5 h-5 transition-transform group-hover:scale-110" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                        <span>Google ile Kayıt Ol</span>
-                    </button>
-                    <div class="flex items-center gap-3 mb-2 py-2">
-                        <div class="flex-1 h-px bg-slate-100"></div>
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">veya e-posta</span>
-                        <div class="flex-1 h-px bg-slate-100"></div>
-                    </div>
                     <div class="flex justify-center mb-2">
                         <label for="reg-avatar" class="avatar-upload relative cursor-pointer group">
                             <div id="avatar-preview" class="w-20 h-20 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden transition-all group-hover:border-slate-800 shadow-sm"><i class="fa-solid fa-camera text-xl text-slate-400 group-hover:text-slate-800 transition-colors"></i></div>
@@ -523,43 +468,17 @@
                         </label>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-                        <div class="w-full">
-                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Ad Soyad</label>
-                            <input type="text" id="reg-name" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800 text-sm font-medium transition-colors" placeholder="Ad Soyad">
-                        </div>
-                        <div class="w-full">
-                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Hesap Türü</label>
-                            <select id="reg-role" required class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800 text-sm font-medium text-slate-700 transition-colors">
-                                <option value="Müşteri">Müşteri</option>
-                                <option value="Usta">Usta</option>
-                                <option value="Müteahhit">Müteahhit</option>
-                            </select>
-                        </div>
+                        <input type="text" id="reg-name" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800 text-sm font-medium transition-colors" placeholder="Ad Soyad">
+                        <select id="reg-role" required class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800 text-sm font-medium text-slate-700 transition-colors">
+                            <option value="Müşteri">Müşteri</option>
+                            <option value="Usta">Usta</option>
+                            <option value="Müteahhit">Müteahhit</option>
+                        </select>
                     </div>
-                    <div class="w-full">
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">E-posta</label>
-                        <input type="email" id="reg-email" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800 text-sm font-medium transition-colors" placeholder="ornek@mail.com">
-                    </div>
-                    <div class="w-full">
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Şifre</label>
-                        <input type="password" id="reg-password" required minlength="6" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800 text-sm font-medium transition-colors" placeholder="En az 6 hane">
-                    </div>
+                    <input type="email" id="reg-email" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800 text-sm font-medium transition-colors" placeholder="E-posta Adresi">
+                    <input type="password" id="reg-password" required minlength="6" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800 text-sm font-medium transition-colors" placeholder="Şifre (En az 6 hane)">
                     <button type="submit" id="register-btn" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-4 rounded-xl shadow-lg transition-transform active:scale-95 border-none outline-none mt-2">Kayıt Ol</button>
                     <p class="text-center text-sm text-slate-500 mt-4 font-medium">Zaten üye misin? <a href="#" id="show-login" class="text-slate-900 font-extrabold hover:underline">Giriş Yap</a></p>
-                </form>
-
-                <!-- ŞİFRE UNUTTUM -->
-                <form id="forgot-password-form" class="space-y-4 tw-modal-hidden w-full">
-                    <div class="text-center mb-6">
-                        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100"><i class="fa-solid fa-key text-2xl text-slate-800"></i></div>
-                        <p class="text-sm text-slate-500 font-medium">E-posta adresinizi girin, sıfırlama bağlantısı gönderelim.</p>
-                    </div>
-                    <div class="w-full">
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">E-posta Adresi</label>
-                        <input type="email" id="forgot-email" required class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800 text-sm transition-colors" placeholder="ornek@mail.com">
-                    </div>
-                    <button type="submit" id="forgot-btn" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-4 rounded-xl shadow-lg transition-transform active:scale-95 border-none outline-none mt-2">Bağlantı Gönder</button>
-                    <p class="text-center text-sm text-slate-500 mt-6 font-medium"><a href="#" id="back-to-login" class="text-slate-900 font-extrabold hover:underline"><i class="fa-solid fa-arrow-left mr-1"></i> Giriş'e Dön</a></p>
                 </form>
             </div>
         </div>
