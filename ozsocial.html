@@ -34,6 +34,9 @@
         .no-scroll { overflow: hidden !important; height: 100vh !important; touch-action: none; }
         button { border: none; background: transparent; outline: none; cursor: pointer; font-family: inherit; }
         .tw-modal-hidden { display: none !important; }
+        
+        /* Z-Index Kök Çözümü: Tüm uyarılar modalların üstünde olacak */
+        .swal2-container { z-index: 99999 !important; }
 
         .post-card { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.03); transform: translateZ(0); will-change: transform; }
 
@@ -141,7 +144,6 @@
                 <div id="media-upload-container" class="tw-modal-hidden animate-fade-in space-y-3">
                     <label class="block text-[12px] font-bold text-slate-500 uppercase tracking-widest">İçerik Seç</label>
                     <div class="grid grid-cols-2 gap-4">
-                        <!-- SADECE RESİM İSTEYEREK ANDROID'İ KAMERAYA ZORLAMA EKLENDİ -->
                         <div class="border-2 border-slate-100 rounded-3xl p-5 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all active:scale-95" onclick="document.getElementById('post-media-camera').click()">
                             <div class="w-14 h-14 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm"><i class="fa-solid fa-camera text-2xl text-slate-700"></i></div>
                             <div class="text-[14px] font-extrabold text-slate-900">Kamerayı Aç</div>
