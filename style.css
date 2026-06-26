@@ -18,8 +18,8 @@
 
 /* Reset & Base Styles */
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-html { scroll-behavior: smooth; }
-body { color: var(--text-dark); line-height: 1.6; background-color: var(--bg-light); overflow-x: hidden; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
+body { color: var(--text-dark); line-height: 1.6; background-color: var(--bg-light); overflow-x: hidden; width: 100%; }
 a { text-decoration: none; color: inherit; }
 ul { list-style: none; }
 button { outline: none; cursor: pointer; font-family: inherit; border: none; background: transparent; }
@@ -28,12 +28,13 @@ button { outline: none; cursor: pointer; font-family: inherit; border: none; bac
 /* Typography */
 h1, h2, h3 { font-weight: 800; line-height: 1.15; }
 
-/* Layout */
-.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-section { padding: 100px 0; }
+/* Layout - Konteyner ve Kesin Genişlik Sınırları */
+.container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+section { padding: 80px 0; width: 100%; }
+@media (min-width: 768px) { section { padding: 100px 0; } }
 
 /* =========================================================
-   V3 PREMIUM GLASSMORPHISM CLASSES 
+   V4 PREMIUM GLASSMORPHISM CLASSES 
 ========================================================= */
 .glass-nav {
     background: rgba(255, 255, 255, 0.7);
@@ -61,7 +62,7 @@ section { padding: 100px 0; }
 /* Navbar */
 .navbar { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; transition: var(--transition); padding: 16px 0; }
 .navbar.scrolled { padding: 12px 0; background: rgba(255, 255, 255, 0.95); box-shadow: 0 4px 30px rgba(0,0,0,0.05); }
-.nav-container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.nav-container { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
 .nav-links { display: flex; gap: 32px; align-items: center; }
 .nav-links a { font-weight: 600; color: var(--text-light); transition: var(--transition); font-size: 0.9rem; }
@@ -73,15 +74,15 @@ section { padding: 100px 0; }
 .lang-btn { background: transparent; border: none; padding: 6px 14px; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: var(--transition); color: var(--text-light); }
 .lang-btn.active { background-color: white; color: var(--primary-color); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
 
-/* HERO SECTION (V3 YENİLENMİŞ) */
+/* HERO SECTION (V4 YENİLENMİŞ) */
 #hero {
     height: 100vh;
     min-height: 700px;
     background: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
-    display: flex; align-items: center; position: relative; padding: 0;
+    display: flex; align-items: center; position: relative; padding: 0; width: 100%;
 }
 .hero-overlay {
-    position: absolute; inset: 0;
+    position: absolute; inset: 0; width: 100%;
     background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(37, 99, 235, 0.3) 100%);
 }
 
@@ -165,7 +166,7 @@ section { padding: 100px 0; }
 @keyframes lookAround { 0%, 100% { transform: translate(0, 0); } 10% { transform: translate(-2px, 0); } 20% { transform: translate(-2px, -2px); } 30% { transform: translate(-2px, -2px); } 40% { transform: translate(2px, -2px); } 50% { transform: translate(2px, 0); } 60% { transform: translate(2px, 0); } 70% { transform: translate(2px, 2px); } 80% { transform: translate(-2px, 2px); } 90% { transform: translate(0, 0); } }
 .pupil { animation: lookAround 6s infinite; }
 
-/* Mobile Responsive */
+/* Mobile Responsive - V4 PERFORMANCE FIX */
 @media (max-width: 768px) { 
     .glass-panel-mobile { 
         position: fixed; top: 70px; left: -100%; width: 100%; height: calc(100vh - 70px); 
@@ -177,6 +178,11 @@ section { padding: 100px 0; }
     .mobile-menu-btn { display: block; } 
     .hero-title { font-size: 2.8rem; } 
     .nav-right { gap: 8px; }
+    
+    /* Fab butonlar mobilde overlap olmasın */
+    #profile-fab-container { right: 20px; bottom: 170px; }
+    .chatbot-btn { right: 20px; bottom: 100px; width: 56px; height: 56px; }
+    .whatsapp-btn { right: 20px; bottom: 30px; width: 56px; height: 56px; font-size: 1.8rem; }
 }
 
 /* ÖZ SOCIAL MODAL FIXES */
