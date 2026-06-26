@@ -16,7 +16,7 @@ let typingTimeout;
 let userDataGlobal = null;
 
 // ============================================
-// PREMIUM TOAST BİLDİRİM SİSTEMİ
+// V4 PREMIUM TOAST BİLDİRİM SİSTEMİ
 // ============================================
 window.showToast = function(type, message) {
     const colors = type === 'success' ? 'bg-slate-900 text-white' : (type === 'error' ? 'bg-red-500 text-white' : 'bg-blue-600 text-white');
@@ -41,7 +41,7 @@ window.showToast = function(type, message) {
 };
 
 // ============================================
-// MODAL FONKSİYONLARI VE GALERİ
+// MODAL FONKSİYONLARI VE TAM EKRAN GALERİ
 // ============================================
 window.openSideModal = function(wrapperId, panelId) {
     const wrapper = document.getElementById(wrapperId);
@@ -49,7 +49,7 @@ window.openSideModal = function(wrapperId, panelId) {
     if(wrapper && panel) {
         document.body.style.overflow = 'hidden';
         wrapper.classList.remove('tw-modal-hidden');
-        setTimeout(() => panel.classList.remove('translate-x-full'), 10);
+        setTimeout(() => panel.classList.remove('translate-x-full', 'scale-95'), 10);
     }
 }
 
@@ -57,7 +57,7 @@ window.closeSideModal = function(wrapperId, panelId) {
     const wrapper = document.getElementById(wrapperId);
     const panel = document.getElementById(panelId);
     if(wrapper && panel) {
-        panel.classList.add('translate-x-full');
+        panel.classList.add('translate-x-full', 'scale-95');
         setTimeout(() => {
             wrapper.classList.add('tw-modal-hidden');
             document.body.style.overflow = '';
@@ -81,18 +81,18 @@ function hideSimpleModal(modalEl) {
 
 window.openGallery = function(imgUrl) {
     const imgEl = document.getElementById('gallery-image');
-    if(imgEl) {
+    const modal = document.getElementById('gallery-modal');
+    const panel = document.getElementById('gallery-panel');
+    if(imgEl && modal && panel) {
         imgEl.src = imgUrl;
-        const wrapper = document.getElementById('gallery-modal');
-        const panel = document.getElementById('gallery-panel');
         document.body.style.overflow = 'hidden';
-        wrapper.classList.remove('tw-modal-hidden');
+        modal.classList.remove('tw-modal-hidden');
         setTimeout(() => panel.classList.remove('scale-95'), 10);
     }
 }
 
 // ============================================
-// REELS VİDEO & GÖRÜNTÜLENME (VIEW) SİSTEMİ
+// V4 REELS VİDEO & GÖRÜNTÜLENME (VIEW) MOTORU
 // ============================================
 window.togglePlay = function(container) {
     const video = container.querySelector('video');
@@ -129,28 +129,33 @@ const reelsObserver = new IntersectionObserver((entries) => {
             if(!video.classList.contains('manually-paused') && playBtn) playBtn.style.opacity = '1';
         }
     });
-}, { threshold: 0.5 });
+}, { threshold: 0.4 });
 
+// Görüntülenme (View) Hatası Çözümü - Threshold 0.2 yapıldı, asenkron koruma eklendi
 const viewedPosts = new Set();
 const postViewObserver = new IntersectionObserver((entries) => {
-    entries.forEach(async entry => {
+    entries.forEach(entry => {
         if(entry.isIntersecting) {
             const postCard = entry.target;
             const postId = postCard.getAttribute('data-post-id');
             if(!viewedPosts.has(postId)) {
-                viewedPosts.add(postId);
-                try {
-                    const {data} = await supabase.from('gonderiler').select('goruntulenme').eq('id', postId).single();
-                    const currentViews = (data && data.goruntulenme) ? data.goruntulenme : 0;
-                    const newViews = currentViews + 1;
-                    await supabase.from('gonderiler').update({goruntulenme: newViews}).eq('id', postId);
-                    const viewSpan = postCard.querySelector('.view-count-text');
-                    if(viewSpan) viewSpan.innerText = newViews;
-                } catch(e){}
+                viewedPosts.add(postId); // Anında sete ekle (spam engelle)
+                
+                // Arka planda güvenli update işlemi
+                setTimeout(async () => {
+                    try {
+                        const {data} = await supabase.from('gonderiler').select('goruntulenme').eq('id', postId).single();
+                        const currentViews = (data && data.goruntulenme) ? data.goruntulenme : 0;
+                        const newViews = currentViews + 1;
+                        await supabase.from('gonderiler').update({goruntulenme: newViews}).eq('id', postId);
+                        const viewSpan = postCard.querySelector('.view-count-text');
+                        if(viewSpan) viewSpan.innerText = newViews;
+                    } catch(e){}
+                }, 100);
             }
         }
     });
-}, { threshold: 0.6 });
+}, { threshold: 0.2 });
 
 // ============================================
 // OTURUM (SESSION) VE YÖNLENDİRME
@@ -184,7 +189,7 @@ window.handleLogout = async () => {
 };
 
 // ============================================
-// BOTTOM NAVIGATION BARI VE ARAMA
+// V4 NAVIGATION BARI VE ARAMA
 // ============================================
 const bottomHomeBtn = document.getElementById('bottom-home-btn');
 if(bottomHomeBtn) bottomHomeBtn.addEventListener('click', () => { window.scrollTo({top:0, behavior:'smooth'}); });
@@ -198,7 +203,7 @@ if(searchInput) {
         const val = e.target.value.trim();
         const resDiv = document.getElementById('search-results');
         if(!val) { 
-            resDiv.innerHTML = '<div class="flex flex-col items-center justify-center h-40 text-slate-400"><i class="fa-solid fa-magnifying-glass text-4xl mb-3 opacity-50"></i><p class="text-[14px] font-medium">Aramak istediğiniz kişinin adını yazın.</p></div>'; 
+            resDiv.innerHTML = '<div class="flex flex-col items-center justify-center h-40 text-slate-400"><i class="fa-solid fa-magnifying-glass text-5xl mb-3 opacity-30"></i><p class="text-[14px] font-bold">Aramak istediğiniz kişiyi yazın.</p></div>'; 
             return; 
         }
         
@@ -262,7 +267,7 @@ if(messagesBtn) messagesBtn.addEventListener('click', () => {
     loadConversations();
 });
 
-// Profil Menüsü Butonları
+// Profil Menüsü Butonları & Gizli Hesap Hatası Çözümü
 document.addEventListener('click', e => {
     const editMenuBtn = e.target.closest('#menu-edit-btn');
     if(editMenuBtn) {
@@ -304,6 +309,7 @@ if(editAvatarInput) {
     });
 }
 
+// Gizli Hesap ve Profil Güncelleme (Bypass Cache)
 const editProfileForm = document.getElementById('edit-profile-form');
 if(editProfileForm) {
     editProfileForm.addEventListener('submit', async (e) => {
@@ -322,17 +328,32 @@ if(editProfileForm) {
             
             const updateData = { ad_soyad: document.getElementById('edit-name').value, biyografi: document.getElementById('edit-bio').value, gizli_hesap: isPrivate };
             if (updatedAvatarUrl) updateData.avatar_url = updatedAvatarUrl;
+            
             await supabase.from('uyeler').update(updateData).eq('id', currentUserSession.user.id);
             
+            // UI ve Global Veriyi Anında Güncelle (Reload ihtiyacını bitirir, sorunsuz aç/kapa sağlar)
+            if(userDataGlobal) {
+                userDataGlobal.ad_soyad = updateData.ad_soyad;
+                userDataGlobal.biyografi = updateData.biyografi;
+                userDataGlobal.gizli_hesap = updateData.gizli_hesap;
+                if (updatedAvatarUrl) userDataGlobal.avatar_url = updatedAvatarUrl;
+            }
+
             hideSimpleModal(document.getElementById('edit-profile-modal'));
             showToast('success', 'Profil başarıyla güncellendi!');
-            setTimeout(() => window.location.reload(), 1500); 
+            
+            // Eğer kendi profilini görüyorsan, verileri ekrana yansıt
+            if(currentlyViewingProfileId === currentUserSession.user.id) {
+                openUserProfile(currentUserSession.user.id);
+            }
         } catch (error) { showToast('error', 'Hata: ' + error.message); }
         finally { btn.innerHTML = 'Kaydet'; btn.disabled = false; }
     });
 }
 
+// ============================================
 // HAREKETLERİN (ACTIVITY) YÜKLEMESİ
+// ============================================
 async function loadActivity(type) {
     const container = document.getElementById('activity-content');
     const tabLikes = document.getElementById('tab-activity-likes');
@@ -345,43 +366,43 @@ async function loadActivity(type) {
         tabLikes.classList.remove('border-transparent', 'text-slate-400');
         tabComments.classList.remove('border-slate-900', 'text-slate-900');
         tabComments.classList.add('border-transparent', 'text-slate-400');
-        container.className = "flex-1 overflow-y-auto p-1 bg-white hide-scrollbar grid grid-cols-3 gap-0.5";
-        container.innerHTML = '<div class="col-span-3 text-center p-10"><i class="fa-solid fa-spinner fa-spin text-blue-500 text-2xl"></i></div>';
+        container.className = "flex-1 overflow-y-auto p-1 bg-white hide-scrollbar grid grid-cols-3 gap-[2px]";
+        container.innerHTML = '<div class="col-span-3 text-center p-10"><i class="fa-solid fa-spinner fa-spin text-blue-500 text-3xl"></i></div>';
         
         const {data} = await supabase.from('etkilesimler').select('gonderi:gonderiler(id, medya_url, metin)').eq('user_id', currentUserSession.user.id).eq('etkilesim_tipi', 'like').order('created_at', {ascending: false});
         container.innerHTML = '';
-        if(!data || data.length === 0) { container.innerHTML = '<div class="col-span-3 text-center p-10 text-sm font-bold text-slate-400">Henüz bir şey beğenmedin.</div>'; return; }
+        if(!data || data.length === 0) { container.innerHTML = '<div class="col-span-3 text-center p-10 text-[14px] font-bold text-slate-400">Henüz bir şey beğenmedin.</div>'; return; }
         
         data.forEach(item => {
             const post = item.gonderi;
             if(!post) return;
             let inner = '';
             if(post.medya_url) {
-                if(post.medya_url.endsWith('.mp4')) inner = '<div class="absolute inset-0 bg-black flex items-center justify-center text-white"><i class="fa-solid fa-play text-xl"></i></div>';
+                if(post.medya_url.endsWith('.mp4')) inner = '<div class="absolute inset-0 bg-black flex items-center justify-center text-white"><i class="fa-solid fa-play text-2xl"></i></div>';
                 else inner = `<img src="${post.medya_url}" class="w-full h-full object-cover">`;
             } else {
-                inner = `<div class="w-full h-full bg-slate-100 flex items-center justify-center p-2 text-center text-[9px] font-bold text-slate-500 break-words overflow-hidden border border-slate-200">${post.metin.substring(0,30)}...</div>`;
+                inner = `<div class="w-full h-full bg-slate-100 flex items-center justify-center p-3 text-center text-[10px] font-bold text-slate-500 break-words overflow-hidden border border-slate-200">${post.metin.substring(0,40)}...</div>`;
             }
-            container.insertAdjacentHTML('beforeend', `<div class="aspect-square relative cursor-pointer hover:opacity-80 transition-opacity" onclick="openSinglePost(${post.id})">${inner}</div>`);
+            container.insertAdjacentHTML('beforeend', `<div class="aspect-square relative cursor-pointer hover:opacity-80 transition-opacity border border-white" onclick="openSinglePost(${post.id})">${inner}</div>`);
         });
     } else {
         tabComments.classList.add('border-slate-900', 'text-slate-900');
         tabComments.classList.remove('border-transparent', 'text-slate-400');
         tabLikes.classList.remove('border-slate-900', 'text-slate-900');
         tabLikes.classList.add('border-transparent', 'text-slate-400');
-        container.className = "flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50 hide-scrollbar flex flex-col";
-        container.innerHTML = '<div class="text-center p-10"><i class="fa-solid fa-spinner fa-spin text-blue-500 text-2xl"></i></div>';
+        container.className = "flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 hide-scrollbar flex flex-col";
+        container.innerHTML = '<div class="text-center p-10"><i class="fa-solid fa-spinner fa-spin text-blue-500 text-3xl"></i></div>';
         
         const {data} = await supabase.from('gonderi_yorumlari').select('*, gonderi:gonderiler(id, user_id, yazar:uyeler(ad_soyad, avatar_url))').eq('user_id', currentUserSession.user.id).order('created_at', {ascending: false});
         container.innerHTML = '';
-        if(!data || data.length === 0) { container.innerHTML = '<div class="text-center p-10 text-sm font-bold text-slate-400">Hiç yorum yapmadın.</div>'; return; }
+        if(!data || data.length === 0) { container.innerHTML = '<div class="text-center p-10 text-[14px] font-bold text-slate-400">Hiç yorum yapmadın.</div>'; return; }
         
         data.forEach(comment => {
             const postOwner = comment.gonderi?.yazar?.ad_soyad || 'Biri';
             container.insertAdjacentHTML('beforeend', `
-                <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 cursor-pointer hover:border-slate-300 transition-colors" onclick="openSinglePost(${comment.gonderi_id})">
-                    <p class="text-[11px] text-slate-400 font-bold mb-1"><i class="fa-solid fa-reply"></i> ${postOwner} kullanıcısının gönderisine</p>
-                    <p class="text-[14px] text-slate-800 bg-slate-50 p-2 rounded-xl border border-slate-100">${comment.metin}</p>
+                <div class="bg-white p-4 rounded-3xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-slate-100 cursor-pointer hover:border-slate-300 transition-colors" onclick="openSinglePost(${comment.gonderi_id})">
+                    <p class="text-[12px] text-slate-400 font-bold mb-2"><i class="fa-solid fa-reply mr-1"></i> ${postOwner} kullanıcısının gönderisine</p>
+                    <p class="text-[14px] font-medium text-slate-800 bg-slate-50 p-3 rounded-2xl border border-slate-100 break-words whitespace-pre-wrap">${comment.metin}</p>
                 </div>
             `);
         });
@@ -392,7 +413,7 @@ document.getElementById('tab-activity-comments')?.addEventListener('click', () =
 
 
 // ============================================
-// REALTIME, BİLDİRİM VE MESAJ SİSTEMLERİ
+// REALTIME & CHAT BÖLÜMLERİ
 // ============================================
 function setupRealtime() {
     if (realtimeChannel) return;
@@ -446,7 +467,7 @@ function setupRealtime() {
                             if(heart) { heart.classList.remove('scale-100', 'opacity-100'); heart.classList.add('scale-0', 'opacity-0'); }
                         }
                         const readIcon = bubbleWrapper.querySelector('.msg-read-status');
-                        if (readIcon && payload.new.okundu) readIcon.className = 'msg-read-status fa-solid fa-check-double text-blue-500 ml-1';
+                        if (readIcon && payload.new.okundu) readIcon.className = 'msg-read-status fa-solid fa-check-double text-blue-500 ml-1.5 text-[11px]';
                     }
                     const messagesListModal = document.getElementById('messages-list-modal');
                     if (messagesListModal && !messagesListModal.classList.contains('tw-modal-hidden')) loadConversations();
@@ -496,7 +517,7 @@ async function loadNotifications() {
     notificationList.innerHTML = '<div class="text-center text-slate-400 mt-10"><i class="fa-solid fa-spinner fa-spin text-3xl mb-2 text-blue-500"></i><br>Yükleniyor...</div>';
     try {
         const { data: notifications } = await supabase.from('bildirimler').select('*, gonderen:uyeler!gonderen_id(ad_soyad, avatar_url), gonderi:gonderiler(medya_url, metin)').eq('alici_id', currentUserSession.user.id).order('created_at', { ascending: false }).limit(30);
-        if (!notifications || notifications.length === 0) { notificationList.innerHTML = '<div class="flex flex-col items-center justify-center h-40 text-slate-400"><i class="fa-regular fa-bell text-4xl mb-3 opacity-50"></i><p class="font-bold text-[14px]">Bildirim yok.</p></div>'; return; }
+        if (!notifications || notifications.length === 0) { notificationList.innerHTML = '<div class="flex flex-col items-center justify-center h-40 text-slate-400"><i class="fa-regular fa-bell text-5xl mb-3 opacity-30"></i><p class="font-bold text-[14px]">Bildirim yok.</p></div>'; return; }
         
         notificationList.innerHTML = '';
         notifications.forEach(notif => {
@@ -514,18 +535,18 @@ async function loadNotifications() {
             let thumbHtml = '';
             if(notif.gonderi_id && notif.gonderi) {
                 if(notif.gonderi.medya_url) {
-                    thumbHtml = `<img src="${notif.gonderi.medya_url}" class="w-12 h-12 object-cover rounded-lg border border-slate-200 ml-3">`;
+                    thumbHtml = `<img src="${notif.gonderi.medya_url}" class="w-14 h-14 object-cover rounded-xl border border-slate-200 ml-3 shadow-sm">`;
                 } else if(notif.gonderi.metin) {
-                    thumbHtml = `<div class="w-12 h-12 bg-slate-100 flex items-center justify-center rounded-lg border border-slate-200 ml-3 text-[8px] text-slate-400 p-1 text-center overflow-hidden break-words font-medium">${notif.gonderi.metin.substring(0,20)}</div>`;
+                    thumbHtml = `<div class="w-14 h-14 bg-slate-50 flex items-center justify-center rounded-xl border border-slate-200 ml-3 text-[9px] text-slate-500 p-1.5 text-center overflow-hidden break-words font-bold shadow-sm">${notif.gonderi.metin.substring(0,25)}</div>`;
                 }
             }
 
             notificationList.insertAdjacentHTML('beforeend', `
-                <div class="p-3 rounded-2xl flex items-center justify-between relative cursor-pointer hover:bg-slate-50 bg-white border-b border-slate-50 transition-colors ${notif.okundu ? '' : 'bg-blue-50/40'}" onclick="handleNotificationClick(${notif.id}, ${postIdParam}, ${senderIdParam})">
-                    <span class="absolute top-1/2 left-1 transform -translate-y-1/2 w-1.5 h-1.5 bg-blue-500 rounded-full ${dotClass}"></span>
-                    <div class="flex items-center gap-3 flex-1 pl-2">
-                        <img src="${avatar}" class="w-11 h-11 rounded-full object-cover flex-shrink-0 border border-slate-100">
-                        <div class="text-[13px] text-slate-800 leading-tight">
+                <div class="p-3.5 rounded-2xl flex items-center justify-between relative cursor-pointer hover:bg-slate-50 bg-white border-b border-slate-50 transition-colors ${notif.okundu ? '' : 'bg-blue-50/40'}" onclick="handleNotificationClick(${notif.id}, ${postIdParam}, ${senderIdParam})">
+                    <span class="absolute top-1/2 left-1.5 transform -translate-y-1/2 w-2 h-2 bg-blue-500 rounded-full ${dotClass}"></span>
+                    <div class="flex items-center gap-3 flex-1 pl-3">
+                        <img src="${avatar}" class="w-12 h-12 rounded-full object-cover flex-shrink-0 border border-slate-100 shadow-sm">
+                        <div class="text-[14px] text-slate-800 leading-snug">
                             <span class="font-extrabold">${sender.ad_soyad}</span> <br> ${richText}
                         </div>
                     </div>
@@ -562,7 +583,7 @@ async function loadConversations() {
     try {
         const { data: msgs, error } = await supabase.from('mesajlar').select('*, gonderen:uyeler!gonderen_id(id, ad_soyad, avatar_url), alici:uyeler!alici_id(id, ad_soyad, avatar_url)').or(`gonderen_id.eq.${currentUserSession.user.id},alici_id.eq.${currentUserSession.user.id}`).order('created_at', { ascending: false });
         if (error) throw error;
-        if (!msgs || msgs.length === 0) { conversationsList.innerHTML = '<div class="flex flex-col items-center justify-center h-40 text-slate-400"><i class="fa-brands fa-facebook-messenger text-4xl mb-3 opacity-50"></i><p class="font-bold text-[14px]">Mesaj kutunuz boş.</p></div>'; return; }
+        if (!msgs || msgs.length === 0) { conversationsList.innerHTML = '<div class="flex flex-col items-center justify-center h-40 text-slate-400"><i class="fa-brands fa-facebook-messenger text-5xl mb-3 opacity-30"></i><p class="font-bold text-[14px]">Mesaj kutunuz boş.</p></div>'; return; }
 
         const convos = {};
         msgs.forEach(m => {
@@ -576,15 +597,15 @@ async function loadConversations() {
         conversationsList.innerHTML = '';
         Object.values(convos).forEach(c => {
             const avatar = c.user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.user.ad_soyad)}`;
-            const bgClass = c.isUnread ? 'bg-blue-50 border-blue-100' : 'bg-white border-white';
+            const bgClass = c.isUnread ? 'bg-blue-50/50 border-blue-100' : 'bg-white border-slate-100';
             const textWeight = c.isUnread ? 'font-extrabold text-slate-900' : 'font-medium text-slate-500';
             
             conversationsList.insertAdjacentHTML('beforeend', `
-                <div class="p-3.5 flex items-center gap-4 cursor-pointer hover:bg-slate-50 transition-colors border-b ${bgClass} rounded-2xl mx-1 my-1" onclick="openChat('${c.user.id}', '${c.user.ad_soyad}', '${avatar}')">
+                <div class="p-4 flex items-center gap-4 cursor-pointer hover:bg-slate-50 transition-colors border ${bgClass} rounded-2xl mx-1 my-2 shadow-sm" onclick="openChat('${c.user.id}', '${c.user.ad_soyad}', '${avatar}')">
                     <img src="${avatar}" class="w-14 h-14 rounded-full object-cover flex-shrink-0 border border-slate-200 pointer-events-none">
                     <div class="flex-1 overflow-hidden pointer-events-none">
                         <div class="font-bold text-[15px] text-slate-900">${c.user.ad_soyad}</div>
-                        <div class="text-[13px] truncate mt-0.5 ${textWeight}">${c.senderLabel}${c.lastMsg}</div>
+                        <div class="text-[14px] truncate mt-0.5 ${textWeight}">${c.senderLabel}${c.lastMsg}</div>
                     </div>
                     ${c.isUnread ? '<span class="w-3 h-3 bg-blue-500 rounded-full pointer-events-none shadow-sm"></span>' : ''}
                 </div>
@@ -619,7 +640,7 @@ window.openChat = async (targetId, targetName, targetAvatar) => {
         if (history && history.length > 0) {
             history.forEach(msg => appendMessageToUI(msg, msg.gonderen_id === currentUserSession.user.id));
         } else {
-            if(dmHistory) dmHistory.innerHTML = '<div class="flex-1 flex flex-col items-center justify-center opacity-50"><i class="fa-regular fa-paper-plane text-5xl mb-4"></i><p id="empty-chat-msg" class="font-bold text-sm">İlk mesajı sen gönder!</p></div>';
+            if(dmHistory) dmHistory.innerHTML = '<div class="flex-1 flex flex-col items-center justify-center opacity-40"><i class="fa-regular fa-paper-plane text-6xl mb-4"></i><p id="empty-chat-msg" class="font-extrabold text-[15px]">İlk mesajı sen gönder!</p></div>';
         }
         scrollToChatBottom();
     } catch (error) { if(dmHistory) dmHistory.innerHTML = '<p class="text-center text-red-500 mt-10 font-bold">Sohbet yüklenemedi.</p>'; }
@@ -632,33 +653,33 @@ function appendMessageToUI(msg, isMine) {
     if (!dmHistory) return;
 
     const timeStr = new Date(msg.created_at).toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
-    const mediaHtml = msg.medya_url ? `<img src="${msg.medya_url}" class="w-full max-w-[220px] h-auto rounded-xl mb-1 pointer-events-auto cursor-pointer border border-slate-100" onclick="openGallery('${msg.medya_url}')">` : '';
-    const textHtml = (msg.metin && msg.metin !== '📷 Görsel') ? `<div class="whitespace-pre-wrap leading-relaxed">${msg.metin}</div>` : '';
+    const mediaHtml = msg.medya_url ? `<img src="${msg.medya_url}" class="w-full max-w-[220px] h-auto rounded-xl mb-1 pointer-events-auto cursor-pointer border border-slate-100 shadow-sm" onclick="openGallery('${msg.medya_url}')">` : '';
+    const textHtml = (msg.metin && msg.metin !== '📷 Görsel') ? `<div class="whitespace-pre-wrap break-words leading-relaxed">${msg.metin}</div>` : '';
     const readHtml = isMine ? `<i class="msg-read-status fa-solid ${msg.okundu ? 'fa-check-double text-blue-300' : 'fa-check text-white/50'} ml-1.5 text-[11px]"></i>` : '';
     const heartClass = msg.begendi ? 'scale-100 opacity-100' : 'scale-0 opacity-0';
 
     if (isMine) {
         dmHistory.insertAdjacentHTML('beforeend', `
-            <div class="flex flex-col items-end w-full animate-fade-in relative mb-4" id="msg-wrapper-${msg.id}">
-                <div class="msg-bubble relative bg-slate-900 text-white px-4 py-2.5 rounded-2xl rounded-br-sm max-w-[80%] text-[14.5px] shadow-sm cursor-pointer select-none border border-slate-800" data-msg-id="${msg.id}" data-is-mine="true" data-is-liked="${!!msg.begendi}">
+            <div class="flex flex-col items-end w-full animate-fade-in relative mb-5" id="msg-wrapper-${msg.id}">
+                <div class="msg-bubble relative bg-slate-900 text-white px-4 py-3 rounded-2xl rounded-br-sm max-w-[80%] text-[15px] shadow-sm cursor-pointer select-none border border-slate-800" data-msg-id="${msg.id}" data-is-mine="true" data-is-liked="${!!msg.begendi}">
                     ${mediaHtml}${textHtml}
-                    <div class="msg-heart absolute -bottom-2.5 -left-2.5 bg-white rounded-full w-7 h-7 flex items-center justify-center shadow-md border border-slate-100 transition-all duration-300 ${heartClass}"><i class="fa-solid fa-heart text-red-500 text-[13px]"></i></div>
+                    <div class="msg-heart absolute -bottom-3 -left-3 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md border border-slate-100 transition-all duration-300 ${heartClass}"><i class="fa-solid fa-heart text-red-500 text-[14px]"></i></div>
                 </div>
-                <div class="flex items-center text-[10px] text-slate-400 mt-1 font-bold mr-1"><span>${timeStr}</span>${readHtml}</div>
+                <div class="flex items-center text-[11px] text-slate-400 mt-1 font-bold mr-1"><span>${timeStr}</span>${readHtml}</div>
             </div>
         `);
     } else {
         const dmUserAvatar = document.getElementById('chat-user-avatar');
         const avatarSrc = dmUserAvatar ? dmUserAvatar.src : '';
         dmHistory.insertAdjacentHTML('beforeend', `
-            <div class="flex items-end gap-2 w-full animate-fade-in relative mb-4" id="msg-wrapper-${msg.id}">
-                <img src="${avatarSrc}" class="w-8 h-8 rounded-full object-cover mb-4 border border-slate-200 shadow-sm">
+            <div class="flex items-end gap-2.5 w-full animate-fade-in relative mb-5" id="msg-wrapper-${msg.id}">
+                <img src="${avatarSrc}" class="w-8 h-8 rounded-full object-cover mb-5 border border-slate-200 shadow-sm">
                 <div class="flex flex-col items-start w-full">
-                    <div class="msg-bubble relative bg-white border border-slate-200 text-slate-800 px-4 py-2.5 rounded-2xl rounded-bl-sm max-w-[80%] text-[14.5px] shadow-sm cursor-pointer select-none" data-msg-id="${msg.id}" data-is-mine="false" data-is-liked="${!!msg.begendi}">
+                    <div class="msg-bubble relative bg-white border border-slate-200 text-slate-800 px-4 py-3 rounded-2xl rounded-bl-sm max-w-[80%] text-[15px] shadow-sm cursor-pointer select-none" data-msg-id="${msg.id}" data-is-mine="false" data-is-liked="${!!msg.begendi}">
                         ${mediaHtml}${textHtml}
-                        <div class="msg-heart absolute -bottom-2.5 -right-2.5 bg-white rounded-full w-7 h-7 flex items-center justify-center shadow-md border border-slate-100 transition-all duration-300 ${heartClass}"><i class="fa-solid fa-heart text-red-500 text-[13px]"></i></div>
+                        <div class="msg-heart absolute -bottom-3 -right-3 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md border border-slate-100 transition-all duration-300 ${heartClass}"><i class="fa-solid fa-heart text-red-500 text-[14px]"></i></div>
                     </div>
-                    <span class="text-[10px] text-slate-400 mt-1 ml-2 font-bold">${timeStr}</span>
+                    <span class="text-[11px] text-slate-400 mt-1 ml-2 font-bold">${timeStr}</span>
                 </div>
             </div>
         `);
@@ -703,7 +724,7 @@ if(dmMediaInput) {
         const dmHistory = document.getElementById('chat-history');
         if(!file || !currentChatUserId || !dmHistory) return;
         e.target.value = ''; 
-        dmHistory.insertAdjacentHTML('beforeend', `<div class="text-center font-bold text-[12px] text-blue-500 my-2" id="img-upload-loading"><i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...</div>`);
+        dmHistory.insertAdjacentHTML('beforeend', `<div class="text-center font-bold text-[13px] text-blue-500 my-2" id="img-upload-loading"><i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...</div>`);
         scrollToChatBottom();
         try {
             const ext = file.name.split('.').pop();
@@ -853,7 +874,7 @@ if(createPostForm) {
                 const mediaUploadContainer = document.getElementById('media-upload-container');
                 if(mediaUploadContainer) mediaUploadContainer.classList.add('tw-modal-hidden');
                 loadFeed(currentFeedFilter);
-            }, 300);
+            }, 350);
 
         } catch (error) { showToast('error', 'Paylaşım hatası!'); } 
         finally { submitPostBtn.innerHTML = 'Paylaş'; submitPostBtn.disabled = false; }
@@ -864,8 +885,8 @@ const feedFilters = document.querySelectorAll('.feed-filter');
 if(feedFilters) {
     feedFilters.forEach(btn => {
         btn.addEventListener('click', (e) => {
-            feedFilters.forEach(f => f.className = "feed-filter px-5 py-2 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-[13px] font-bold transition-colors shadow-sm outline-none");
-            e.target.className = "feed-filter active px-5 py-2 rounded-full bg-slate-900 text-white text-[13px] font-bold transition-colors border-none outline-none shadow-md";
+            feedFilters.forEach(f => f.className = "feed-filter px-5 py-2.5 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-[13px] font-bold transition-all shadow-sm outline-none");
+            e.target.className = "feed-filter active px-5 py-2.5 rounded-2xl bg-slate-900 text-white text-[13px] font-bold transition-all shadow-md border-none outline-none";
             currentFeedFilter = e.target.getAttribute('data-filter');
             loadFeed(currentFeedFilter);
         });
@@ -887,10 +908,10 @@ function generatePostHTML(post, isSingleView = false) {
         const canEdit = ((new Date() - new Date(post.created_at)) / (1000 * 60)) <= 15;
         postOptionsHTML = `
             <div class="relative group ml-auto">
-                <button class="text-slate-400 p-2 outline-none border-none bg-transparent hover:text-slate-700 transition-colors"><i class="fa-solid fa-ellipsis-vertical pointer-events-none"></i></button>
-                <div class="absolute right-0 mt-1 w-32 bg-white border border-slate-200 rounded-xl shadow-[0_10px_25px_rgba(0,0,0,0.1)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 overflow-hidden">
-                    ${canEdit ? `<button class="edit-post-btn w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 outline-none border-none bg-transparent border-b border-slate-50 font-semibold" data-post-id="${post.id}" data-text="${encodeURIComponent(post.metin)}">Düzenle</button>` : ''}
-                    <button class="delete-post-btn w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 outline-none border-none bg-transparent font-bold" data-post-id="${post.id}">Sil</button>
+                <button class="text-slate-400 p-2 outline-none border-none bg-transparent hover:text-slate-800 transition-colors active:scale-90"><i class="fa-solid fa-ellipsis-vertical pointer-events-none text-lg"></i></button>
+                <div class="absolute right-0 mt-1 w-36 bg-white border border-slate-100 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.1)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20 overflow-hidden py-1">
+                    ${canEdit ? `<button class="edit-post-btn w-full text-left px-5 py-3.5 text-[14px] text-slate-800 hover:bg-slate-50 outline-none border-none bg-transparent font-extrabold flex items-center gap-2" data-post-id="${post.id}" data-text="${encodeURIComponent(post.metin)}"><i class="fa-solid fa-pen w-4"></i> Düzenle</button><div class="h-px bg-slate-100 mx-3"></div>` : ''}
+                    <button class="delete-post-btn w-full text-left px-5 py-3.5 text-[14px] text-red-600 hover:bg-red-50 outline-none border-none bg-transparent font-extrabold flex items-center gap-2" data-post-id="${post.id}"><i class="fa-solid fa-trash-can w-4"></i> Sil</button>
                 </div>
             </div>
         `;
@@ -898,20 +919,21 @@ function generatePostHTML(post, isSingleView = false) {
 
     let commentsHTML = '';
     const allComments = post.gonderi_yorumlari || [];
+    // Yorum Truncate Hatası Çözümü (break-words ve whitespace-pre-wrap eklendi)
     allComments.filter(c => !c.ust_yorum_id).forEach(comment => {
         const cAuthor = comment.yazar || {};
         const cAvatar = cAuthor.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(cAuthor.ad_soyad || 'U')}`;
         let cOptions = (currentUserSession && currentUserSession.user.id === comment.user_id) ? `<button class="delete-comment-btn hover:text-red-500 ml-2 outline-none border-none bg-transparent" data-comment-id="${comment.id}">Sil</button>` : '';
 
         commentsHTML += `
-            <div class="flex gap-3 items-start mt-4">
-                <img src="${cAvatar}" class="w-8 h-8 rounded-full object-cover border border-slate-200 cursor-pointer user-profile-trigger shadow-sm" data-user-id="${comment.user_id}">
-                <div class="flex-1">
-                    <div class="bg-slate-100 px-3 py-2 rounded-2xl rounded-tl-sm inline-block">
-                        <span class="font-bold text-[13px] text-slate-900 mr-2 cursor-pointer hover:underline user-profile-trigger" data-user-id="${comment.user_id}">${cAuthor.ad_soyad}</span>
-                        <span class="text-[13px] text-slate-700">${comment.metin}</span>
+            <div class="flex gap-3 items-start mt-4 w-full">
+                <img src="${cAvatar}" class="w-9 h-9 rounded-full object-cover border border-slate-200 cursor-pointer user-profile-trigger shadow-sm flex-shrink-0" data-user-id="${comment.user_id}">
+                <div class="flex-1 min-w-0">
+                    <div class="bg-slate-50 border border-slate-100 px-4 py-2.5 rounded-2xl rounded-tl-sm inline-block max-w-full shadow-sm">
+                        <span class="font-extrabold text-[14px] text-slate-900 mr-2 cursor-pointer hover:underline user-profile-trigger block sm:inline" data-user-id="${comment.user_id}">${cAuthor.ad_soyad}</span>
+                        <span class="text-[14px] text-slate-800 break-words whitespace-pre-wrap font-medium">${comment.metin}</span>
                     </div>
-                    <div class="flex gap-3 mt-1 ml-2 text-[11px] text-slate-400 font-bold">
+                    <div class="flex gap-3 mt-1.5 ml-2 text-[11px] text-slate-400 font-extrabold">
                         <button class="reply-to-comment-btn hover:text-slate-800 outline-none border-none bg-transparent transition-colors" data-post-id="${post.id}" data-comment-id="${comment.id}" data-author-name="${cAuthor.ad_soyad}">Yanıtla</button>${cOptions}
                     </div>
         `;
@@ -922,14 +944,14 @@ function generatePostHTML(post, isSingleView = false) {
             let rOptions = (currentUserSession && currentUserSession.user.id === reply.user_id) ? `<button class="delete-comment-btn hover:text-red-500 ml-2 outline-none border-none bg-transparent" data-comment-id="${reply.id}">Sil</button>` : '';
 
             commentsHTML += `
-                <div class="flex gap-2 items-start mt-3 ml-4 border-l-2 pl-3 border-slate-200">
-                    <img src="${rAvatar}" class="w-6 h-6 rounded-full object-cover border border-slate-200 cursor-pointer user-profile-trigger shadow-sm" data-user-id="${reply.user_id}">
-                    <div class="flex-1">
-                        <div class="bg-slate-100 px-3 py-1.5 rounded-2xl rounded-tl-sm inline-block">
-                            <span class="font-bold text-[12px] text-slate-900 mr-1 cursor-pointer hover:underline user-profile-trigger" data-user-id="${reply.user_id}">${rAuthor.ad_soyad}</span>
-                            <span class="text-[13px] text-slate-700">${reply.metin}</span>
+                <div class="flex gap-2.5 items-start mt-3 w-full">
+                    <img src="${rAvatar}" class="w-7 h-7 rounded-full object-cover border border-slate-200 cursor-pointer user-profile-trigger shadow-sm flex-shrink-0" data-user-id="${reply.user_id}">
+                    <div class="flex-1 min-w-0">
+                        <div class="bg-slate-50 border border-slate-100 px-3.5 py-2 rounded-2xl rounded-tl-sm inline-block max-w-full shadow-sm">
+                            <span class="font-extrabold text-[13px] text-slate-900 mr-1.5 cursor-pointer hover:underline user-profile-trigger block sm:inline" data-user-id="${reply.user_id}">${rAuthor.ad_soyad}</span>
+                            <span class="text-[14px] text-slate-800 break-words whitespace-pre-wrap font-medium">${reply.metin}</span>
                         </div>
-                        <div class="flex gap-2 mt-1 ml-2 text-[10px] text-slate-400 font-bold">${rOptions}</div>
+                        <div class="flex gap-2 mt-1.5 ml-2 text-[10px] text-slate-400 font-extrabold">${rOptions}</div>
                     </div>
                 </div>
             `;
@@ -951,57 +973,57 @@ function generatePostHTML(post, isSingleView = false) {
             `;
         } else {
             mediaHTML = `
-                <div class="relative mt-4 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 premium-shadow group">
+                <div class="relative mt-4 rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 premium-shadow group">
                     <img src="${post.medya_url}" class="post-media-item w-full h-auto max-h-[70vh] object-cover pointer-events-auto cursor-pointer" onclick="openGallery('${post.medya_url}')" data-post-id="${post.id}" data-author-id="${post.user_id}">
-                    <i class="fa-solid fa-heart absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-6xl opacity-0 pointer-events-none drop-shadow-2xl z-10 big-heart"></i>
-                    <div class="absolute bottom-3 right-3 bg-black/50 text-white text-[10px] font-bold px-2 py-1.5 rounded backdrop-blur-sm pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5"><i class="fa-solid fa-expand"></i> Büyüt</div>
+                    <i class="fa-solid fa-heart absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-7xl opacity-0 pointer-events-none drop-shadow-2xl z-10 big-heart"></i>
+                    <div class="absolute bottom-3 right-3 bg-black/60 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg backdrop-blur-md pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5"><i class="fa-solid fa-expand"></i> Büyüt</div>
                 </div>
             `;
         }
     }
 
     return `
-        <div class="post-card no-select bg-white p-5 rounded-[20px] shadow-[0_2px_15px_rgba(0,0,0,0.03)] border border-slate-100 transition-all duration-300 mb-6" data-post-id="${post.id}">
-            <div class="flex justify-between items-start mb-3 pointer-events-auto">
+        <div class="post-card no-select bg-white p-5 rounded-[24px] transition-all duration-300 mb-6" data-post-id="${post.id}">
+            <div class="flex justify-between items-start mb-4 pointer-events-auto">
                 <div class="flex items-center gap-3">
-                    <img src="${avatar}" class="w-12 h-12 rounded-full object-cover border border-slate-200 cursor-pointer user-profile-trigger shadow-sm" data-user-id="${post.user_id}">
+                    <img src="${avatar}" class="w-12 h-12 rounded-full object-cover border-[1.5px] border-slate-200 cursor-pointer user-profile-trigger shadow-sm" data-user-id="${post.user_id}">
                     <div>
                         <h4 class="font-extrabold text-slate-900 text-[15px] flex items-center gap-2 cursor-pointer hover:underline user-profile-trigger" data-user-id="${post.user_id}">
                             ${author.ad_soyad || 'Bilinmeyen'}
-                            <span class="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[9px] uppercase tracking-wide font-extrabold border border-blue-100">${author.rol || 'Müşteri'}</span>
+                            <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[9px] uppercase tracking-wider font-extrabold border border-blue-100">${author.rol || 'Müşteri'}</span>
                         </h4>
-                        <p class="text-[11px] text-slate-400 font-bold">${new Date(post.created_at).toLocaleDateString('tr-TR', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}</p>
+                        <p class="text-[12px] text-slate-400 font-bold mt-0.5">${new Date(post.created_at).toLocaleDateString('tr-TR', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}</p>
                     </div>
                 </div>
                 ${postOptionsHTML}
             </div>
             
-            <div class="text-slate-800 text-[15px] whitespace-pre-wrap pointer-events-auto leading-relaxed font-medium">${post.metin}</div>
+            <div class="text-slate-900 text-[15px] whitespace-pre-wrap break-words pointer-events-auto leading-relaxed font-medium px-1">${post.metin}</div>
             ${mediaHTML}
             
-            <div class="flex items-center gap-6 mt-4 pt-4 border-t border-slate-100 pointer-events-auto">
-                <button class="action-btn like-btn flex items-center gap-2 text-[15px] font-extrabold transition-colors outline-none border-none bg-transparent active:scale-95 ${isLikedByMe ? 'text-red-500' : 'text-slate-700 hover:text-red-500'}" data-post-id="${post.id}" data-author-id="${post.user_id}">
-                    <i class="${isLikedByMe ? 'fa-solid fa-heart' : 'fa-regular fa-heart'} like-icon" style="pointer-events:none;"></i> <span class="like-count" style="pointer-events:none;">${likesCount > 0 ? likesCount : 'Beğen'}</span>
+            <div class="flex items-center gap-6 mt-5 pt-4 border-t border-slate-100 pointer-events-auto px-1">
+                <button class="action-btn like-btn flex items-center gap-2 text-[16px] font-extrabold transition-colors outline-none border-none bg-transparent active:scale-90 ${isLikedByMe ? 'text-red-500' : 'text-slate-800 hover:text-red-500'}" data-post-id="${post.id}" data-author-id="${post.user_id}">
+                    <i class="${isLikedByMe ? 'fa-solid fa-heart' : 'fa-regular fa-heart'} like-icon" style="pointer-events:none;"></i> <span class="like-count text-[15px]" style="pointer-events:none;">${likesCount > 0 ? likesCount : 'Beğen'}</span>
                 </button>
-                <button class="action-btn comment-toggle-btn flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors text-[15px] font-extrabold outline-none border-none bg-transparent active:scale-95" data-post-id="${post.id}">
-                    <i class="fa-regular fa-comment pointer-events-none"></i> <span class="pointer-events-none">${allComments.length > 0 ? allComments.length : 'Yorum'}</span>
+                <button class="action-btn comment-toggle-btn flex items-center gap-2 text-slate-800 hover:text-blue-600 transition-colors text-[16px] font-extrabold outline-none border-none bg-transparent active:scale-90" data-post-id="${post.id}">
+                    <i class="fa-regular fa-comment pointer-events-none"></i> <span class="pointer-events-none text-[15px]">${allComments.length > 0 ? allComments.length : 'Yorum'}</span>
                 </button>
-                <div class="ml-auto flex items-center gap-1.5 text-slate-400 text-[13px] font-bold">
-                    <i class="fa-regular fa-eye text-[15px]"></i> <span class="view-count-text">${viewCount}</span>
+                <div class="ml-auto flex items-center gap-1.5 text-slate-400 text-[13px] font-extrabold">
+                    <i class="fa-solid fa-chart-simple text-[14px]"></i> <span class="view-count-text">${viewCount}</span>
                 </div>
             </div>
 
-            <div class="comment-section ${isSingleView ? '' : 'hidden'} mt-4 pt-4 border-t border-slate-100 pointer-events-auto">
-                <div class="mb-4 space-y-1">${commentsHTML}</div>
-                <div class="reply-indicator hidden items-center justify-between bg-blue-50 text-blue-700 px-4 py-2 rounded-t-xl text-[11px] font-extrabold border border-blue-100 border-b-0">
-                    <span><i class="fa-solid fa-reply mr-1"></i> <span class="reply-name"></span> kullanıcısına yanıt veriliyor</span>
-                    <button class="cancel-reply-btn hover:text-red-500 outline-none border-none bg-transparent"><i class="fa-solid fa-xmark text-base"></i></button>
+            <div class="comment-section ${isSingleView ? '' : 'hidden'} mt-5 pt-4 border-t border-slate-100 pointer-events-auto">
+                <div class="mb-5 space-y-1">${commentsHTML}</div>
+                <div class="reply-indicator hidden items-center justify-between bg-blue-50 text-blue-700 px-4 py-2.5 rounded-t-2xl text-[12px] font-extrabold border border-blue-100 border-b-0">
+                    <span><i class="fa-solid fa-reply mr-1.5"></i> <span class="reply-name"></span> kullanıcısına yanıt veriliyor</span>
+                    <button class="cancel-reply-btn hover:text-red-500 outline-none border-none bg-transparent active:scale-90"><i class="fa-solid fa-xmark text-lg"></i></button>
                 </div>
                 <div class="flex gap-2 relative">
-                    <img src="${userDataGlobal ? userDataGlobal.avatar_url : 'https://via.placeholder.com/150'}" class="w-10 h-10 rounded-full object-cover border border-slate-200 absolute left-0 top-0">
-                    <input type="text" class="comment-input flex-1 pl-12 pr-12 py-2.5 bg-slate-50 border border-slate-200 rounded-full text-sm font-medium focus:outline-none focus:border-slate-400 focus:bg-white transition-colors shadow-inner" placeholder="Yorum ekle..." style="outline:none;">
-                    <button class="submit-comment-btn absolute right-1 top-1 w-8 h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center shadow-sm transition-transform active:scale-95 outline-none border-none" data-post-id="${post.id}" data-author-id="${post.user_id}">
-                        <i class="fa-solid fa-paper-plane pointer-events-none text-xs ml-[-1px]"></i>
+                    <img src="${userDataGlobal ? userDataGlobal.avatar_url : 'https://via.placeholder.com/150'}" class="w-11 h-11 rounded-full object-cover border border-slate-200 absolute left-0 top-0 shadow-sm">
+                    <input type="text" class="comment-input flex-1 pl-14 pr-14 py-3 bg-slate-50 border border-slate-200 rounded-full text-[14px] font-medium focus:outline-none focus:border-slate-800 focus:bg-white transition-colors" placeholder="Yorum ekle..." style="outline:none;">
+                    <button class="submit-comment-btn absolute right-1.5 top-1.5 w-8 h-8 bg-slate-900 hover:bg-black text-white rounded-full flex items-center justify-center shadow-md transition-transform active:scale-90 outline-none border-none" data-post-id="${post.id}" data-author-id="${post.user_id}">
+                        <i class="fa-solid fa-paper-plane pointer-events-none text-[11px] ml-[-1px]"></i>
                     </button>
                 </div>
             </div>
@@ -1013,17 +1035,16 @@ async function loadFeed(filterType) {
     if (!currentUserSession) return;
     const feedList = document.getElementById('feed-list');
     if (!feedList) return;
-    feedList.innerHTML = '<div class="p-10 text-center text-slate-400 bg-white rounded-2xl border border-slate-100 shadow-sm"><i class="fa-solid fa-spinner fa-spin text-4xl mb-3 text-blue-500"></i><p class="font-bold">Akış Yükleniyor...</p></div>';
+    feedList.innerHTML = '<div class="p-12 text-center text-slate-400 bg-white rounded-3xl border border-slate-100 shadow-sm"><i class="fa-solid fa-spinner fa-spin text-5xl mb-4 text-blue-500"></i><p class="font-extrabold text-[15px]">Akış Yükleniyor...</p></div>';
     try {
         let query = supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).order('created_at', { ascending: false });
         if (filterType !== 'all') query = query.eq('gonderi_tipi', filterType);
         const { data: posts } = await query;
-        if (!posts || posts.length === 0) { feedList.innerHTML = '<div class="bg-white p-10 border border-slate-100 rounded-2xl text-center text-slate-400 shadow-sm"><i class="fa-regular fa-images text-5xl mb-4 text-slate-300"></i><p class="font-bold">Henüz paylaşım yok.</p></div>'; return; }
+        if (!posts || posts.length === 0) { feedList.innerHTML = '<div class="bg-white p-12 border border-slate-100 rounded-3xl text-center text-slate-400 shadow-sm"><i class="fa-regular fa-images text-6xl mb-5 text-slate-200"></i><p class="font-extrabold text-[15px]">Henüz paylaşım yok.</p></div>'; return; }
         
         feedList.innerHTML = '';
         posts.forEach(p => feedList.insertAdjacentHTML('beforeend', generatePostHTML(p, false)));
         
-        // Yüklenen videolara ve kartlara gözlemcileri ekle
         document.querySelectorAll('.reels-video').forEach(v => reelsObserver.observe(v));
         document.querySelectorAll('.post-card').forEach(c => postViewObserver.observe(c));
     } catch (e) {}
@@ -1046,12 +1067,12 @@ document.addEventListener('click', async (e) => {
         let currentCount = parseInt(countSpan.innerText) || 0;
 
         if (isLiked) {
-            icon.className = "fa-regular fa-heart like-icon text-slate-700"; 
-            likeBtn.classList.replace('text-red-500', 'text-slate-700');
+            icon.className = "fa-regular fa-heart like-icon text-slate-800"; 
+            likeBtn.classList.replace('text-red-500', 'text-slate-800');
             countSpan.innerText = currentCount > 1 ? currentCount - 1 : 'Beğen';
         } else {
             icon.className = "fa-solid fa-heart like-icon text-red-500"; 
-            likeBtn.classList.replace('text-slate-700', 'text-red-500');
+            likeBtn.classList.replace('text-slate-800', 'text-red-500');
             countSpan.innerText = isNaN(currentCount) || currentCount === 0 ? 1 : currentCount + 1;
         }
 
@@ -1094,7 +1115,7 @@ document.addEventListener('click', async (e) => {
             
             showToast('success', 'Yorum eklendi!');
         } catch(err) { showToast('error', 'Yorum gönderilemedi.'); } 
-        finally { submitCommentBtn.disabled = false; submitCommentBtn.innerHTML = '<i class="fa-solid fa-paper-plane text-xs"></i>'; }
+        finally { submitCommentBtn.disabled = false; submitCommentBtn.innerHTML = '<i class="fa-solid fa-paper-plane text-[11px] ml-[-1px]"></i>'; }
         return;
     }
 
@@ -1133,7 +1154,7 @@ document.addEventListener('click', async (e) => {
     const deletePostBtn = target.closest('.delete-post-btn');
     if (deletePostBtn) {
         const postId = deletePostBtn.getAttribute('data-post-id');
-        Swal.fire({ title: 'Emin misin?', text: "Bu gönderi kalıcı olarak silinecek!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Sil', cancelButtonText: 'İptal' }).then(async (res) => {
+        Swal.fire({ title: 'Emin misin?', text: "Bu gönderi kalıcı olarak silinecek!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#0f172a', cancelButtonColor: '#64748b', confirmButtonText: 'Sil', cancelButtonText: 'İptal' }).then(async (res) => {
             if (res.isConfirmed) { 
                 await supabase.from('gonderiler').delete().eq('id', postId); 
                 showToast('success', 'Gönderi silindi.');
@@ -1148,7 +1169,7 @@ document.addEventListener('click', async (e) => {
     if (deleteCommentBtn) {
         const postCard = deleteCommentBtn.closest('.post-card');
         const commentId = deleteCommentBtn.getAttribute('data-comment-id');
-        Swal.fire({ title: 'Yorumu Sil?', text: "Kalıcı olarak silinecek!", icon: 'question', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Sil', cancelButtonText: 'İptal' }).then(async (res) => {
+        Swal.fire({ title: 'Yorumu Sil?', text: "Kalıcı olarak silinecek!", icon: 'question', showCancelButton: true, confirmButtonColor: '#0f172a', confirmButtonText: 'Sil', cancelButtonText: 'İptal' }).then(async (res) => {
             if (res.isConfirmed) { 
                 await supabase.from('gonderi_yorumlari').delete().eq('id', commentId); 
                 showToast('success', 'Yorum silindi.');
@@ -1203,7 +1224,7 @@ document.addEventListener('dblclick', async (e) => {
         if (!isLiked) {
             let currentCount = parseInt(countSpan.innerText) || 0;
             icon.className = "fa-solid fa-heart like-icon text-red-500";
-            postCard.querySelector('.like-btn').classList.replace('text-slate-700', 'text-red-500');
+            postCard.querySelector('.like-btn').classList.replace('text-slate-800', 'text-red-500');
             countSpan.innerText = isNaN(currentCount) || currentCount === 0 ? 1 : currentCount + 1;
 
             try {
@@ -1223,7 +1244,7 @@ window.openFollowList = async function(type, userId) {
     const content = document.getElementById('follow-list-content');
     
     title.innerText = type === 'followers' ? 'Takipçiler' : 'Takip Edilenler';
-    content.innerHTML = '<div class="text-center p-10"><i class="fa-solid fa-spinner fa-spin text-blue-500 text-3xl"></i></div>';
+    content.innerHTML = '<div class="text-center p-10"><i class="fa-solid fa-spinner fa-spin text-blue-500 text-4xl"></i></div>';
     
     try {
         let query = supabase.from('takipler').select('takip_eden_id').eq('takip_edilen_id', userId);
@@ -1233,7 +1254,7 @@ window.openFollowList = async function(type, userId) {
         if(error) throw error;
         
         if(!data || data.length === 0) {
-            content.innerHTML = '<div class="flex flex-col items-center justify-center h-40 text-slate-400"><i class="fa-solid fa-user-xmark text-4xl mb-3 opacity-50"></i><p class="font-bold text-[14px]">Liste boş.</p></div>';
+            content.innerHTML = '<div class="flex flex-col items-center justify-center h-40 text-slate-400"><i class="fa-solid fa-user-xmark text-5xl mb-4 opacity-30"></i><p class="font-bold text-[14px]">Liste boş.</p></div>';
             return;
         }
         
@@ -1244,11 +1265,11 @@ window.openFollowList = async function(type, userId) {
         users.forEach(u => {
             const avatar = u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.ad_soyad)}&background=1e3a8a&color=fff`;
             content.insertAdjacentHTML('beforeend', `
-                <div class="flex items-center gap-3 p-3.5 bg-white rounded-2xl cursor-pointer hover:bg-slate-50 transition-colors border border-slate-100 shadow-[0_2px_10px_rgba(0,0,0,0.03)] mb-2 user-profile-trigger" data-user-id="${u.id}" onclick="closeSideModal('follow-list-modal', 'follow-list-panel')">
-                    <img src="${avatar}" class="w-12 h-12 rounded-full object-cover border border-slate-200 pointer-events-none">
+                <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors border border-slate-100 shadow-sm mb-3 user-profile-trigger" data-user-id="${u.id}" onclick="closeSideModal('follow-list-modal', 'follow-list-panel')">
+                    <img src="${avatar}" class="w-14 h-14 rounded-full object-cover border-[1.5px] border-slate-200 pointer-events-none shadow-sm">
                     <div class="pointer-events-none flex-1">
-                        <h4 class="font-extrabold text-slate-900 text-[14px]">${u.ad_soyad}</h4>
-                        <span class="text-[9px] font-extrabold text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase border border-blue-100">${u.rol}</span>
+                        <h4 class="font-extrabold text-slate-900 text-[15px]">${u.ad_soyad}</h4>
+                        <span class="text-[10px] font-extrabold text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase border border-blue-100 mt-1 inline-block">${u.rol}</span>
                     </div>
                 </div>
             `);
@@ -1259,15 +1280,15 @@ window.openFollowList = async function(type, userId) {
 };
 
 // ============================================
-// PROFİL SAYFASI VE GİZLİLİK MANTIĞI (.maybeSingle ile çökme engellendi)
+// PROFİL SAYFASI VE GİZLİLİK MANTIĞI
 // ============================================
 const tabGridBtn = document.getElementById('tab-grid');
 const tabQuestionsBtn = document.getElementById('tab-questions');
 if(tabGridBtn && tabQuestionsBtn) {
     tabGridBtn.addEventListener('click', () => {
         tabGridBtn.classList.add('border-slate-900', 'text-slate-900');
-        tabGridBtn.classList.remove('border-transparent', 'text-slate-400');
-        tabQuestionsBtn.classList.add('border-transparent', 'text-slate-400');
+        tabGridBtn.classList.remove('border-transparent', 'text-slate-300');
+        tabQuestionsBtn.classList.add('border-transparent', 'text-slate-300');
         tabQuestionsBtn.classList.remove('border-slate-900', 'text-slate-900');
         const upGrid = document.getElementById('up-grid');
         const upQuestionsList = document.getElementById('up-questions-list');
@@ -1276,8 +1297,8 @@ if(tabGridBtn && tabQuestionsBtn) {
     });
     tabQuestionsBtn.addEventListener('click', () => {
         tabQuestionsBtn.classList.add('border-slate-900', 'text-slate-900');
-        tabQuestionsBtn.classList.remove('border-transparent', 'text-slate-400');
-        tabGridBtn.classList.add('border-transparent', 'text-slate-400');
+        tabQuestionsBtn.classList.remove('border-transparent', 'text-slate-300');
+        tabGridBtn.classList.add('border-transparent', 'text-slate-300');
         tabGridBtn.classList.remove('border-slate-900', 'text-slate-900');
         const upGrid = document.getElementById('up-grid');
         const upQuestionsList = document.getElementById('up-questions-list');
@@ -1298,8 +1319,8 @@ window.openUserProfile = async (uId) => {
     const tabsContainer = document.getElementById('profile-tabs-container');
     const emptyPlaceHolder = document.getElementById('empty-profile-placeholder');
     
-    if(upGrid) upGrid.innerHTML = '<div class="col-span-3 text-center p-10"><i class="fa-solid fa-spinner fa-spin text-3xl text-blue-500"></i></div>';
-    if(upQuestionsList) upQuestionsList.innerHTML = '<div class="text-center p-10"><i class="fa-solid fa-spinner fa-spin text-3xl text-blue-500"></i></div>';
+    if(upGrid) upGrid.innerHTML = '<div class="col-span-3 text-center p-10"><i class="fa-solid fa-spinner fa-spin text-4xl text-blue-500"></i></div>';
+    if(upQuestionsList) upQuestionsList.innerHTML = '<div class="text-center p-10"><i class="fa-solid fa-spinner fa-spin text-4xl text-blue-500"></i></div>';
     if(emptyPlaceHolder) emptyPlaceHolder.classList.add('hidden');
     if(emptyPlaceHolder) emptyPlaceHolder.classList.remove('flex');
     if(tabsContainer) tabsContainer.style.display = 'flex';
@@ -1345,7 +1366,6 @@ window.openUserProfile = async (uId) => {
                 };
             }
             
-            // KRİTİK HATA ÇÖZÜMÜ: .single() yerine .maybeSingle() kullanıldı
             const { data: follow } = await supabase.from('takipler').select('id').eq('takip_eden_id', currentUserSession.user.id).eq('takip_edilen_id', uId).maybeSingle();
             
             if (follow) { 
@@ -1364,17 +1384,16 @@ window.openUserProfile = async (uId) => {
         const { count: fing } = await supabase.from('takipler').select('*', { count: 'exact', head: true }).eq('takip_eden_id', uId);
         if(upFollowerCount) upFollowerCount.innerText = fer || 0; if(upFollowingCount) upFollowingCount.innerText = fing || 0;
 
-        // Gizli Hesap Kontrolü
+        // GİZLİ HESAP ENGELLEMESİ
         if(user.gizli_hesap && !isFollowing && uId !== currentUserSession?.user?.id) {
             if(tabsContainer) tabsContainer.style.display = 'none';
-            if(upGrid) upGrid.innerHTML = '<div class="col-span-3 flex flex-col items-center justify-center p-14 text-slate-500"><i class="fa-solid fa-lock text-5xl mb-4 text-slate-300"></i><h3 class="font-extrabold text-slate-800 text-lg">Bu Hesap Gizli</h3><p class="text-sm mt-1 text-center font-medium">Fotoğraflarını ve videolarını görmek için takip et.</p></div>';
+            if(upGrid) upGrid.innerHTML = '<div class="col-span-3 flex flex-col items-center justify-center p-16 text-slate-500"><div class="w-20 h-20 bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center mb-5"><i class="fa-solid fa-lock text-4xl text-slate-300"></i></div><h3 class="font-extrabold text-slate-900 text-lg">Bu Hesap Gizli</h3><p class="text-sm mt-1 text-center font-medium">Fotoğraflarını ve videolarını görmek için takip et.</p></div>';
             if(upQuestionsList) upQuestionsList.innerHTML = '';
             const upPostCount = document.getElementById('up-post-count');
             if(upPostCount) upPostCount.innerText = '-';
             return; 
         }
 
-        // Gönderileri Çek
         const { data: posts } = await supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).eq('user_id', uId).order('created_at', { ascending: false });
         const upPostCount = document.getElementById('up-post-count');
         if(upPostCount) upPostCount.innerText = posts ? posts.length : 0;
@@ -1385,8 +1404,8 @@ window.openUserProfile = async (uId) => {
         if(posts && posts.length > 0) {
             posts.forEach(p => {
                 if (p.gonderi_tipi === 'medya') {
-                    let content = p.medya_url.endsWith('.mp4') ? '<div class="absolute inset-0 bg-black flex items-center justify-center text-white"><i class="fa-solid fa-play text-2xl"></i><span class="absolute bottom-2 left-2 text-[10px] bg-black/60 font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">Reels</span></div>' : `<img src="${p.medya_url}" class="w-full h-full object-cover">`;
-                    if(upGrid) upGrid.insertAdjacentHTML('beforeend', `<div class="aspect-square relative cursor-pointer border border-white hover:opacity-90 transition-opacity" onclick="openSinglePost(${p.id})">${content}</div>`);
+                    let content = p.medya_url.endsWith('.mp4') ? '<div class="absolute inset-0 bg-black flex items-center justify-center text-white"><i class="fa-solid fa-play text-2xl drop-shadow-md"></i><span class="absolute bottom-2 left-2 text-[10px] bg-black/60 font-bold px-1.5 py-0.5 rounded backdrop-blur-sm shadow-sm">Reels</span></div>' : `<img src="${p.medya_url}" class="w-full h-full object-cover">`;
+                    if(upGrid) upGrid.insertAdjacentHTML('beforeend', `<div class="aspect-square relative cursor-pointer hover:opacity-90 transition-opacity" onclick="openSinglePost(${p.id})">${content}</div>`);
                 } else { 
                     if(upQuestionsList) upQuestionsList.insertAdjacentHTML('beforeend', generatePostHTML(p, false)); 
                 }
@@ -1439,7 +1458,7 @@ if(followBtnEl) {
 const unfollowBtnEl = document.getElementById('unfollow-btn');
 if(unfollowBtnEl) {
     unfollowBtnEl.addEventListener('click', async () => {
-        Swal.fire({title: 'Takibi Bırak?', icon: 'question', showCancelButton: true, confirmButtonText: 'Bırak', cancelButtonText: 'İptal', confirmButtonColor: '#d33'}).then(async res => {
+        Swal.fire({title: 'Takibi Bırak?', icon: 'question', showCancelButton: true, confirmButtonText: 'Bırak', cancelButtonText: 'İptal', confirmButtonColor: '#0f172a'}).then(async res => {
             if(res.isConfirmed) {
                 await supabase.from('takipler').delete().eq('takip_eden_id', currentUserSession.user.id).eq('takip_edilen_id', currentlyViewingProfileId);
                 unfollowBtnEl.classList.add('tw-modal-hidden'); 
@@ -1456,7 +1475,7 @@ if(unfollowBtnEl) {
 window.openSinglePost = async (postId) => {
     openSideModal('single-post-modal', 'single-post-panel');
     const singlePostContainer = document.getElementById('single-post-container');
-    if(singlePostContainer) singlePostContainer.innerHTML = '<div class="text-center mt-20 text-slate-400"><i class="fa-solid fa-spinner fa-spin text-4xl mb-3 text-blue-500"></i><p class="font-bold">Yükleniyor...</p></div>';
+    if(singlePostContainer) singlePostContainer.innerHTML = '<div class="text-center mt-20 text-slate-400"><i class="fa-solid fa-spinner fa-spin text-5xl mb-4 text-blue-500"></i><p class="font-bold text-[15px]">Yükleniyor...</p></div>';
     try {
         const { data: post } = await supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).eq('id', postId).single();
         if(singlePostContainer) {
@@ -1469,6 +1488,4 @@ window.openSinglePost = async (postId) => {
     } catch (e) {}
 };
 
-// Başlangıç Yüklemeleri
 checkSession();
-
