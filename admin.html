@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Supabase Entegrasyonu (Galeri Yüklemeleri İçin) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
@@ -80,6 +81,7 @@
             </div>
         </aside>
 
+        <!-- Mobil Alt Menü -->
         <nav class="md:hidden fixed bottom-0 left-0 w-full bg-slate-900 flex justify-around p-3 z-50 pb-safe shadow-[0_-10px_20px_rgba(0,0,0,0.2)] border-t border-slate-800">
             <button id="mob-menu-bot" onclick="switchTab('bot')" class="text-blue-500 flex flex-col items-center gap-1 transition-colors"><i class="fa-solid fa-robot text-xl"></i><span class="text-[10px] font-bold">Asistan</span></button>
             <button id="mob-menu-gallery" onclick="switchTab('gallery')" class="text-slate-400 hover:text-white flex flex-col items-center gap-1 transition-colors"><i class="fa-solid fa-images text-xl"></i><span class="text-[10px] font-bold">Galeri</span></button>
@@ -105,6 +107,7 @@
 
             <div class="flex-1 p-4 sm:p-6 lg:p-8 flex flex-col overflow-hidden w-full relative">
                 
+                <!-- BOT SEKMSİ -->
                 <div id="section-bot" class="w-full flex-1 flex flex-col bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="bg-slate-50 px-4 sm:px-6 py-4 border-b border-slate-200 flex flex-wrap gap-4 justify-between items-center flex-shrink-0">
                         <div class="hidden sm:flex items-center gap-2 text-slate-700 font-bold">
@@ -133,6 +136,7 @@
                     </div>
                 </div>
 
+                <!-- GALERİ SEKMSİ -->
                 <div id="section-gallery" class="w-full flex-1 flex flex-col hidden overflow-hidden">
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 mb-6 flex-shrink-0">
                         <h3 class="font-extrabold text-slate-900 mb-4 flex items-center gap-2"><i class="fa-solid fa-plus-circle text-blue-600"></i> Yeni Kare Ekle</h3>
@@ -170,11 +174,13 @@
                         </div>
                         <div class="flex-1 overflow-y-auto p-6 hide-scrollbar">
                             <div id="gallery-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 w-full">
-                                </div>
+                                <!-- JS Dolduracak -->
+                            </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- YORUMLAR SEKMSİ -->
                 <div id="section-reviews" class="w-full flex-1 flex flex-col hidden overflow-y-auto hide-scrollbar space-y-6">
                     <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden w-full">
                         <div class="bg-slate-50 px-5 py-4 border-b border-slate-200 flex items-center gap-2 font-extrabold text-slate-900">
@@ -223,10 +229,13 @@
         </main>
     </div>
 
+    <!-- SUPABASE İSTEMCİSİ VE GALERİ JS (HATA ÇÖZÜLDÜ) -->
     <script>
         const supabaseUrl = "https://ppdwtpjglkphayfxexhv.supabase.co";
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwZHd0cGpnbGtwaGF5ZnhleGh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNTc5ODEsImV4cCI6MjA5NjgzMzk4MX0.fJIyyxfU15EgrNARWkISFHJvU7-o-QpZbIKbRc3q_-s";
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // HATA BURADAYDI: Değişken adını supabaseClient olarak değiştirdik.
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         let sessionPassword = "";
         let originalText = ""; 
@@ -240,7 +249,6 @@
         const botTextArea = document.getElementById('bot-text');
         const saveBtn = document.getElementById('save-btn');
 
-        // GÖZ İKONU
         function showPassword() { passwordInput.type = 'text'; togglePasswordBtn.classList.replace('fa-eye', 'fa-eye-slash'); }
         function hidePassword() { passwordInput.type = 'password'; togglePasswordBtn.classList.replace('fa-eye-slash', 'fa-eye'); }
         togglePasswordBtn.addEventListener('mousedown', showPassword);
@@ -249,14 +257,12 @@
         togglePasswordBtn.addEventListener('touchstart', (e) => { e.preventDefault(); showPassword(); });
         togglePasswordBtn.addEventListener('touchend', hidePassword);
 
-        // HASH
         async function sha256(message) {
             const msgBuffer = new TextEncoder().encode(message);
             const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
             return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // TAB MANTIĞI
         function switchTab(tabName) {
             const btnBot = document.getElementById('menu-bot');
             const btnGal = document.getElementById('menu-gallery');
@@ -269,9 +275,7 @@
             const secRev = document.getElementById('section-reviews');
             const title = document.getElementById('page-title');
 
-            // Reset Desktop
             [btnBot, btnGal, btnRev].forEach(b => b.className = "flex items-center gap-3 p-3.5 w-full text-left text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl font-bold transition-all justify-between");
-            // Reset Mobile
             [mBtnBot, mBtnGal, mBtnRev].forEach(b => b.className = "text-slate-400 hover:text-white flex flex-col items-center gap-1 transition-colors relative");
 
             secBot.classList.add('hidden'); secGal.classList.add('hidden'); secRev.classList.add('hidden');
@@ -296,7 +300,6 @@
             }
         }
 
-        // TEXT AREA GEÇMİŞİ
         function saveHistoryState(text) {
             if (isUndoingOrRedoing) return;
             if (historyIndex < historyStack.length - 1) historyStack = historyStack.slice(0, historyIndex + 1);
@@ -324,7 +327,6 @@
             reader.readAsText(file); event.target.value = ''; 
         }
 
-        // GİRİŞ
         async function enterPanel() {
             const pass = passwordInput.value;
             if (!pass) { Swal.fire({ icon: 'warning', text: 'Şifrenizi girin.' }); return; }
@@ -343,7 +345,6 @@
 
         function logout() { Swal.fire({ title: 'Çıkış?', showCancelButton: true, confirmButtonText: 'Evet' }).then((result) => { if (result.isConfirmed) location.reload(); }); }
 
-        // ASİSTAN VERİ
         async function loadData() {
             botTextArea.value = "Yükleniyor...";
             try {
@@ -364,7 +365,6 @@
             } catch (err) {} finally { saveBtn.innerHTML = btnContent; saveBtn.disabled = false; }
         });
 
-        // YORUMLAR
         async function loadReviews() {
             if (!sessionPassword) return;
             const pendingList = document.getElementById('pending-reviews-list');
@@ -425,7 +425,7 @@
         }
 
         // ============================================
-        // GALERİ SİSTEMİ (V4 - YENİ)
+        // GALERİ SİSTEMİ (SupabaseClient Hatası Düzeltildi)
         // ============================================
         function previewGalleryImage(input) {
             const file = input.files[0];
@@ -447,14 +447,13 @@
                 const ext = selectedGalleryFile.name.split('.').pop();
                 const fileName = `galeri-${Date.now()}.${ext}`;
                 
-                // Storage'a yükle (medya bucket)
-                const { error: uploadErr } = await supabase.storage.from('medya').upload(fileName, selectedGalleryFile);
+                // supabaseClient kullanarak hatayı giderdik
+                const { error: uploadErr } = await supabaseClient.storage.from('medya').upload(fileName, selectedGalleryFile);
                 if(uploadErr) throw uploadErr;
                 
-                const fileUrl = supabase.storage.from('medya').getPublicUrl(fileName).data.publicUrl;
+                const fileUrl = supabaseClient.storage.from('medya').getPublicUrl(fileName).data.publicUrl;
                 
-                // galeri tablosuna kaydet
-                const { error: dbErr } = await supabase.from('galeri').insert([{ gorsel_url: fileUrl, aciklama: desc }]);
+                const { error: dbErr } = await supabaseClient.from('galeri').insert([{ gorsel_url: fileUrl, aciklama: desc }]);
                 if(dbErr) throw dbErr;
 
                 Swal.fire({icon:'success', title:'Kare Eklendi!', timer:1500, showConfirmButton:false});
@@ -464,7 +463,7 @@
                 document.getElementById('gal-preview-name').classList.add('hidden');
                 selectedGalleryFile = null;
                 
-                loadGalleryAdmin(); // Listeyi yenile
+                loadGalleryAdmin(); 
             } catch(e) { Swal.fire({icon:'error', text:'Yükleme Başarısız!'}); console.error(e); }
             finally { btn.innerHTML = 'Sisteme Yükle'; btn.disabled = false; }
         }
@@ -473,7 +472,7 @@
             const grid = document.getElementById('gallery-grid');
             grid.innerHTML = '<div class="col-span-full text-center py-10"><i class="fa-solid fa-spinner fa-spin text-blue-500 text-3xl"></i></div>';
             try {
-                const { data, error } = await supabase.from('galeri').select('*').order('created_at', { ascending: false });
+                const { data, error } = await supabaseClient.from('galeri').select('*').order('created_at', { ascending: false });
                 if(error) throw error;
                 if(!data || data.length === 0) { grid.innerHTML = '<div class="col-span-full text-center font-bold text-slate-400 py-10">Galeri şu an boş.</div>'; return; }
                 
@@ -495,7 +494,7 @@
         async function deleteGalleryItem(id) {
             Swal.fire({title: 'Silinsin mi?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sil', cancelButtonText:'İptal', confirmButtonColor: '#d33'}).then(async res => {
                 if(res.isConfirmed) {
-                    await supabase.from('galeri').delete().eq('id', id);
+                    await supabaseClient.from('galeri').delete().eq('id', id);
                     loadGalleryAdmin();
                 }
             });
