@@ -27,8 +27,17 @@ window.showToast = function(type, message) {
     toast.innerHTML = `<i class="fa-solid ${icon} text-lg"></i><span class="text-[14px] font-bold tracking-wide">${message}</span>`;
     
     document.body.appendChild(toast);
-    requestAnimationFrame(() => { toast.classList.remove('-translate-y-24', 'opacity-0'); toast.classList.add('translate-y-0', 'opacity-100'); });
-    setTimeout(() => { toast.classList.remove('translate-y-0', 'opacity-100'); toast.classList.add('-translate-y-24', 'opacity-0'); setTimeout(() => toast.remove(), 400); }, 3000);
+    
+    requestAnimationFrame(() => {
+        toast.classList.remove('-translate-y-24', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+    });
+    
+    setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('-translate-y-24', 'opacity-0');
+        setTimeout(() => toast.remove(), 400);
+    }, 3000);
 };
 
 // ============================================
@@ -49,59 +58,92 @@ window.closeSideModal = function(wrapperId, panelId) {
     const panel = document.getElementById(panelId);
     if(wrapper && panel) {
         panel.classList.add('translate-x-full', 'scale-95');
-        setTimeout(() => { wrapper.classList.add('tw-modal-hidden'); document.body.style.overflow = ''; }, 300);
+        setTimeout(() => {
+            wrapper.classList.add('tw-modal-hidden');
+            document.body.style.overflow = '';
+        }, 300);
     }
 }
 
-function showSimpleModal(modalEl) { if(modalEl) { document.body.style.overflow = 'hidden'; modalEl.classList.remove('tw-modal-hidden'); } }
-function hideSimpleModal(modalEl) { if(modalEl) { modalEl.classList.add('tw-modal-hidden'); document.body.style.overflow = ''; } }
+function showSimpleModal(modalEl) {
+    if(modalEl) {
+        document.body.style.overflow = 'hidden';
+        modalEl.classList.remove('tw-modal-hidden');
+    }
+}
+
+function hideSimpleModal(modalEl) {
+    if(modalEl) {
+        modalEl.classList.add('tw-modal-hidden');
+        document.body.style.overflow = '';
+    }
+}
 
 window.openGallery = function(imgUrl) {
     const imgEl = document.getElementById('gallery-image');
     const modal = document.getElementById('gallery-modal');
     const panel = document.getElementById('gallery-panel');
     if(imgEl && modal && panel) {
-        imgEl.src = imgUrl; document.body.style.overflow = 'hidden';
+        imgEl.src = imgUrl;
+        document.body.style.overflow = 'hidden';
         modal.classList.remove('tw-modal-hidden');
         setTimeout(() => panel.classList.remove('scale-95'), 10);
     }
 }
 
 // ============================================
-// V4 REELS VİDEO & GÖRÜNTÜLENME (VIEW) MOTORU
+// V4 REELS VİDEO & GÖRÜNTÜLENME MOTORU
 // ============================================
 window.togglePlay = function(container) {
     const video = container.querySelector('video');
     const playBtn = container.querySelector('.reels-play-btn');
-    if(video.paused) { video.play(); video.classList.remove('paused', 'manually-paused'); playBtn.style.opacity = '0'; } 
-    else { video.pause(); video.classList.add('paused', 'manually-paused'); playBtn.style.opacity = '1'; }
+    if(video.paused) {
+        video.play();
+        video.classList.remove('paused', 'manually-paused');
+        playBtn.style.opacity = '0';
+    } else {
+        video.pause();
+        video.classList.add('paused', 'manually-paused');
+        playBtn.style.opacity = '1';
+    }
 };
 
 window.toggleMute = function(e, btn) {
-    e.stopPropagation(); const video = btn.previousElementSibling.previousElementSibling;
-    video.muted = !video.muted; btn.innerHTML = video.muted ? '<i class="fa-solid fa-volume-xmark"></i>' : '<i class="fa-solid fa-volume-high"></i>';
+    e.stopPropagation();
+    const video = btn.previousElementSibling.previousElementSibling;
+    video.muted = !video.muted;
+    btn.innerHTML = video.muted ? '<i class="fa-solid fa-volume-xmark"></i>' : '<i class="fa-solid fa-volume-high"></i>';
 };
 
 const reelsObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-        const video = entry.target; const playBtn = video.nextElementSibling;
-        if(entry.isIntersecting) { if(!video.classList.contains('manually-paused')) { video.play().catch(e => {}); if(playBtn) playBtn.style.opacity = '0'; } } 
-        else { video.pause(); if(!video.classList.contains('manually-paused') && playBtn) playBtn.style.opacity = '1'; }
+        const video = entry.target;
+        const playBtn = video.nextElementSibling;
+        if(entry.isIntersecting) {
+            if(!video.classList.contains('manually-paused')) {
+                video.play().catch(e => console.log('Auto-play engellendi'));
+                if(playBtn) playBtn.style.opacity = '0';
+            }
+        } else {
+            video.pause();
+            if(!video.classList.contains('manually-paused') && playBtn) playBtn.style.opacity = '1';
+        }
     });
 }, { threshold: 0.4 });
 
-// Görüntülenme Hatası Çözümü - Threshold 0.2 yapıldı, asenkron koruma eklendi
 const viewedPosts = new Set();
 const postViewObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if(entry.isIntersecting) {
-            const postCard = entry.target; const postId = postCard.getAttribute('data-post-id');
+            const postCard = entry.target;
+            const postId = postCard.getAttribute('data-post-id');
             if(!viewedPosts.has(postId)) {
-                viewedPosts.add(postId);
+                viewedPosts.add(postId); 
                 setTimeout(async () => {
                     try {
                         const {data} = await supabase.from('gonderiler').select('goruntulenme').eq('id', postId).single();
-                        const newViews = (data?.goruntulenme || 0) + 1;
+                        const currentViews = (data && data.goruntulenme) ? data.goruntulenme : 0;
+                        const newViews = currentViews + 1;
                         await supabase.from('gonderiler').update({goruntulenme: newViews}).eq('id', postId);
                         const viewSpan = postCard.querySelector('.view-count-text');
                         if(viewSpan) viewSpan.innerText = newViews;
@@ -117,6 +159,7 @@ const postViewObserver = new IntersectionObserver((entries) => {
 // ============================================
 async function checkSession() {
     const { data: { session } } = await supabase.auth.getSession();
+    
     if (session) {
         currentUserSession = session;
         try {
@@ -128,8 +171,11 @@ async function checkSession() {
                 if(bottomAvatar) bottomAvatar.src = avatarUrl;
             }
         } catch (e) {}
+        
         checkNotificationsBadge(); checkMessagesBadge(); setupRealtime(); loadFeed(currentFeedFilter);
-    } else { window.location.href = 'index.html'; }
+    } else {
+        window.location.href = 'index.html';
+    }
 }
 
 window.handleLogout = async () => {
@@ -144,26 +190,35 @@ window.handleLogout = async () => {
 // ============================================
 const bottomHomeBtn = document.getElementById('bottom-home-btn');
 if(bottomHomeBtn) bottomHomeBtn.addEventListener('click', () => { window.scrollTo({top:0, behavior:'smooth'}); });
+
 const bottomSearchBtn = document.getElementById('bottom-search-btn');
 if(bottomSearchBtn) bottomSearchBtn.addEventListener('click', () => { openSideModal('search-modal', 'search-modal-panel'); });
 
 const searchInput = document.getElementById('user-search-input');
 if(searchInput) {
     searchInput.addEventListener('input', async (e) => {
-        const val = e.target.value.trim(); const resDiv = document.getElementById('search-results');
-        if(!val) { resDiv.innerHTML = '<div class="flex flex-col items-center justify-center h-40 text-slate-400"><i class="fa-solid fa-magnifying-glass text-5xl mb-3 opacity-30"></i><p class="text-[14px] font-bold">Aramak istediğiniz kişiyi yazın.</p></div>'; return; }
+        const val = e.target.value.trim();
+        const resDiv = document.getElementById('search-results');
+        if(!val) { 
+            resDiv.innerHTML = '<div class="flex flex-col items-center justify-center h-40 text-slate-400"><i class="fa-solid fa-magnifying-glass text-5xl mb-3 opacity-30"></i><p class="text-[14px] font-bold">Aramak istediğiniz kişiyi yazın.</p></div>'; 
+            return; 
+        }
         
         try {
-            const { data: users, error } = await supabase.from('uyeler').select('id, ad_soyad, avatar_url, rol').ilike('ad_soyad', `%${val}%`).limit(10);
+            const { data: users, error } = await supabase.from('uyeler').select('id, ad_soyad, avatar_url, rol, gizli_hesap').ilike('ad_soyad', `%${val}%`).limit(10);
             if(error) throw error;
             if(!users || users.length === 0) { resDiv.innerHTML = '<p class="text-center text-slate-400 mt-10 text-sm font-bold">Kullanıcı bulunamadı.</p>'; return; }
+            
             resDiv.innerHTML = '';
             users.forEach(u => {
                 const avatar = u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.ad_soyad || 'U')}`;
                 resDiv.insertAdjacentHTML('beforeend', `
                     <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors user-profile-trigger border border-slate-100 shadow-sm" data-user-id="${u.id}" onclick="closeSideModal('search-modal', 'search-modal-panel')">
                         <img src="${avatar}" class="w-12 h-12 rounded-full object-cover border border-slate-200 pointer-events-none">
-                        <div class="pointer-events-none flex-1"><h4 class="font-bold text-slate-900 text-[14px]">${u.ad_soyad}</h4><span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase border border-blue-100">${u.rol}</span></div>
+                        <div class="pointer-events-none flex-1">
+                            <h4 class="font-bold text-slate-900 text-[14px] flex items-center gap-1">${u.ad_soyad} ${u.gizli_hesap ? '<i class="fa-solid fa-lock text-[10px] text-slate-400"></i>' : ''}</h4>
+                            <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase border border-blue-100">${u.rol}</span>
+                        </div>
                     </div>
                 `);
             });
@@ -174,24 +229,40 @@ if(searchInput) {
 const bottomAddBtn = document.getElementById('bottom-add-btn');
 if(bottomAddBtn) bottomAddBtn.addEventListener('click', () => { 
     const createModal = document.getElementById('create-post-modal');
-    if(createModal) { document.body.style.overflow = 'hidden'; createModal.classList.remove('tw-modal-hidden'); setTimeout(() => document.getElementById('create-post-panel').classList.remove('translate-y-full'), 10); }
+    if(createModal) {
+        document.body.style.overflow = 'hidden';
+        createModal.classList.remove('tw-modal-hidden');
+        setTimeout(() => document.getElementById('create-post-panel').classList.remove('translate-y-full'), 10);
+    }
 });
 
 document.getElementById('close-post-modal')?.addEventListener('click', () => {
     document.getElementById('create-post-panel').classList.add('translate-y-full');
-    setTimeout(() => { document.getElementById('create-post-modal').classList.add('tw-modal-hidden'); document.body.style.overflow = ''; }, 300);
+    setTimeout(() => {
+        document.getElementById('create-post-modal').classList.add('tw-modal-hidden');
+        document.body.style.overflow = '';
+    }, 300);
 });
 
 const bottomNotifBtn = document.getElementById('bottom-notif-btn');
-if(bottomNotifBtn) bottomNotifBtn.addEventListener('click', () => { openSideModal('notification-modal', 'notification-panel'); loadNotifications(); });
+if(bottomNotifBtn) bottomNotifBtn.addEventListener('click', () => { 
+    openSideModal('notification-modal', 'notification-panel');
+    loadNotifications();
+});
+
 const bottomProfileBtn = document.getElementById('bottom-profile-btn');
-if(bottomProfileBtn) bottomProfileBtn.addEventListener('click', () => { if(currentUserSession) openUserProfile(currentUserSession.user.id); });
+if(bottomProfileBtn) bottomProfileBtn.addEventListener('click', () => {
+    if(currentUserSession) openUserProfile(currentUserSession.user.id);
+});
 
 // ============================================
-// MODALLAR VE PROFİL GÜNCELLEME (BYPASS CACHE)
+// MODALLAR (Mesajlar / Profil Ayarları / Hareketlerin)
 // ============================================
 const messagesBtn = document.getElementById('messages-btn');
-if(messagesBtn) messagesBtn.addEventListener('click', () => { openSideModal('messages-list-modal', 'messages-list-panel'); loadConversations(); });
+if(messagesBtn) messagesBtn.addEventListener('click', () => {
+    openSideModal('messages-list-modal', 'messages-list-panel');
+    loadConversations();
+});
 
 document.addEventListener('click', e => {
     const editMenuBtn = e.target.closest('#menu-edit-btn');
@@ -202,11 +273,16 @@ document.addEventListener('click', e => {
         if(document.getElementById('edit-bio') && userDataGlobal) document.getElementById('edit-bio').value = userDataGlobal.biyografi || '';
         if(document.getElementById('edit-avatar-img') && userDataGlobal) document.getElementById('edit-avatar-img').src = userDataGlobal.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(userDataGlobal.ad_soyad || 'U')}`;
         const pToggle = document.getElementById('privacy-toggle');
-        if(pToggle && userDataGlobal.gizli_hesap !== undefined) pToggle.checked = userDataGlobal.gizli_hesap;
+        if(pToggle && userDataGlobal.gizli_hesap !== undefined) pToggle.checked = !!userDataGlobal.gizli_hesap;
         selectedUpdateAvatarFile = null;
     }
+    
     const activityMenuBtn = e.target.closest('#menu-activity-btn');
-    if(activityMenuBtn) { openSideModal('activity-modal', 'activity-panel'); loadActivity('likes'); }
+    if(activityMenuBtn) {
+        openSideModal('activity-modal', 'activity-panel');
+        loadActivity('likes');
+    }
+    
     const logoutMenuBtn = e.target.closest('#menu-logout-btn');
     if(logoutMenuBtn) handleLogout();
 });
@@ -220,10 +296,16 @@ const editAvatarInput = document.getElementById('edit-avatar');
 if(editAvatarInput) {
     editAvatarInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
-        if (file) { selectedUpdateAvatarFile = file; const reader = new FileReader(); reader.onload = (ev) => { document.getElementById('edit-avatar-img').src = ev.target.result; }; reader.readAsDataURL(file); }
+        if (file) {
+            selectedUpdateAvatarFile = file;
+            const reader = new FileReader();
+            reader.onload = (ev) => { document.getElementById('edit-avatar-img').src = ev.target.result; };
+            reader.readAsDataURL(file);
+        }
     });
 }
 
+// Gizli Hesap ve Profil Güncelleme (Bypass Cache Düzenlemesi)
 const editProfileForm = document.getElementById('edit-profile-form');
 if(editProfileForm) {
     editProfileForm.addEventListener('submit', async (e) => {
@@ -233,24 +315,32 @@ if(editProfileForm) {
         try {
             let updatedAvatarUrl = null;
             if (selectedUpdateAvatarFile) {
-                const ext = selectedUpdateAvatarFile.name.split('.').pop(); const fileName = `${currentUserSession.user.id}-${Math.random()}.${ext}`;
+                const ext = selectedUpdateAvatarFile.name.split('.').pop();
+                const fileName = `${currentUserSession.user.id}-${Math.random()}.${ext}`;
                 await supabase.storage.from('avatars').upload(fileName, selectedUpdateAvatarFile);
                 updatedAvatarUrl = supabase.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
             }
             const isPrivate = document.getElementById('privacy-toggle') ? document.getElementById('privacy-toggle').checked : false;
+            
             const updateData = { ad_soyad: document.getElementById('edit-name').value, biyografi: document.getElementById('edit-bio').value, gizli_hesap: isPrivate };
             if (updatedAvatarUrl) updateData.avatar_url = updatedAvatarUrl;
             
-            await supabase.from('uyeler').update(updateData).eq('id', currentUserSession.user.id);
+            const { error: updateError } = await supabase.from('uyeler').update(updateData).eq('id', currentUserSession.user.id);
+            if(updateError) throw updateError;
             
             if(userDataGlobal) {
-                userDataGlobal.ad_soyad = updateData.ad_soyad; userDataGlobal.biyografi = updateData.biyografi; userDataGlobal.gizli_hesap = updateData.gizli_hesap;
+                userDataGlobal.ad_soyad = updateData.ad_soyad;
+                userDataGlobal.biyografi = updateData.biyografi;
+                userDataGlobal.gizli_hesap = updateData.gizli_hesap;
                 if (updatedAvatarUrl) userDataGlobal.avatar_url = updatedAvatarUrl;
             }
 
             hideSimpleModal(document.getElementById('edit-profile-modal'));
             showToast('success', 'Profil başarıyla güncellendi!');
-            if(currentlyViewingProfileId === currentUserSession.user.id) openUserProfile(currentUserSession.user.id);
+            
+            if(currentlyViewingProfileId === currentUserSession.user.id) {
+                openUserProfile(currentUserSession.user.id);
+            }
         } catch (error) { showToast('error', 'Hata: ' + error.message); }
         finally { btn.innerHTML = 'Kaydet'; btn.disabled = false; }
     });
@@ -263,29 +353,45 @@ async function loadActivity(type) {
     const container = document.getElementById('activity-content');
     const tabLikes = document.getElementById('tab-activity-likes');
     const tabComments = document.getElementById('tab-activity-comments');
+    
     if(!container || !currentUserSession) return;
     
     if(type === 'likes') {
-        tabLikes.classList.add('border-slate-900', 'text-slate-900'); tabLikes.classList.remove('border-transparent', 'text-slate-400');
-        tabComments.classList.remove('border-slate-900', 'text-slate-900'); tabComments.classList.add('border-transparent', 'text-slate-400');
+        tabLikes.classList.add('border-slate-900', 'text-slate-900');
+        tabLikes.classList.remove('border-transparent', 'text-slate-400');
+        tabComments.classList.remove('border-slate-900', 'text-slate-900');
+        tabComments.classList.add('border-transparent', 'text-slate-400');
         container.className = "flex-1 overflow-y-auto p-1 bg-white hide-scrollbar grid grid-cols-3 gap-[2px]";
         container.innerHTML = '<div class="col-span-3 text-center p-10"><i class="fa-solid fa-spinner fa-spin text-blue-500 text-3xl"></i></div>';
+        
         const {data} = await supabase.from('etkilesimler').select('gonderi:gonderiler(id, medya_url, metin)').eq('user_id', currentUserSession.user.id).eq('etkilesim_tipi', 'like').order('created_at', {ascending: false});
         container.innerHTML = '';
         if(!data || data.length === 0) { container.innerHTML = '<div class="col-span-3 text-center p-10 text-[14px] font-bold text-slate-400">Henüz bir şey beğenmedin.</div>'; return; }
+        
         data.forEach(item => {
-            const post = item.gonderi; if(!post) return;
-            let inner = post.medya_url ? (post.medya_url.endsWith('.mp4') ? '<div class="absolute inset-0 bg-black flex items-center justify-center text-white"><i class="fa-solid fa-play text-2xl"></i></div>' : `<img src="${post.medya_url}" class="w-full h-full object-cover">`) : `<div class="w-full h-full bg-slate-100 flex items-center justify-center p-3 text-center text-[10px] font-bold text-slate-500 break-words overflow-hidden border border-slate-200">${post.metin.substring(0,40)}...</div>`;
+            const post = item.gonderi;
+            if(!post) return;
+            let inner = '';
+            if(post.medya_url) {
+                if(post.medya_url.endsWith('.mp4')) inner = '<div class="absolute inset-0 bg-black flex items-center justify-center text-white"><i class="fa-solid fa-play text-2xl"></i></div>';
+                else inner = `<img src="${post.medya_url}" class="w-full h-full object-cover">`;
+            } else {
+                inner = `<div class="w-full h-full bg-slate-100 flex items-center justify-center p-3 text-center text-[10px] font-bold text-slate-500 break-words overflow-hidden border border-slate-200">${post.metin.substring(0,40)}...</div>`;
+            }
             container.insertAdjacentHTML('beforeend', `<div class="aspect-square relative cursor-pointer hover:opacity-80 transition-opacity border border-white" onclick="openSinglePost(${post.id})">${inner}</div>`);
         });
     } else {
-        tabComments.classList.add('border-slate-900', 'text-slate-900'); tabComments.classList.remove('border-transparent', 'text-slate-400');
-        tabLikes.classList.remove('border-slate-900', 'text-slate-900'); tabLikes.classList.add('border-transparent', 'text-slate-400');
+        tabComments.classList.add('border-slate-900', 'text-slate-900');
+        tabComments.classList.remove('border-transparent', 'text-slate-400');
+        tabLikes.classList.remove('border-slate-900', 'text-slate-900');
+        tabLikes.classList.add('border-transparent', 'text-slate-400');
         container.className = "flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 hide-scrollbar flex flex-col";
         container.innerHTML = '<div class="text-center p-10"><i class="fa-solid fa-spinner fa-spin text-blue-500 text-3xl"></i></div>';
+        
         const {data} = await supabase.from('gonderi_yorumlari').select('*, gonderi:gonderiler(id, user_id, yazar:uyeler(ad_soyad, avatar_url))').eq('user_id', currentUserSession.user.id).order('created_at', {ascending: false});
         container.innerHTML = '';
         if(!data || data.length === 0) { container.innerHTML = '<div class="text-center p-10 text-[14px] font-bold text-slate-400">Hiç yorum yapmadın.</div>'; return; }
+        
         data.forEach(comment => {
             const postOwner = comment.gonderi?.yazar?.ad_soyad || 'Biri';
             container.insertAdjacentHTML('beforeend', `
@@ -301,15 +407,22 @@ document.getElementById('tab-activity-likes')?.addEventListener('click', () => l
 document.getElementById('tab-activity-comments')?.addEventListener('click', () => loadActivity('comments'));
 
 // ============================================
-// REALTIME, BİLDİRİM VE MESAJ SİSTEMLERİ
+// REALTIME & CHAT BÖLÜMLERİ
 // ============================================
 function setupRealtime() {
     if (realtimeChannel) return;
     realtimeChannel = supabase.channel('oz-yapi-realtime')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'gonderiler' }, async (payload) => {
             if (payload.new.user_id !== currentUserSession?.user?.id) {
-                const { data: newPost } = await supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).eq('id', payload.new.id).single();
-                if (newPost && (currentFeedFilter === 'all' || currentFeedFilter === newPost.gonderi_tipi)) {
+                const { data: newPost } = await supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol, gizli_hesap), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).eq('id', payload.new.id).single();
+                
+                let showPost = true;
+                if(newPost && newPost.yazar && newPost.yazar.gizli_hesap) {
+                    const { data: follow } = await supabase.from('takipler').select('id').eq('takip_eden_id', currentUserSession.user.id).eq('takip_edilen_id', newPost.user_id).maybeSingle();
+                    if(!follow) showPost = false;
+                }
+
+                if (showPost && newPost && (currentFeedFilter === 'all' || currentFeedFilter === newPost.gonderi_tipi)) {
                     const feedList = document.getElementById('feed-list');
                     if (feedList) {
                         feedList.insertAdjacentHTML('afterbegin', generatePostHTML(newPost, false));
@@ -365,9 +478,24 @@ function setupRealtime() {
                 }
             }
         }).subscribe();
+
+    if(!chatBroadcastChannel) {
+        chatBroadcastChannel = supabase.channel('chat-typing');
+        chatBroadcastChannel.on('broadcast', { event: 'typing' }, payload => {
+            const dmModal = document.getElementById('dm-modal');
+            if (payload.payload.to === currentUserSession.user.id && payload.payload.from === currentChatUserId && dmModal && !dmModal.classList.contains('tw-modal-hidden')) {
+                const dmTypingIndicator = document.getElementById('chat-typing-indicator');
+                if(dmTypingIndicator) {
+                    dmTypingIndicator.classList.remove('hidden'); dmTypingIndicator.classList.add('flex');
+                    scrollToChatBottom(); clearTimeout(typingTimeout);
+                    typingTimeout = setTimeout(() => { dmTypingIndicator.classList.remove('flex'); dmTypingIndicator.classList.add('hidden'); }, 2000);
+                }
+            }
+        }).subscribe();
+    }
 }
 
-// --- ZENGİN BİLDİRİMLER VE GİZLİ HESAP ONAY MANTIĞI ---
+// --- ZENGİN BİLDİRİMLER (RICH NOTIFICATIONS) VE İSTEK MANTIĞI ---
 async function checkNotificationsBadge() {
     if (!currentUserSession) return;
     const bottomNotifBadge = document.querySelector('#bottom-notif-btn #notification-badge');
@@ -396,8 +524,17 @@ async function loadNotifications() {
             let richText = notif.mesaj;
             let actionButtons = '';
             
-            if(notif.mesaj.includes('yorum yaptı')) richText = `<span class="text-slate-500 font-normal">gönderine yorum yaptı:</span> <span class="text-slate-700 italic">"${notif.ek_metin || '...'}"</span>`;
-            else if(notif.mesaj.includes('beğendi')) richText = `<span class="text-slate-500 font-normal">gönderini beğendi <i class="fa-solid fa-heart text-red-500 ml-1"></i></span>`;
+            // YORUM KESİLME HATASI ÇÖZÜMÜ: ek_metin kullanmadan ana mesajdan split ediyoruz
+            if(notif.mesaj.includes('gönderine yorum yaptı:')) {
+                const parts = notif.mesaj.split('gönderine yorum yaptı:');
+                richText = `<span class="text-slate-500 font-normal">gönderine yorum yaptı:</span> <span class="text-slate-700 italic">"${parts[1] ? parts[1].trim() : '...'}"</span>`;
+            }
+            else if(notif.mesaj === 'gönderine yorum yaptı') {
+                richText = `<span class="text-slate-500 font-normal">gönderine yorum yaptı</span>`;
+            }
+            else if(notif.mesaj.includes('beğendi')) {
+                richText = `<span class="text-slate-500 font-normal">gönderini beğendi <i class="fa-solid fa-heart text-red-500 ml-1"></i></span>`;
+            }
             else if(notif.mesaj === 'seni takip etmek istiyor') {
                 richText = `<span class="text-slate-900 font-bold">seni takip etmek istiyor</span>`;
                 actionButtons = `
@@ -407,7 +544,9 @@ async function loadNotifications() {
                     </div>
                 `;
             }
-            else if(notif.mesaj.includes('takip etmeye') || notif.mesaj.includes('onayladı')) richText = `<span class="text-blue-600 font-bold">${notif.mesaj}</span>`;
+            else if(notif.mesaj.includes('takip etmeye') || notif.mesaj.includes('onayladı')) {
+                richText = `<span class="text-blue-600 font-bold">${notif.mesaj}</span>`;
+            }
 
             let thumbHtml = '';
             if(notif.gonderi_id && notif.gonderi && !actionButtons) {
@@ -628,53 +767,6 @@ if(dmMediaInput) {
     });
 }
 
-const dmHistoryEl = document.getElementById('chat-history');
-if(dmHistoryEl) {
-    let msgPressTimer;
-    const handleMsgPressStart = (e) => {
-        const bubble = e.target.closest('.msg-bubble');
-        if(bubble) {
-            const msgId = bubble.getAttribute('data-msg-id');
-            const isMine = bubble.getAttribute('data-is-mine') === 'true';
-            msgPressTimer = setTimeout(() => {
-                if(isMine) {
-                    Swal.fire({title: 'Mesajı Sil?', icon: 'warning', showCancelButton:true, confirmButtonText:'Sil', cancelButtonText:'İptal', confirmButtonColor: '#0f172a'}).then(async res => {
-                        if(res.isConfirmed) {
-                            const wrapper = document.getElementById(`msg-wrapper-${msgId}`);
-                            if(wrapper) { wrapper.style.opacity = '0'; setTimeout(() => wrapper.remove(), 200); }
-                            await supabase.from('mesajlar').delete().eq('id', msgId);
-                        }
-                    })
-                }
-            }, 600); 
-        }
-    };
-    const handleMsgPressEnd = () => clearTimeout(msgPressTimer);
-    dmHistoryEl.addEventListener('mousedown', handleMsgPressStart);
-    dmHistoryEl.addEventListener('touchstart', handleMsgPressStart);
-    dmHistoryEl.addEventListener('mouseup', handleMsgPressEnd);
-    dmHistoryEl.addEventListener('mouseleave', handleMsgPressEnd);
-    dmHistoryEl.addEventListener('touchend', handleMsgPressEnd);
-    dmHistoryEl.addEventListener('touchmove', handleMsgPressEnd);
-
-    dmHistoryEl.addEventListener('dblclick', async (e) => {
-        const bubble = e.target.closest('.msg-bubble');
-        if(bubble) {
-            if(window.getSelection) window.getSelection().removeAllRanges();
-            const msgId = bubble.getAttribute('data-msg-id');
-            const isLiked = bubble.getAttribute('data-is-liked') === 'true';
-            bubble.setAttribute('data-is-liked', (!isLiked).toString());
-            const heart = bubble.querySelector('.msg-heart');
-            if(!isLiked) { 
-                if(heart) { heart.classList.remove('scale-0', 'opacity-0'); heart.classList.add('scale-100', 'opacity-100', 'chat-heart-anim'); }
-            } else { 
-                if(heart) { heart.classList.remove('scale-100', 'opacity-100', 'chat-heart-anim'); heart.classList.add('scale-0', 'opacity-0'); }
-            }
-            await supabase.from('mesajlar').update({begendi: !isLiked}).eq('id', msgId);
-        }
-    });
-}
-
 // ============================================
 // DOSYA/KAMERA SEÇİCİ VE GÖNDERİ PAYLAŞIM
 // ============================================
@@ -784,7 +876,7 @@ if(feedFilters) {
 }
 
 // ============================================
-// TEMPLATE ÜRETİMİ (V4 PERFORMANS OPTİMİZASYONLU BATCH RENDER)
+// BATCH RENDER & TEMPLATE ÜRETİMİ
 // ============================================
 function generatePostHTML(post, isSingleView = false) {
     const author = post.yazar || {};
@@ -809,6 +901,7 @@ function generatePostHTML(post, isSingleView = false) {
 
     let commentsHTML = '';
     const allComments = post.gonderi_yorumlari || [];
+    
     // YORUM KESİLME HATASI DÜZELTİLDİ: "break-words whitespace-pre-wrap" eklendi
     allComments.filter(c => !c.ust_yorum_id).forEach(comment => {
         const cAuthor = comment.yazar || {};
@@ -921,20 +1014,38 @@ function generatePostHTML(post, isSingleView = false) {
     `;
 }
 
-// BATCH RENDER PERFORMANS GÜNCELLEMESİ (Döngü ile anlık yazdırma iptal edildi, tek seferde basılıyor)
+// BATCH RENDER PERFORMANS GÜNCELLEMESİ (Döngü ile anlık yazdırma iptal edildi)
 async function loadFeed(filterType) {
     if (!currentUserSession) return;
     const feedList = document.getElementById('feed-list');
     if (!feedList) return;
     feedList.innerHTML = '<div class="p-12 text-center text-slate-400 bg-white rounded-3xl border border-slate-100 shadow-sm"><i class="fa-solid fa-spinner fa-spin text-5xl mb-4 text-blue-500"></i><p class="font-extrabold text-[15px]">Akış Yükleniyor...</p></div>';
+    
     try {
-        let query = supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).order('created_at', { ascending: false });
+        const { data: myFollows } = await supabase.from('takipler').select('takip_edilen_id').eq('takip_eden_id', currentUserSession.user.id);
+        const followedIds = myFollows ? myFollows.map(f => f.takip_edilen_id) : [];
+        followedIds.push(currentUserSession.user.id); 
+
+        let query = supabase.from('gonderiler').select(`*, yazar:uyeler(id, ad_soyad, avatar_url, rol, gizli_hesap), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).order('created_at', { ascending: false });
         if (filterType !== 'all') query = query.eq('gonderi_tipi', filterType);
-        const { data: posts } = await query;
-        if (!posts || posts.length === 0) { feedList.innerHTML = '<div class="bg-white p-12 border border-slate-100 rounded-3xl text-center text-slate-400 shadow-sm"><i class="fa-regular fa-images text-6xl mb-5 text-slate-200"></i><p class="font-extrabold text-[15px]">Henüz paylaşım yok.</p></div>'; return; }
         
-        // Perfomance Fix: Tek seferde render
-        feedList.innerHTML = posts.map(p => generatePostHTML(p, false)).join('');
+        const { data: posts, error } = await query;
+        if(error) throw error;
+
+        // Gizli Hesap Besleme Filtresi
+        const visiblePosts = posts.filter(p => {
+            if (p.yazar && p.yazar.gizli_hesap === true) {
+                return followedIds.includes(p.user_id);
+            }
+            return true;
+        });
+
+        if (!visiblePosts || visiblePosts.length === 0) { 
+            feedList.innerHTML = '<div class="bg-white p-12 border border-slate-100 rounded-3xl text-center text-slate-400 shadow-sm"><i class="fa-regular fa-images text-6xl mb-5 text-slate-200"></i><p class="font-extrabold text-[15px]">Henüz paylaşım yok.</p></div>'; 
+            return; 
+        }
+        
+        feedList.innerHTML = visiblePosts.map(p => generatePostHTML(p, false)).join('');
         
         document.querySelectorAll('.reels-video').forEach(v => reelsObserver.observe(v));
         document.querySelectorAll('.post-card').forEach(c => postViewObserver.observe(c));
@@ -987,12 +1098,16 @@ document.addEventListener('click', async (e) => {
         submitCommentBtn.disabled = true; submitCommentBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
         try {
             const parentId = activeReplyData[postId] || null;
-            await supabase.from('gonderi_yorumlari').insert([{ gonderi_id: postId, user_id: currentUserSession.user.id, metin: input.value.trim(), ust_yorum_id: parentId }]);
+            const commentText = input.value.trim();
             
+            await supabase.from('gonderi_yorumlari').insert([{ gonderi_id: postId, user_id: currentUserSession.user.id, metin: commentText, ust_yorum_id: parentId }]);
+            
+            // BİLDİRİM HATASI ÇÖZÜMÜ: ek_metin kullanılmadan tek mesajda gönderilir
             if (authorId !== currentUserSession.user.id) {
-                const shortComment = input.value.trim().substring(0, 30) + (input.value.length > 30 ? '...' : '');
-                await supabase.from('bildirimler').insert([{ alici_id: authorId, gonderen_id: currentUserSession.user.id, mesaj: 'gönderine yorum yaptı', ek_metin: shortComment, gonderi_id: postId }]);
+                const notifMsg = `gönderine yorum yaptı: ${commentText}`;
+                await supabase.from('bildirimler').insert([{ alici_id: authorId, gonderen_id: currentUserSession.user.id, mesaj: notifMsg, gonderi_id: postId }]);
             }
+            
             delete activeReplyData[postId]; input.value = '';
             
             const { data: post } = await supabase.from('gonderiler').select(`*, yazar:uyeler(ad_soyad, avatar_url, rol), etkilesimler(id, user_id), gonderi_yorumlari(id, metin, created_at, user_id, ust_yorum_id, yazar:uyeler(ad_soyad, avatar_url, rol))`).eq('id', postId).single();
@@ -1147,7 +1262,7 @@ window.openFollowList = async function(type, userId) {
             const avatar = u.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.ad_soyad)}&background=1e3a8a&color=fff`;
             content.insertAdjacentHTML('beforeend', `
                 <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors border border-slate-100 shadow-sm mb-3 user-profile-trigger" data-user-id="${u.id}" onclick="closeSideModal('follow-list-modal', 'follow-list-panel')">
-                    <img src="${avatar}" class="w-14 h-14 rounded-full object-cover border-[1.5px] border-slate-200 pointer-events-none shadow-sm">
+                    <img src="${avatar}" class="w-14 h-14 rounded-full object-cover border-[1.5px] border-slate-200 pointer-events-none shadow-sm" loading="lazy">
                     <div class="pointer-events-none flex-1">
                         <h4 class="font-extrabold text-slate-900 text-[15px]">${u.ad_soyad}</h4>
                         <span class="text-[10px] font-extrabold text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase border border-blue-100 mt-1 inline-block">${u.rol}</span>
@@ -1155,7 +1270,9 @@ window.openFollowList = async function(type, userId) {
                 </div>
             `);
         });
-    } catch(e) { content.innerHTML = '<div class="text-center text-red-500 mt-10 font-bold">Liste yüklenemedi.</div>'; }
+    } catch(e) {
+        content.innerHTML = '<div class="text-center text-red-500 mt-10 font-bold">Liste yüklenemedi.</div>';
+    }
 };
 
 // ============================================
@@ -1215,7 +1332,6 @@ window.openUserProfile = async (uId) => {
         let isFollowing = false;
         let isRequested = false;
 
-        // İSTEK VE TAKİP KONTROLÜ
         if (currentUserSession && uId !== currentUserSession.user.id) {
             const { data: follow } = await supabase.from('takipler').select('id').eq('takip_eden_id', currentUserSession.user.id).eq('takip_edilen_id', uId).maybeSingle();
             if (follow) isFollowing = true;
@@ -1241,7 +1357,11 @@ window.openUserProfile = async (uId) => {
             
             if(isFollowing) {
                 if(followBtn) followBtn.classList.add('tw-modal-hidden'); 
-                if(unfollowBtn) unfollowBtn.classList.remove('tw-modal-hidden'); 
+                if(unfollowBtn) {
+                    unfollowBtn.classList.remove('tw-modal-hidden'); 
+                    unfollowBtn.innerHTML = 'Takip Ediliyor';
+                    unfollowBtn.disabled = false;
+                }
             } else if (isRequested) {
                 if(followBtn) { 
                     followBtn.classList.remove('tw-modal-hidden'); 
@@ -1261,8 +1381,7 @@ window.openUserProfile = async (uId) => {
         const upFollowingCount = document.getElementById('up-following-count');
         const { count: fer } = await supabase.from('takipler').select('*', { count: 'exact', head: true }).eq('takip_edilen_id', uId);
         const { count: fing } = await supabase.from('takipler').select('*', { count: 'exact', head: true }).eq('takip_eden_id', uId);
-        if(upFollowerCount) upFollowerCount.innerText = fer || 0; if(upFollowingCount) upFollowingCount.innerText = fing || 0;
-
+        
         const fTrigger = document.getElementById('follower-trigger');
         const fingTrigger = document.getElementById('following-trigger');
 
@@ -1272,10 +1391,14 @@ window.openUserProfile = async (uId) => {
             if(upGrid) upGrid.innerHTML = '<div class="col-span-3 flex flex-col items-center justify-center p-16 text-slate-500"><div class="w-20 h-20 bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center mb-5"><i class="fa-solid fa-lock text-4xl text-slate-300"></i></div><h3 class="font-extrabold text-slate-900 text-lg">Bu Hesap Gizli</h3><p class="text-sm mt-1 text-center font-medium">Fotoğraflarını ve videolarını görmek için takip et.</p></div>';
             if(upQuestionsList) upQuestionsList.innerHTML = '';
             document.getElementById('up-post-count').innerText = '-';
+            if(upFollowerCount) upFollowerCount.innerText = '-';
+            if(upFollowingCount) upFollowingCount.innerText = '-';
             fTrigger.onclick = null; fingTrigger.onclick = null;
             return; 
         }
 
+        if(upFollowerCount) upFollowerCount.innerText = fer || 0; 
+        if(upFollowingCount) upFollowingCount.innerText = fing || 0;
         fTrigger.onclick = () => openFollowList('followers', uId);
         fingTrigger.onclick = () => openFollowList('following', uId);
 
@@ -1315,41 +1438,64 @@ document.addEventListener('click', async (e) => {
     if (uId) openUserProfile(uId);
 });
 
+// TAKİP ET & İSTEK GÖNDER
 const followBtnEl = document.getElementById('follow-btn');
 if(followBtnEl) {
     followBtnEl.addEventListener('click', async () => {
+        followBtnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        followBtnEl.disabled = true;
         try {
             const { data: user } = await supabase.from('uyeler').select('gizli_hesap').eq('id', currentlyViewingProfileId).single();
             if(user && user.gizli_hesap) {
                 await supabase.from('takip_istekleri').insert([{ gonderen_id: currentUserSession.user.id, alici_id: currentlyViewingProfileId }]);
                 await supabase.from('bildirimler').insert([{ alici_id: currentlyViewingProfileId, gonderen_id: currentUserSession.user.id, mesaj: 'seni takip etmek istiyor' }]);
-                followBtnEl.innerHTML = 'İstek Gönderildi'; followBtnEl.disabled = true; followBtnEl.classList.add('opacity-70');
+                followBtnEl.innerHTML = 'İstek Gönderildi'; followBtnEl.classList.add('opacity-70');
                 showToast('success', 'Takip isteği gönderildi.');
             } else {
                 await supabase.from('takipler').insert([{ takip_eden_id: currentUserSession.user.id, takip_edilen_id: currentlyViewingProfileId }]);
                 await supabase.from('bildirimler').insert([{ alici_id: currentlyViewingProfileId, gonderen_id: currentUserSession.user.id, mesaj: 'seni takip etmeye başladı' }]);
-                followBtnEl.classList.add('tw-modal-hidden'); document.getElementById('unfollow-btn')?.classList.remove('tw-modal-hidden'); 
+                followBtnEl.classList.add('tw-modal-hidden'); followBtnEl.innerHTML = 'Takip Et'; followBtnEl.disabled = false;
+                
+                const unfollowBtnEl = document.getElementById('unfollow-btn');
+                if(unfollowBtnEl) unfollowBtnEl.classList.remove('tw-modal-hidden'); 
+                
                 const upFollowerCount = document.getElementById('up-follower-count');
                 if(upFollowerCount) upFollowerCount.innerText = parseInt(upFollowerCount.innerText)+1;
                 showToast('success', 'Takip ediliyor.');
             }
-        } catch(e){}
+        } catch(e){
+            followBtnEl.innerHTML = 'Takip Et'; followBtnEl.disabled = false;
+        }
     });
 }
 
+// TAKİPTEN ÇIKMA (KABA UYARI SİLİNDİ, DİREKT TOAST)
 const unfollowBtnEl = document.getElementById('unfollow-btn');
 if(unfollowBtnEl) {
     unfollowBtnEl.addEventListener('click', async () => {
-        Swal.fire({title: 'Takibi Bırak?', icon: 'question', showCancelButton: true, confirmButtonText: 'Bırak', cancelButtonText: 'İptal', confirmButtonColor: '#0f172a'}).then(async res => {
-            if(res.isConfirmed) {
-                await supabase.from('takipler').delete().eq('takip_eden_id', currentUserSession.user.id).eq('takip_edilen_id', currentlyViewingProfileId);
-                unfollowBtnEl.classList.add('tw-modal-hidden'); followBtnEl?.classList.remove('tw-modal-hidden'); 
-                const upFollowerCount = document.getElementById('up-follower-count');
-                if(upFollowerCount) upFollowerCount.innerText = parseInt(upFollowerCount.innerText)-1;
-                openUserProfile(currentlyViewingProfileId); 
-                showToast('info', 'Takipten çıkıldı.');
-            }
-        });
+        unfollowBtnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        unfollowBtnEl.disabled = true;
+        
+        await supabase.from('takipler').delete().eq('takip_eden_id', currentUserSession.user.id).eq('takip_edilen_id', currentlyViewingProfileId);
+        
+        unfollowBtnEl.classList.add('tw-modal-hidden'); 
+        unfollowBtnEl.innerHTML = 'Takip Ediliyor';
+        unfollowBtnEl.disabled = false;
+        
+        if(followBtnEl) { 
+            followBtnEl.classList.remove('tw-modal-hidden'); 
+            followBtnEl.innerText = 'Takip Et'; 
+            followBtnEl.disabled = false; 
+            followBtnEl.classList.remove('opacity-70'); 
+        }
+        
+        const upFollowerCount = document.getElementById('up-follower-count');
+        if(upFollowerCount && upFollowerCount.innerText !== '-') {
+            upFollowerCount.innerText = Math.max(0, parseInt(upFollowerCount.innerText)-1);
+        }
+        
+        openUserProfile(currentlyViewingProfileId); 
+        showToast('info', 'Takipten çıkıldı.');
     });
 }
 
@@ -1370,3 +1516,4 @@ window.openSinglePost = async (postId) => {
 };
 
 checkSession();
+
